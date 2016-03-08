@@ -19,7 +19,7 @@
         android:id="@+id/createDatetime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/spacing_huge"
+        android:paddingLeft="@dimen/spacing_middle"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:text="2016/03/03 13:14:00"
         android:textColor="?android:textColorPrimary"
