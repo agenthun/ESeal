@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">蓝牙锁</string>
+
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+
+    <string name="action_settings">设置</string>
+
+    <string name="prompt_account">用户名</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录</string>
+    <string name="action_forget_password">无法登录?</string>
+    <string name="action_sign_up">注册</string>
+    <string name="error_invalid_account">请输入用户名</string>
+    <string name="error_invalid_password">请输入密码</string>
+    <string name="error_invalid_null">该用户尚未注册!</string>
+
+    <string name="page_title_freight_track_query">货讯速查</string>
+    <string name="page_title_scan_device">扫描设备</string>
+    <string name="page_title_freight_query">查询</string>
+
+    <string name="text_hint_freight_query">请输入货物箱号</string>
+    <string name="text_container_no">"箱号 "</string>
+    <string name="menu_clear">关闭</string>
+    <string name="menu_toggle_icon">触发</string>
+    <string name="menu_icon_type">种类</string>
+</resources>
