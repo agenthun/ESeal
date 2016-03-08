@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -26,4 +26,4 @@
         app:floatingSearch_searchHint="@string/text_hint_freight_query"
         app:floatingSearch_showSearchKey="false" />
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

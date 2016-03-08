@@ -3,11 +3,14 @@ package com.agenthun.eseal.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.Log;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.activity.MainActivity;
+import com.agenthun.eseal.fragment.FreightQueryFragment;
 import com.agenthun.eseal.fragment.FreightTrackFragment;
+import com.agenthun.eseal.fragment.ScanDeviceFragment;
 
 /**
  * @project ESeal
@@ -15,6 +18,8 @@ import com.agenthun.eseal.fragment.FreightTrackFragment;
  * @date 16/3/7 上午5:25.
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private static final String TAG = "SectionsPagerAdapter";
+
     public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
@@ -25,11 +30,21 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Return a PlaceholderFragment (defined as a static inner class below).
         switch (position) {
             case 0:
-                return FreightTrackFragment.newInstance("0", "1070");
+                Fragment freightTrackFragment = FreightTrackFragment.newInstance("0", "1070");
+                ((FreightTrackFragment) freightTrackFragment).setOnItemClickListener(new FreightTrackFragment.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(String containerNo, String containerId) {
+                        Log.d(TAG, "get containerNo: " + containerNo + ", containerId: " + containerId);
+                        if (mOnDataChangeListener != null) {
+                            mOnDataChangeListener.onContainerDataChange(containerNo, containerId);
+                        }
+                    }
+                });
+                return freightTrackFragment;
             case 1:
-                return MainActivity.PlaceholderFragment.newInstance(1);
+                return ScanDeviceFragment.newInstance("1", "1070");
             case 2:
-                return MainActivity.PlaceholderFragment.newInstance(2);
+                return FreightQueryFragment.newInstance("2", "1070");
         }
         return null;
     }
@@ -51,5 +66,16 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 return App.getContext().getString(R.string.page_title_freight_query);
         }
         return null;
+    }
+
+    //itemClick interface
+    public interface OnDataChangeListener {
+        void onContainerDataChange(String containerNo, String containerId);
+    }
+
+    private OnDataChangeListener mOnDataChangeListener;
+
+    public void setOnDataChangeListener(OnDataChangeListener mOnDataChangeListener) {
+        this.mOnDataChangeListener = mOnDataChangeListener;
     }
 }

@@ -31,11 +31,14 @@ import android.widget.TextView;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.adapter.SectionsPagerAdapter;
+import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
 import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
+import com.agenthun.eseal.fragment.FreightTrackFragment;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.ContainerNoSuggestion;
 import com.agenthun.eseal.view.BottomSheetDialogView;
 
 import java.util.List;
@@ -55,7 +58,9 @@ public class MainActivity extends AppCompatActivity
     private ViewPager mViewPager;
     private FloatingActionButton fab;
 
-    String token = null;
+    private String token = null;
+    private String mContainerNo = null;
+    private String mContainerId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,22 +72,24 @@ public class MainActivity extends AppCompatActivity
         token = getIntent().getStringExtra(RetrofitManager.TOKEN);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-/*                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();*/
-
-                BottomSheetDialogView.show(MainActivity.this, "xxxx");
+                String token = App.getToken();
+                if (mContainerNo != null && mContainerId != null) {
+                    showFreightDataListByBottomSheet(token, mContainerId, mContainerNo);
+                } else {
+                    Snackbar.make(view, getString(R.string.text_hint_freight_query), Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                }
             }
         });
 
@@ -97,53 +104,46 @@ public class MainActivity extends AppCompatActivity
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mSectionsPagerAdapter.setOnDataChangeListener(new SectionsPagerAdapter.OnDataChangeListener() {
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.d(TAG, "onTabSelected() returned: " + tab.getPosition());
-                if (tab.getPosition() == 0) {
-                    fab.setVisibility(View.VISIBLE);
-                    ViewCompat.animate(fab).scaleX(1).scaleY(1)
-                            .setInterpolator(new LinearOutSlowInInterpolator())
-                            .setListener(new ViewPropertyAnimatorListenerAdapter() {
-                                @Override
-                                public void onAnimationEnd(View view) {
-                                    if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
-                                        return;
-                                    }
-                                    fab.setVisibility(View.VISIBLE);
-                                }
-                            })
-                            .start();
-                } else {
-                    if (fab.isShown()) {
-                        ViewCompat.animate(fab).scaleX(0).scaleY(0)
-                                .setInterpolator(new FastOutSlowInInterpolator())
-                                .setStartDelay(100)
-                                .setListener(new ViewPropertyAnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(View view) {
-                                        if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
-                                            return;
-                                        }
-                                        fab.setVisibility(View.GONE);
-                                    }
-                                })
-                                .start();
-                    }
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
+            public void onContainerDataChange(String containerNo, String containerId) {
+                mContainerNo = containerNo;
+                mContainerId = containerId;
             }
         });
+
+/*        Log.d(TAG, "onPageChange() returned: " + position);
+        if (position == 0) {
+            fab.setVisibility(View.VISIBLE);
+            ViewCompat.animate(fab).scaleX(1).scaleY(1)
+                    .setInterpolator(new LinearOutSlowInInterpolator())
+                    .setListener(new ViewPropertyAnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(View view) {
+                            if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
+                                return;
+                            }
+                            fab.setVisibility(View.VISIBLE);
+                        }
+                    })
+                    .start();
+        } else {
+            if (fab.isShown()) {
+                ViewCompat.animate(fab).scaleX(0).scaleY(0)
+                        .setInterpolator(new FastOutSlowInInterpolator())
+                        .setStartDelay(100)
+                        .setListener(new ViewPropertyAnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(View view) {
+                                if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
+                                    return;
+                                }
+                                fab.setVisibility(View.GONE);
+                            }
+                        })
+                        .start();
+            }
+        }*/
     }
 
     @Override
@@ -203,51 +203,22 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo) {
+        if (token != null) {
+            RetrofitManager.builder(PathType.BASE_WEB_SERVICE)
+                    .getFreightDataListObservable(token, containerId, 1)
+                    .enqueue(new Callback<AllDynamicDataByContainerId>() {
+                        @Override
+                        public void onResponse(Call<AllDynamicDataByContainerId> call, Response<AllDynamicDataByContainerId> response) {
+                            List<Detail> details = response.body().getDetails();
+                            BottomSheetDialogView.show(MainActivity.this, containerNo, details);
+                        }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText("section: " + getArguments().getInt(ARG_SECTION_NUMBER));
-
-            final WebView webView = (WebView) rootView.findViewById(R.id.webView);
-
-
-			/*            webView.getSettings().setJavaScriptEnabled(true);
-                        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-			            WebSettings webSettings = webView.getSettings();
-			            webSettings.setAllowFileAccess(true);
-			            webSettings.setBuiltInZoomControls(true);
-			            webView.loadUrl("http://www.freight-track.com/BaiduMap/FreightTrackPath.aspx?token=c361fb9f85a64d6a8f7b30119a5eb25f&Type=0&ContainerId=1070&language=l");*/
-
-            return rootView;
+                        @Override
+                        public void onFailure(Call<AllDynamicDataByContainerId> call, Throwable t) {
+                            Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
+                        }
+                    });
         }
     }
 }

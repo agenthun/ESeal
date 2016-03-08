@@ -1,6 +1,8 @@
 package com.agenthun.eseal.view;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.annotation.DrawableRes;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.bean.base.Detail;
+
+import java.util.List;
 
 /**
  * @project ESeal
@@ -18,18 +24,11 @@ import com.agenthun.eseal.R;
  * @date 16/3/8 上午12:26.
  */
 public class BottomSheetDialogView {
-    private static String[] timeList;
+    private static List<Detail> details;
 
-    static {
-        timeList = new String[20];
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < timeList.length; i++) {
-            stringBuilder.append(i + 1);
-            timeList[i] = stringBuilder.toString();
-        }
-    }
+    public BottomSheetDialogView(Context context, String containerNo, List<Detail> details) {
+        BottomSheetDialogView.details = details;
 
-    public BottomSheetDialogView(Context context, String containerNo) {
         BottomSheetDialog dialog = new BottomSheetDialog(context);
 //        dialog.getDelegate().setLocalNightMode();
         View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog_recycler_view, null);
@@ -45,18 +44,20 @@ public class BottomSheetDialogView {
         dialog.show();
     }
 
-    public static void show(Context context, String containerNo) {
-        new BottomSheetDialogView(context, containerNo);
+    public static void show(Context context, String containerNo, List<Detail> details) {
+        new BottomSheetDialogView(context, containerNo, details);
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView;
-        private AppCompatTextView textView;
+        private ImageView securityLevelImageView;
+        private AppCompatTextView timeTextView;
+        private AppCompatTextView actionTypeTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.status);
-            textView = (AppCompatTextView) itemView.findViewById(R.id.createDatetime);
+            securityLevelImageView = (ImageView) itemView.findViewById(R.id.securityLevel);
+            timeTextView = (AppCompatTextView) itemView.findViewById(R.id.createDatetime);
+            actionTypeTextView = (AppCompatTextView) itemView.findViewById(R.id.actionType);
         }
     }
 
@@ -70,12 +71,42 @@ public class BottomSheetDialogView {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.textView.setText(timeList[position]);
+            switch (details.get(position).getSecurityLevel()) {
+                case "0":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.orange_500));
+                    break;
+                case "1":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.dark_gray));
+                    break;
+            }
+            holder.timeTextView.setText(details.get(position).getCreateDatetime());
+            holder.actionTypeTextView.setText(getActionType(details.get(position).getActionType()));
         }
 
         @Override
         public int getItemCount() {
-            return timeList.length;
+            return details.size();
+        }
+
+        //获取相应的ActionType
+        private String getActionType(String actionType) {
+            switch (actionType) {
+                case "0":
+                    return App.getContext().getString(R.string.action_type_0);
+                case "1":
+                    return App.getContext().getString(R.string.action_type_1);
+                case "2":
+                    return App.getContext().getString(R.string.action_type_2);
+                case "3":
+                    return App.getContext().getString(R.string.action_type_3);
+                case "4":
+                    return App.getContext().getString(R.string.action_type_4);
+            }
+            return "";
         }
     }
 }

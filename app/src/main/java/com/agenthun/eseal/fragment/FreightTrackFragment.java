@@ -81,7 +81,7 @@ public class FreightTrackFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<FreightInfosByToken> call, Throwable t) {
-                    Log.d(TAG, "Response onFailure: ");
+                    Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
                 }
             });
         }
@@ -129,7 +129,10 @@ public class FreightTrackFragment extends Fragment {
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 String containerId = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerId();
                 Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
-
+                String containerNo = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerNo();
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(containerNo, containerId);
+                }
                 webView.loadUrl("http://www.freight-track.com/BaiduMap/FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
             }
 
@@ -139,5 +142,16 @@ public class FreightTrackFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    //itemClick interface
+    public interface OnItemClickListener {
+        void onItemClick(String containerNo, String containerId);
+    }
+
+    private OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 }
