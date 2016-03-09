@@ -7,16 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.agenthun.eseal.activity.LoginActivity">
-
-    <!-- Login progress -->
-    <!--    <ProgressBar
-            android:id="@+id/login_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />-->
+    tools:context=".activity.LoginActivity">
 
     <ScrollView
         android:id="@+id/login_form"

@@ -32,4 +32,23 @@
     <string name="action_type_4">海关查验</string>
 
     <string name="error_ble_not_supported">该设备不支持蓝牙功能</string>
+    <string name="device_connecting">正在连接中...</string>
+    <string name="success_device_connection">连接成功</string>
+    <string name="fail_device_connection">连接失败</string>
+    <string name="text_ok">确认</string>
+
+    <string name="card_title_setting">配置</string>
+    <string name="card_title_lock">上封</string>
+    <string name="card_title_unlock">解封</string>
+    <string name="card_title_query">查询</string>
+
+    <string name="text_hint_freight_container_number">箱号</string>
+    <string name="text_hint_freight_owner">货主</string>
+    <string name="text_hint_freight_name">货物</string>
+    <string name="text_hint_freight_origin">起始地</string>
+    <string name="text_hint_freight_destination">目的地</string>
+    <string name="text_hint_freight_vessel">航班</string>
+    <string name="text_hint_freight_voyage">航次</string>
+    <string name="text_hint_freight_frequency">上报频率</string>
+
 </resources>

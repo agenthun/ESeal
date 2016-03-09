@@ -18,4 +18,10 @@
 
     <color name="orange_500">#ff9800</color>
     <color name="red_500">#e51c23</color>
+
+    <color name="serenity_mask">#C2CCE4</color>
+    <color name="rose_quartz_mask">#F7DFDF</color>
+    <color name="amber_a100_mask">#FBD82A</color>
+    <color name="green_mask">#ADD57E</color>
+
 </resources>
