@@ -68,7 +68,7 @@ public class ACSUtility extends Object {
                 (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         mBtAdapter = bluetoothManager.getAdapter();
         if (mBtAdapter == null) {
-            Log.d(TAG, "error,mBtAdapter == null");
+            Log.d(TAG, "error, mBtAdapter == null");
             return;
         }
 

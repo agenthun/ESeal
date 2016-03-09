@@ -3,32 +3,11 @@ package com.agenthun.eseal.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
-import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.FreightInfosByToken;
-import com.agenthun.eseal.bean.base.Detail;
-import com.agenthun.eseal.connectivity.manager.RetrofitManager;
-import com.agenthun.eseal.connectivity.service.PathType;
-import com.agenthun.eseal.utils.ContainerNoSuggestion;
-import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
-import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.BodyTextView;
-import com.arlib.floatingsearchview.util.view.IconImageView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @project ESeal

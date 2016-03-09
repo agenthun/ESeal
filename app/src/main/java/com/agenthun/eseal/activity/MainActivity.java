@@ -1,44 +1,29 @@
 package com.agenthun.eseal.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.adapter.SectionsPagerAdapter;
 import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
-import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
-import com.agenthun.eseal.fragment.FreightTrackFragment;
-import com.agenthun.eseal.utils.ApiLevelHelper;
-import com.agenthun.eseal.utils.ContainerNoSuggestion;
 import com.agenthun.eseal.view.BottomSheetDialogView;
 
 import java.util.List;

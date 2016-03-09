@@ -37,18 +37,30 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
     }
 
     @Override
-    public void onBindViewHolder(DeviceViewHolder holder, int position) {
+    public void onBindViewHolder(DeviceViewHolder holder, final int position) {
         int rssi = rssiValues.get(devices.get(position).getAddress());
         holder.deviceSignal.setImageLevel(Math.abs(rssi));
         holder.deviceSignal.setColorFilter(
                 App.getContext().getResources().getColor(R.color.colorAccent));
         holder.deviceName.setText(devices.get(position).getName());
         holder.deviceAddress.setText(devices.get(position).getAddress());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(v, position);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return devices.size();
+    }
+
+    public BluetoothDevice getItem(int position) {
+        return devices.get(position);
     }
 
     public void clear() {
@@ -66,5 +78,16 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
             deviceName = (AppCompatTextView) itemView.findViewById(R.id.device_name);
             deviceAddress = (AppCompatTextView) itemView.findViewById(R.id.device_address);
         }
+    }
+
+    //itemClick interface
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    private OnItemClickListener mOnItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 }

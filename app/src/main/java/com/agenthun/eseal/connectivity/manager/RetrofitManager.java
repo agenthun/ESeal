@@ -26,10 +26,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func0;
-import rx.schedulers.Schedulers;
 
 /**
  * @project ESeal

@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.activity.MainActivity;
 import com.agenthun.eseal.fragment.FreightQueryFragment;
 import com.agenthun.eseal.fragment.FreightTrackFragment;
 import com.agenthun.eseal.fragment.ScanDeviceFragment;

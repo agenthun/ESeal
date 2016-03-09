@@ -71,7 +71,8 @@ public class BottomSheetDialogView {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            switch (details.get(position).getSecurityLevel()) {
+            String actionType = details.get(position).getActionType();
+/*            switch (details.get(position).getSecurityLevel()) {
                 case "0":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
@@ -79,12 +80,40 @@ public class BottomSheetDialogView {
                     break;
                 case "1":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                    if (actionType == "2") {
+                        //非法拆封
+                        holder.securityLevelImageView.setColorFilter(
+                                App.getContext().getResources().getColor(R.color.dark_gray));
+                    } else {
+                        holder.securityLevelImageView.setColorFilter(
+                                App.getContext().getResources().getColor(R.color.dark_gray));
+                    }
+                    break;
+            }*/
+            switch (actionType) {
+                case "0":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
                             App.getContext().getResources().getColor(R.color.dark_gray));
                     break;
+                case "1":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.dark_gray));
+                    break;
+                case "2":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.red_500));
+                    break;
+                case "3":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.colorPrimary));
+                    break;
             }
             holder.timeTextView.setText(details.get(position).getCreateDatetime());
-            holder.actionTypeTextView.setText(getActionType(details.get(position).getActionType()));
+            holder.actionTypeTextView.setText(getActionType(actionType));
         }
 
         @Override
