@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
@@ -40,11 +41,18 @@ public class DeviceOperationActivity extends AppCompatActivity {
         toolbar.setTitle(device.getName());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
     }
 
     @OnClick(R.id.card_seting)
