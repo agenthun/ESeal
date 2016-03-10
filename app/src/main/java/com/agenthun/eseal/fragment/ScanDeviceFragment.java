@@ -172,13 +172,7 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
             utilIsScan = false;
             swipeRefreshLayout.setRefreshing(false);
             utility.stopEnum();
-        }/* else if (requestCode == REQEEST_ENUM_PORTS
-                && resultCode == Activity.RESULT_OK) {
-            Bundle bundle = data.getExtras();
-
-            BluetoothDevice device = bundle.getParcelable(BluetoothDevice.EXTRA_DEVICE);
-            mSelectedPort = utility.new blePort(device);
-        }*/
+        }
     }
 
     private void scanDevice() {
@@ -210,7 +204,6 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
         if (!isFound) {
             deviceList.add(device);
         }
-//        deviceAdapter.notifyDataSetChanged();
         deviceAdapter.notifyItemInserted(deviceList.size());
     }
 

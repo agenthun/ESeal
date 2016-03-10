@@ -36,6 +36,8 @@
     <string name="success_device_connection">连接成功</string>
     <string name="fail_device_connection">连接失败</string>
     <string name="time_out_device_connection">连接超时</string>
+    <string name="success_device_send_data">操作成功</string>
+    <string name="fail_device_send_data">操作失败</string>
     <string name="text_ok">确认</string>
 
     <string name="card_title_setting">配置</string>

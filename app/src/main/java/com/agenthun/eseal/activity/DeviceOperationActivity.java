@@ -5,10 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -37,6 +40,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private boolean isPortOpen = false;
 
     private AppCompatDialog mProgressDialog;
+
+    @Bind(R.id.card_seting)
+    CardView cardSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,10 +184,26 @@ public class DeviceOperationActivity extends AppCompatActivity {
         @Override
         public void didPackageSended(boolean succeed) {
             Log.d(TAG, "didPackageSended() returned: " + succeed);
+            if (succeed) {
+                Snackbar.make(cardSetting, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            } else {
+                Snackbar.make(cardSetting, getString(R.string.fail_device_send_data), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            }
         }
 
         @Override
         public void didPackageReceived(ACSUtility.blePort port, byte[] packageToSend) {
+            StringBuffer sb = new StringBuffer();
+            for (byte b : packageToSend) {
+                sb.append("0x");
+                if ((b & 0xff) <= 0x0f) {
+                    sb.append("0");
+                }
+                sb.append(Integer.toHexString(b & 0xff) + " ");
+            }
+            Log.d(TAG, "didPackageReceived() returned: " + sb.toString());
         }
 
         @Override
@@ -205,7 +227,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
         byte[] data = new byte[128];
         for (int i = 0; i < data.length; i++) {
             data[i] = (byte) i;
-            Log.d(TAG, "bytes[" + i + "] = " + data[i]);
         }
         utility.writePort(data);
     }
