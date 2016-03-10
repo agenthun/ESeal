@@ -65,7 +65,7 @@ public class ACSUtility extends Object {
         Log.d(TAG, "acsUtility 1");
 
         bluetoothManager =
-                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+                (BluetoothManager) context.getSystemService(context.BLUETOOTH_SERVICE);
         mBtAdapter = bluetoothManager.getAdapter();
         if (mBtAdapter == null) {
             Log.d(TAG, "error, mBtAdapter == null");
@@ -183,9 +183,10 @@ public class ACSUtility extends Object {
 
     }
 
-    /*public void setUserCallback(IACSUtilityCallback userCallback) {
+    public void setUserCallback(IACSUtilityCallback userCallback) {
         this.userCallback = userCallback;
-    }*/
+    }
+
     public boolean isPortOpen(blePort port) {
 
 		/*if (mService != null && mService.mBluetoothGatt != null) {
@@ -211,40 +212,40 @@ public class ACSUtility extends Object {
                     + scanRecord.length + ",address : " + device.getAddress());
 
             if (/* device.getName().equals("BDE_ACS_Module") */true) {
-                /*Log.d(TAG, "onScanResult() - device=" + device + ", rssi=" +
-                        rssi + ",lengthOfScanRecord is : " + scanRecord.length);*/
-                // Log.d(TAG, "found ACS Module");
+                // Log.d(tag, "onScanResult() - device=" + device + ", rssi=" +
+                // rssi + ",lengthOfScanRecord is : "+ scanRecord.length);
+                // Log.d(tag, "found ACS Module");
                 //if (checkAddressExist(device)) {
-                //同样设备的多个包
-                // Log.d(TAG, "found same ACS Module");
+                // 同样设备的多个包
+                // Log.d(tag, "found same ACS Module");
                 //} else {
                 if (ports == null) {
-                    ports = new ArrayList<blePort>();
+                    ports = new ArrayList<ACSUtility.blePort>();
                 }
 
-                //添加新端口
+                // 添加新端口
                 Log.d(TAG, "==== new Port add here ====");
                 blePort newPort = new blePort(device);
                 ports.add(newPort);
 
-                if (device.getName().equals("BDE_SPP")) {
-                    //断点
-                    int i = 0;
-                    i++;
-                }
+/*                    if (device.getName().equals("BDE_SPP")) {
+                        // 断点
+                        int i = 0;
+                        i++;
+                    }*/
 
                 if (userCallback != null) {
                     userCallback.didFoundPort(newPort, rssi);
                 }
 
-                    /*// 包解析
+					/*// 包解析
 
 					int flag;
 					int recordStart = 0;
 					int length = scanRecord[recordStart++];
 					while (length > 0) {
 						flag = scanRecord[recordStart++];
-						if (flag == 2 && scanRecord[recordStart++] == -80 
+						if (flag == 2 && scanRecord[recordStart++] == -80
 								&& scanRecord[recordStart++] == -1) {
 							if (userCallback != null) {
 								userCallback.didFoundPort(newPort);
