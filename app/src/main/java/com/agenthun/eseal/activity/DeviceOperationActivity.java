@@ -19,7 +19,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.model.protocol.ESealOperation;
-import com.agenthun.eseal.model.utils.Encrypt;
+import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 
 import java.nio.ByteBuffer;
@@ -95,6 +95,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_seting)
     public void onSettingBtnClick() {
+        //配置信息
         Intent intent = new Intent(DeviceOperationActivity.this, DeviceSettingActivity.class);
         startActivityForResult(intent, DEVICE_SETTING);
     }
@@ -102,6 +103,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @OnClick(R.id.card_lock)
     public void onLockBtnClick() {
         Log.d(TAG, "onLockBtnClick() returned: ");
+        //发送上封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.putInt(id);
         buffer.putInt(rn);
@@ -122,6 +124,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @OnClick(R.id.card_unlock)
     public void onUnlockBtnClick() {
         Log.d(TAG, "onUnlockBtnClick() returned: ");
+        //发送解封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.putInt(id);
         buffer.putInt(rn);
@@ -142,6 +145,34 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @OnClick(R.id.card_query)
     public void onQueryBtnClick() {
         Log.d(TAG, "onQueryBtnClick() returned: ");
+
+/*        //发送查询操作报文
+        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
+        buffer.putInt(id);
+        buffer.putInt(rn);
+        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
+        buffer.put(ESealOperation.operationQuery(id, rn, key));
+
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY,
+                buffer.array()
+        );
+        sendData(data);*/
+
+        //发送请求信息操作报文
+        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
+        buffer.putInt(id);
+        buffer.putInt(rn);
+        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
+        buffer.put(ESealOperation.operationInfo(id, rn, key));
+
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO,
+                buffer.array()
+        );
+        sendData(data);
     }
 
     @Override
@@ -150,6 +181,25 @@ public class DeviceOperationActivity extends AppCompatActivity {
         if (requestCode == DEVICE_SETTING && resultCode == RESULT_OK) {
             DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
             Log.d(TAG, "onActivityResult() returned: " + detail.toString());
+
+            //发送配置操作报文
+            ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
+            buffer.putInt(id);
+            buffer.putInt(rn);
+            buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
+            buffer.put(ESealOperation.operationConfig(id, rn, key,
+                            ESealOperation.PERIOD_DEFAULT,
+                            ESealOperation.WINDOW_DEFAULT,
+                            ESealOperation.CHANNEL_DEFAULT,
+                            new SensorType())
+            );
+
+            SocketPackage socketPackage = new SocketPackage();
+            byte[] settingData = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                    10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG,
+                    buffer.array()
+            );
+            sendData(settingData);
         }
     }
 
@@ -231,16 +281,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         @Override
         public void didPackageReceived(ACSUtility.blePort port, byte[] packageToSend) {
-/*            StringBuffer sb = new StringBuffer();
+            StringBuffer sb = new StringBuffer();
             for (byte b : packageToSend) {
-                sb.append("0x");
                 if ((b & 0xff) <= 0x0f) {
                     sb.append("0");
                 }
                 sb.append(Integer.toHexString(b & 0xff) + " ");
-                utility.printHexString(packageToSend);
             }
-            Log.d(TAG, "didPackageReceived() returned: " + sb.toString());*/
+            Log.d(TAG, sb.toString());
 
 /*            SocketPackageReceive((sSocketPackageTypeDef *)Comm2Data, &byte,1,
                     ESEALBD_OPERATION_CMD_MAX_SIZE, pipe, (FNCT_COMM) COM2TxFIFOIn);*/

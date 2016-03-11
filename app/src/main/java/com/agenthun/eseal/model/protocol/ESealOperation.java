@@ -41,6 +41,10 @@ public class ESealOperation {
     public static final byte SAFE_LOCK = 0;
     public static final byte SAFE_UNLOCK = 1;
 
+    public static final int PERIOD_DEFAULT = 60;
+    public static final short WINDOW_DEFAULT = 30;
+    public static final byte CHANNEL_DEFAULT = 1;
+
     public ESealOperation() {
     }
 
