@@ -293,8 +293,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
             }
             Log.d(TAG, sb.toString());
 
-/*            SocketPackageReceive((sSocketPackageTypeDef *)Comm2Data, &byte,1,
-                    ESEALBD_OPERATION_CMD_MAX_SIZE, pipe, (FNCT_COMM) COM2TxFIFOIn);*/
+            if (socketPackageReceived.packageReceive(socketPackageReceived, packageToSend) == 1) {
+                Log.d(TAG, "didPackageReceived() returned: ok");
+                Log.d(TAG, "getCount() returned: " + socketPackageReceived.getCount());
+                ByteBuffer buffer = ByteBuffer.allocate(socketPackageReceived.getData().length);
+                short prococolPort = buffer.getShort(6);
+            }
         }
 
         @Override
@@ -302,6 +306,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         }
     };
+
+    private SocketPackage socketPackageReceived = new SocketPackage();
+
 
     private AppCompatDialog getProgressDialog() {
         if (mProgressDialog != null) {

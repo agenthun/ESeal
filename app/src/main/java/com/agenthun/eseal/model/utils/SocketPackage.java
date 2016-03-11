@@ -10,13 +10,15 @@ import java.nio.ByteBuffer;
 public class SocketPackage {
     private static final short SOCKET_HEAD_SIZE = 10;
     private static final int SOCKET_LEAD = 0xFFFFFFFF;
+    private static final byte SOCKET_LEAD_BYTE = (byte) 0xFF;
 
     int flag;
     int count;
     byte[] data;
 
     public SocketPackage() {
-
+        this.flag = 0;
+        this.count = 0;
     }
 
     public SocketPackage(int flag, int count, byte[] data) {
@@ -36,8 +38,33 @@ public class SocketPackage {
         return buffer.array();
     }
 
-    public void packageReceive(SocketPackage socketPackage, byte[] pdata, int len) {
+    public int packageReceive(SocketPackage socketPackage, byte[] pdata) {
+        int res = 0;
+        for (int i = 0; i < pdata.length; i++) {
+            if ((pdata[i] == SOCKET_LEAD_BYTE) && (socketPackage.getFlag() == 0)) {
+                socketPackage.setFlag(1);
+                socketPackage.setCount(0);
+            } else {
+                if ((socketPackage.getFlag() != 0) && (socketPackage.getFlag() != 1)) {
+                    socketPackage.setFlag(0);
+                }
+            }
 
+            if ((socketPackage.getFlag() == 1) && (socketPackage.getCount() == 0)) {
+                int len = (int) SOCKET_HEAD_SIZE + (((int) pdata[i + 8]) << 4) + (int) pdata[i + 9];
+                socketPackage.data = new byte[len];
+            }
+            if (socketPackage.getFlag() == 1) {
+                socketPackage.setData(socketPackage.getCount(), pdata[i]);
+                socketPackage.setCount(socketPackage.getCount() + 1);
+            }
+        }
+        if (socketPackage.getCount() == socketPackage.getData().length) {
+            res = 1;
+        } else {
+            res = 0;
+        }
+        return res;
     }
 
     public int getFlag() {
@@ -62,5 +89,9 @@ public class SocketPackage {
 
     public void setData(byte[] data) {
         this.data = data;
+    }
+
+    public void setData(int position, byte pdata) {
+        this.data[position] = pdata;
     }
 }

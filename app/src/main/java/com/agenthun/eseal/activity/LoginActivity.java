@@ -61,7 +61,6 @@ public class LoginActivity extends AppCompatActivity {
         attemptLogin();
     }
 
-
 /*    @OnClick(R.id.forget_password_button)
     public void onForgetPasswordBtnClick() {
         startActivity(new Intent(this, ForgetPasswordActivity.class));
