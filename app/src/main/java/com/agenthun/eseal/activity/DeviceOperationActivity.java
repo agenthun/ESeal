@@ -142,11 +142,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
         sendData(data);
     }
 
-    @OnClick(R.id.card_query)
-    public void onQueryBtnClick() {
-        Log.d(TAG, "onQueryBtnClick() returned: ");
-
-/*        //发送查询操作报文
+    @OnClick(R.id.card_query_status)
+    public void onQueryStatusBtnClick() {
+        Log.d(TAG, "onQueryStatusBtnClick() returned: ");
+        //发送查询操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
         buffer.putInt(id);
         buffer.putInt(rn);
@@ -158,9 +157,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY,
                 buffer.array()
         );
-        sendData(data);*/
+        sendData(data);
+    }
 
-        //发送请求信息操作报文
+    @OnClick(R.id.card_query_info)
+    public void onQueryInfoBtnClick() {
+        Log.d(TAG, "onQueryInfoBtnClick() returned: ");
+        //发送位置请求信息操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
         buffer.putInt(id);
         buffer.putInt(rn);
