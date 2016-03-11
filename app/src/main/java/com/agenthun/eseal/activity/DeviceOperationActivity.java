@@ -18,6 +18,11 @@ import android.view.View;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
+import com.agenthun.eseal.model.protocol.ESealOperation;
+import com.agenthun.eseal.model.utils.Encrypt;
+import com.agenthun.eseal.model.utils.SocketPackage;
+
+import java.nio.ByteBuffer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,6 +48,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @Bind(R.id.card_seting)
     CardView cardSetting;
+
+    private int id = 0x12345678;
+    private int rn = 0xABABABAB;
+    private int key = 0x87654321;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +102,41 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @OnClick(R.id.card_lock)
     public void onLockBtnClick() {
         Log.d(TAG, "onLockBtnClick() returned: ");
-        if (isPortOpen) {
-            sendData();
-        }
+        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
+        buffer.putInt(id);
+        buffer.putInt(rn);
+        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
+        buffer.put(ESealOperation.operationOperation(id, rn, key,
+                        ESealOperation.POWER_ON,
+                        ESealOperation.SAFE_LOCK)
+        );
+
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
+                buffer.array()
+        );
+        sendData(data);
     }
 
     @OnClick(R.id.card_unlock)
     public void onUnlockBtnClick() {
         Log.d(TAG, "onUnlockBtnClick() returned: ");
+        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
+        buffer.putInt(id);
+        buffer.putInt(rn);
+        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
+        buffer.put(ESealOperation.operationOperation(id, rn, key,
+                        ESealOperation.POWER_ON,
+                        ESealOperation.SAFE_UNLOCK)
+        );
+
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
+                buffer.array()
+        );
+        sendData(data);
     }
 
     @OnClick(R.id.card_query)
@@ -195,15 +231,19 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         @Override
         public void didPackageReceived(ACSUtility.blePort port, byte[] packageToSend) {
-            StringBuffer sb = new StringBuffer();
+/*            StringBuffer sb = new StringBuffer();
             for (byte b : packageToSend) {
                 sb.append("0x");
                 if ((b & 0xff) <= 0x0f) {
                     sb.append("0");
                 }
                 sb.append(Integer.toHexString(b & 0xff) + " ");
+                utility.printHexString(packageToSend);
             }
-            Log.d(TAG, "didPackageReceived() returned: " + sb.toString());
+            Log.d(TAG, "didPackageReceived() returned: " + sb.toString());*/
+
+/*            SocketPackageReceive((sSocketPackageTypeDef *)Comm2Data, &byte,1,
+                    ESEALBD_OPERATION_CMD_MAX_SIZE, pipe, (FNCT_COMM) COM2TxFIFOIn);*/
         }
 
         @Override
@@ -223,11 +263,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         return mProgressDialog;
     }
 
-    private void sendData() {
-        byte[] data = new byte[128];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (byte) i;
-        }
+    private void sendData(byte[] data) {
         utility.writePort(data);
     }
 
