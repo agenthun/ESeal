@@ -1,5 +1,6 @@
 package com.agenthun.eseal.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -7,7 +8,11 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +29,7 @@ import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
+import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.view.BottomSheetDialogView;
 
 import java.util.List;
@@ -60,6 +66,53 @@ public class MainActivity extends AppCompatActivity
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(TAG, "onPageSelected() returned: " + position);
+                if (position == 0) {
+                    fab.setVisibility(View.VISIBLE);
+                    ViewCompat.animate(fab).scaleX(1).scaleY(1)
+                            .setInterpolator(new LinearOutSlowInInterpolator())
+                            .setListener(new ViewPropertyAnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(View view) {
+                                    if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
+                                        return;
+                                    }
+                                    fab.setVisibility(View.VISIBLE);
+                                }
+                            })
+                            .start();
+                } else {
+                    if (fab.isShown()) {
+                        ViewCompat.animate(fab).scaleX(0).scaleY(0)
+                                .setInterpolator(new FastOutSlowInInterpolator())
+                                .setStartDelay(100)
+                                .setListener(new ViewPropertyAnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(View view) {
+                                        if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
+                                            return;
+                                        }
+                                        fab.setVisibility(View.GONE);
+                                    }
+                                })
+                                .start();
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -96,39 +149,6 @@ public class MainActivity extends AppCompatActivity
                 mContainerId = containerId;
             }
         });
-
-/*        Log.d(TAG, "onPageChange() returned: " + position);
-        if (position == 0) {
-            fab.setVisibility(View.VISIBLE);
-            ViewCompat.animate(fab).scaleX(1).scaleY(1)
-                    .setInterpolator(new LinearOutSlowInInterpolator())
-                    .setListener(new ViewPropertyAnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(View view) {
-                            if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
-                                return;
-                            }
-                            fab.setVisibility(View.VISIBLE);
-                        }
-                    })
-                    .start();
-        } else {
-            if (fab.isShown()) {
-                ViewCompat.animate(fab).scaleX(0).scaleY(0)
-                        .setInterpolator(new FastOutSlowInInterpolator())
-                        .setStartDelay(100)
-                        .setListener(new ViewPropertyAnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(View view) {
-                                if (isFinishing() || (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.JELLY_BEAN_MR1) && isDestroyed())) {
-                                    return;
-                                }
-                                fab.setVisibility(View.GONE);
-                            }
-                        })
-                        .start();
-            }
-        }*/
     }
 
     @Override
