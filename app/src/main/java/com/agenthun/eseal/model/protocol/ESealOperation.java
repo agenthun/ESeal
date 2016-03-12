@@ -257,7 +257,11 @@ public class ESealOperation {
         int year = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 11) + 2000;
         int month = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 12) - 1; //从0计算
         int day = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 13);
-        int hour = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 14);
+        int hour = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 14) + 8; //GPS时间转UTC时间, time_GPS + 8 = time_UTC_china
+        if (hour >= 24) {
+            hour -= 24;
+            day++;
+        }
         int minute = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 15);
         int second = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 16);
         positionType.getCalendar().set(year, month, day, hour, minute, second);
