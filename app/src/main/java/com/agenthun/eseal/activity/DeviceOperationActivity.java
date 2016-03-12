@@ -19,10 +19,15 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.model.protocol.ESealOperation;
+import com.agenthun.eseal.model.utils.Encrypt;
+import com.agenthun.eseal.model.utils.PositionType;
 import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SocketPackage;
+import com.agenthun.eseal.model.utils.StateType;
 
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -185,13 +190,17 @@ public class DeviceOperationActivity extends AppCompatActivity {
             DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
             Log.d(TAG, "onActivityResult() returned: " + detail.toString());
 
+            int period = ESealOperation.PERIOD_DEFAULT;
+            if (detail.getFrequency() != null && detail.getFrequency().length() != 0) {
+                period = Integer.parseInt(detail.getFrequency());
+            }
             //发送配置操作报文
             ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
             buffer.putInt(id);
             buffer.putInt(rn);
             buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
             buffer.put(ESealOperation.operationConfig(id, rn, key,
-                            ESealOperation.PERIOD_DEFAULT,
+                            period,
                             ESealOperation.WINDOW_DEFAULT,
                             ESealOperation.CHANNEL_DEFAULT,
                             new SensorType())
@@ -284,20 +293,78 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         @Override
         public void didPackageReceived(ACSUtility.blePort port, byte[] packageToSend) {
-            StringBuffer sb = new StringBuffer();
+/*            StringBuffer sb = new StringBuffer();
             for (byte b : packageToSend) {
                 if ((b & 0xff) <= 0x0f) {
                     sb.append("0");
                 }
                 sb.append(Integer.toHexString(b & 0xff) + " ");
             }
-            Log.d(TAG, sb.toString());
+            Log.d(TAG, sb.toString());*/
 
             if (socketPackageReceived.packageReceive(socketPackageReceived, packageToSend) == 1) {
                 Log.d(TAG, "didPackageReceived() returned: ok");
-                Log.d(TAG, "getCount() returned: " + socketPackageReceived.getCount());
-                ByteBuffer buffer = ByteBuffer.allocate(socketPackageReceived.getData().length);
+                socketPackageReceived.setFlag(0);
+                socketPackageReceived.setCount(0);
+                byte[] receiveData = socketPackageReceived.getData();
+                int lenTotal = receiveData.length;
+                Log.d(TAG, "getCount() returned: " + lenTotal);
+                Encrypt.decrypt(id, rn, key, receiveData,
+                        ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET,
+                        lenTotal - ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET);
+
+                ByteBuffer buffer = ByteBuffer.allocate(lenTotal);
+                buffer.put(receiveData);
                 short prococolPort = buffer.getShort(6);
+                short type = buffer.getShort(ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 2);
+
+                if ((prococolPort & 0xffff) == ESealOperation.ESEALBD_OPERATION_PORT) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                    switch (type) {
+                        case ESealOperation.ESEALBD_OPERATION_TYPE_REPLAY_QUERY:
+                            Log.d(TAG, "ESEALBD_OPERATION_TYPE_REPLAY_QUERY");
+                            StateType stateType = new StateType();
+                            ESealOperation.operationQueryReplay(buffer, stateType);
+
+                            String safeStringQuery = (stateType.getSafe() == 0 ?
+                                    getString(R.string.device_reply_safe_0) :
+                                    (stateType.getSafe() == 1 ?
+                                            getString(R.string.device_reply_safe_1) : getString(R.string.device_reply_safe_2)));
+                            String isLockStringQuery = stateType.isLocked() ?
+                                    getString(R.string.device_reply_lock) : getString(R.string.device_reply_unlock);
+                            builder.setTitle(R.string.device_reply_query_title)
+                                    .setMessage("上传周期 " + stateType.getPeriod()
+                                            + " s\r\n\r\n" + safeStringQuery
+                                            + "\r\n\r\n锁状态 " + isLockStringQuery)
+                                    .setPositiveButton(R.string.text_ok, null).show();
+                            break;
+                        case ESealOperation.ESEALBD_OPERATION_TYPE_REPLAY_INFO:
+                            Log.d(TAG, "ESEALBD_OPERATION_TYPE_REPLAY_INFO");
+                            PositionType positionType = new PositionType();
+                            ESealOperation.operationInfoReplay(buffer, positionType);
+                            Calendar calendar = positionType.getCalendar();
+                            StringBuffer time = new StringBuffer();
+                            if (positionType.getPosition() != null) {
+                                time.append(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+                                        .format(calendar.getTime()));
+                            } else {
+                                time.append(getString(R.string.device_reply_info_time_error));
+                            }
+                            String safeStringInfo = (positionType.getSafe() == 0 ?
+                                    getString(R.string.device_reply_safe_0) :
+                                    (positionType.getSafe() == 1 ?
+                                            getString(R.string.device_reply_safe_1) : getString(R.string.device_reply_safe_2)));
+                            String isLockStringInfo = positionType.isLocked() ?
+                                    getString(R.string.device_reply_lock) : getString(R.string.device_reply_unlock);
+                            builder.setTitle(R.string.device_reply_info_title)
+                                    .setMessage(time.toString()
+                                            + "\r\n\r\n当前位置 " + positionType.getPosition()
+                                            + "\r\n\r\n" + safeStringInfo
+                                            + "\r\n\r\n锁状态 " + isLockStringInfo)
+                                    .setPositiveButton(R.string.text_ok, null).show();
+                            break;
+                    }
+                }
             }
         }
 
@@ -323,22 +390,5 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private void sendData(byte[] data) {
         utility.writePort(data);
-    }
-
-    private String bytesToHexString(byte[] src) {
-        StringBuilder stringBuilder = new StringBuilder("");
-        if (src == null || src.length <= 0) {
-            return null;
-        }
-        for (int i = 0; i < src.length; i++) {
-            int v = src[i] & 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }
-        stringBuilder.append('\n');
-        return stringBuilder.toString();
     }
 }

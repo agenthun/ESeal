@@ -36,8 +36,17 @@
     <string name="success_device_connection">连接成功</string>
     <string name="fail_device_connection">连接失败</string>
     <string name="time_out_device_connection">连接超时</string>
-    <string name="success_device_send_data">操作成功</string>
-    <string name="fail_device_send_data">操作失败</string>
+    <string name="success_device_send_data">发送成功</string>
+    <string name="fail_device_send_data">发送失败</string>
+    <string name="device_reply_query_title">设备状态信息</string>
+    <string name="device_reply_query_period">上传周期</string>
+    <string name="device_reply_safe_0">未上封</string>
+    <string name="device_reply_safe_1">已上封</string>
+    <string name="device_reply_safe_2">已拆封</string>
+    <string name="device_reply_lock">闭合</string>
+    <string name="device_reply_unlock">未闭合</string>
+    <string name="device_reply_info_title">设备位置信息</string>
+    <string name="device_reply_info_time_error">时间未知</string>
     <string name="text_ok">确认</string>
 
     <string name="card_title_setting">配置</string>
@@ -53,6 +62,6 @@
     <string name="text_hint_freight_destination">目的地</string>
     <string name="text_hint_freight_vessel">航班</string>
     <string name="text_hint_freight_voyage">航次</string>
-    <string name="text_hint_freight_frequency">上报频率</string>
+    <string name="text_hint_freight_frequency">上报周期(s)</string>
 
 </resources>

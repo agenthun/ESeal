@@ -42,6 +42,29 @@ public class Encrypt {
         encrypt(id, rn, key, pdata, len);
     }
 
+    public static void decrypt(int id, int rn, int key, byte[] pdata, int pdataOffset, int len) {
+        byte[] secretData = new byte[256];
+        byte[] mac = getMAC(id, rn, key);
+        if (len <= 20) {
+            for (int i = 0; i < len; i++) {
+                secretData[i] = (byte) (pdata[i + pdataOffset] ^ mac[i]);
+            }
+        } else {
+            int j;
+            for (j = 0; j < (len / 20); j++) {
+                for (int i = 0; i < 20; i++) {
+                    secretData[i + j * 20] = (byte) (pdata[i + j * 20 + pdataOffset] ^ mac[i]);
+                }
+            }
+            for (int i = 0; i < (len % 20); i++) {
+                secretData[i + j * 20] = (byte) (pdata[i + j * 20 + pdataOffset] ^ mac[i]);
+            }
+        }
+        for (int i = 0; i < len; i++) {
+            pdata[i + pdataOffset] = secretData[i];
+        }
+    }
+
     private static byte[] encodeMessageDigest(String algorithm, byte[] pdata) {
         if (pdata == null || pdata.length == 0) return null;
 

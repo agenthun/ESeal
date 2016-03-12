@@ -1,10 +1,20 @@
 package com.agenthun.eseal.model.protocol;
 
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
+import android.util.Log;
+
 import com.agenthun.eseal.model.utils.Crc;
 import com.agenthun.eseal.model.utils.Encrypt;
+import com.agenthun.eseal.model.utils.PositionType;
 import com.agenthun.eseal.model.utils.SensorType;
+import com.agenthun.eseal.model.utils.StateType;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @project ESeal
@@ -12,8 +22,11 @@ import java.nio.ByteBuffer;
  * @date 16/3/11 下午10:18.
  */
 public class ESealOperation {
+    private static final String TAG = "ESealOperation";
+
     public static final int ESEALBD_OPERATION_PORT = 0xA002;
     private static final short ESEALBD_OPERATION_CMD_MAX_SIZE = 256;
+    public static final short ESEALBD_PROTOCOL_CMD_DATA_OFFSET = 20;
 
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_QUERY = (2 + 2 + 2 + 4);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_CONFIG = (2 + 2 + 2 + 4 + 2 + 1 + 1 + 9);
@@ -31,10 +44,10 @@ public class ESealOperation {
     private static final short ESEALBD_OPERATION_TYPE_CLEAR = 0x2FD3;
     private static final short ESEALBD_OPERATION_TYPE_INFO = 0x2FD2;
 
-    private static final short ESEALBD_OPERATION_TYPE_REPLAY_ERROR = 0x1F0F;
-    private static final short ESEALBD_OPERATION_TYPE_REPLAY_QUERY = 0x1F00;
-    private static final short ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA = 0x1FD1;
-    private static final short ESEALBD_OPERATION_TYPE_REPLAY_INFO = 0x1FD0;
+    public static final short ESEALBD_OPERATION_TYPE_REPLAY_ERROR = 0x1F0F;
+    public static final short ESEALBD_OPERATION_TYPE_REPLAY_QUERY = 0x1F00;
+    public static final short ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA = 0x1FD1;
+    public static final short ESEALBD_OPERATION_TYPE_REPLAY_INFO = 0x1FD0;
 
     public static final byte POWER_OFF = 0;
     public static final byte POWER_ON = 1;
@@ -226,5 +239,72 @@ public class ESealOperation {
 
         Encrypt.encrypt(id, rn, key, temp, ESEALBD_OPERATION_REQUEST_SIZE_INFO);
         return temp;
+    }
+
+    public static void operationQueryReplay(ByteBuffer buffer, StateType stateType) {
+        short period = buffer.getShort(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 10);
+        boolean power = ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 15) & 0xff) == 0) ? false : true;
+        byte safe = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 16);
+        boolean locked = ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 17) & 0xff) == 0) ? false : true;
+        stateType.setPeriod(period);
+        stateType.setPower(power);
+        stateType.setSafe(safe);
+        stateType.setLocked(locked);
+    }
+
+    public static void operationInfoReplay(ByteBuffer buffer, PositionType positionType) {
+
+        int year = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 11) + 2000;
+        int month = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 12) - 1; //从0计算
+        int day = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 13);
+        int hour = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 14);
+        int minute = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 15);
+        int second = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 16);
+        positionType.getCalendar().set(year, month, day, hour, minute, second);
+
+        byte safe = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 32);
+        boolean locked = ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 33) & 0xff) == 0) ? false : true;
+        positionType.setSafe(safe);
+        positionType.setLocked(locked);
+
+        if ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 17) & 0xff) == 1) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            StringBuffer sb = new StringBuffer();
+            sb.append(buffer.getShort(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 19));
+            sb.append('.');
+            sb.append(buffer.getInt(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 21));
+
+            float latitude = Float.parseFloat(sb.substring(0, 2))
+                    + Float.parseFloat(sb.substring(2)) / 60; //纬度
+
+            sb = new StringBuffer();
+            sb.append(buffer.getShort(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 26));
+            sb.append('.');
+            sb.append(buffer.getInt(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 28));
+            float longitude = Float.parseFloat(sb.substring(0, 3))
+                    + Float.parseFloat(sb.substring(3)) / 60; //经度
+
+            sb = new StringBuffer();
+            sb.append(longitude);
+            sb.append(", ");
+            sb.append(latitude);
+            positionType.setPosition(sb.toString());
+/*            if ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 25) & 0xff) == 0x45) {
+                //E 东经
+                Log.d(TAG, "E 东经");
+            } else {
+                //W 西经
+                Log.d(TAG, "W 西经");
+            }
+
+            if ((buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 18) & 0xff) == 0x4e) {
+                //N 北纬
+                Log.d(TAG, "N 北纬");
+            } else {
+                //S 南纬
+                Log.d(TAG, "S 南纬");
+            }*/
+        }
     }
 }
