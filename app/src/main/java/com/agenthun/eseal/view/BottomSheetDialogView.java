@@ -1,8 +1,6 @@
 package com.agenthun.eseal.view;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.support.annotation.DrawableRes;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,13 +23,14 @@ import java.util.List;
  */
 public class BottomSheetDialogView {
     private static List<Detail> details;
+    private final View view;
 
     public BottomSheetDialogView(Context context, String containerNo, List<Detail> details) {
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
 //        dialog.getDelegate().setLocalNightMode();
-        View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog_recycler_view, null);
+        view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog_recycler_view, null);
 
         AppCompatTextView textView = (AppCompatTextView) view.findViewById(R.id.bottom_sheet_title);
         textView.setText(context.getString(R.string.text_container_no) + containerNo);
@@ -46,6 +45,10 @@ public class BottomSheetDialogView {
 
     public static void show(Context context, String containerNo, List<Detail> details) {
         new BottomSheetDialogView(context, containerNo, details);
+    }
+
+    public View getView() {
+        return view;
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
