@@ -114,8 +114,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.put(ESealOperation.operationOperation(id, rn, key,
-                        ESealOperation.POWER_ON,
-                        ESealOperation.SAFE_LOCK)
+                ESealOperation.POWER_ON,
+                ESealOperation.SAFE_LOCK)
         );
 
         SocketPackage socketPackage = new SocketPackage();
@@ -135,8 +135,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.put(ESealOperation.operationOperation(id, rn, key,
-                        ESealOperation.POWER_ON,
-                        ESealOperation.SAFE_UNLOCK)
+                ESealOperation.POWER_ON,
+                ESealOperation.SAFE_UNLOCK)
         );
 
         SocketPackage socketPackage = new SocketPackage();
@@ -200,10 +200,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
             buffer.putInt(rn);
             buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
             buffer.put(ESealOperation.operationConfig(id, rn, key,
-                            period,
-                            ESealOperation.WINDOW_DEFAULT,
-                            ESealOperation.CHANNEL_DEFAULT,
-                            new SensorType())
+                    period,
+                    ESealOperation.WINDOW_DEFAULT,
+                    ESealOperation.CHANNEL_DEFAULT,
+                    new SensorType())
             );
 
             SocketPackage socketPackage = new SocketPackage();
@@ -385,6 +385,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setContentView(R.layout.dialog_device_connecting);
         mProgressDialog.setTitle(getString(R.string.device_connecting));
+        mProgressDialog.setCancelable(false);
         return mProgressDialog;
     }
 
