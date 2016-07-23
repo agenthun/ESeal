@@ -24,5 +24,6 @@
     <color name="amber_a100_mask">#FBD82A</color>
     <color name="green_mask">#ADD57E</color>
     <color name="teal_mask">#B3DFDC</color>
+    <color name="blue_mask">#0096A9</color>
 
 </resources>

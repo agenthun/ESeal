@@ -1,8 +1,13 @@
 package com.agenthun.eseal.activity;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -15,9 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
+import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.model.protocol.ESealOperation;
 import com.agenthun.eseal.model.utils.Encrypt;
 import com.agenthun.eseal.model.utils.PositionType;
@@ -43,11 +50,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
+    private static int NFC_TAG_FLAGS = NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
 
     private ACSUtility.blePort mCurrentPort;
     private ACSUtility utility;
     private boolean utilEnable = false;
+
     private boolean isPortOpen = false;
+    private NfcUtility mNfcUtility;
 
     private AppCompatDialog mProgressDialog;
 
@@ -71,6 +81,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
         utility = new ACSUtility(this, callback);
         mCurrentPort = utility.new blePort(device);
 
+        mNfcUtility = new NfcUtility(tagCallback);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getAddress());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -83,6 +95,18 @@ public class DeviceOperationActivity extends AppCompatActivity {
         });
 
         getProgressDialog().show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        enableNfcReaderMode();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        disableNfcReaderMode();
     }
 
     @Override
@@ -145,6 +169,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 buffer.array()
         );
         sendData(data);
+    }
+
+    @OnClick(R.id.card_scan_nfc)
+    public void onScanNfcBtnClick() {
+        Log.d(TAG, "onScanNfcBtnClick() returned: ");
+        //扫描NFC封条,获取ID
+        enableNfcReaderMode();
     }
 
     @OnClick(R.id.card_query_status)
@@ -392,4 +423,34 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private void sendData(byte[] data) {
         utility.writePort(data);
     }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void enableNfcReaderMode() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.enableReaderMode(this, mNfcUtility, NFC_TAG_FLAGS, null);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private void disableNfcReaderMode() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableReaderMode(this);
+        }
+    }
+
+    private NfcUtility.TagCallback tagCallback = new NfcUtility.TagCallback() {
+        @Override
+        public void onTagReceived(final String tag) {
+            App.setTagId(tag);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Snackbar.make(cardSetting, tag, Snackbar.LENGTH_SHORT)
+                            .setAction("Action", null).show();
+                }
+            });
+        }
+    };
 }

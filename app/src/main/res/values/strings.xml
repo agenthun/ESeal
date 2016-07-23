@@ -52,6 +52,7 @@
     <string name="card_title_setting">配置</string>
     <string name="card_title_lock">上封</string>
     <string name="card_title_unlock">解封</string>
+    <string name="card_title_scan_nfc">扫描封条ID</string>
     <string name="card_title_query_status">状态查询</string>
     <string name="card_title_query_info">位置查询</string>
 

@@ -11,8 +11,10 @@ import android.content.Context;
 public class App extends Application {
     private static Context mApplicationContext;
     private static String token;
+    private static String tagId;
 
     @Override
+
     public void onCreate() {
         super.onCreate();
         mApplicationContext = this;
@@ -33,5 +35,13 @@ public class App extends Application {
 
     public static void setToken(String token) {
         App.token = token;
+    }
+
+    public static String getTagId() {
+        return tagId;
+    }
+
+    public static void setTagId(String tagId) {
+        App.tagId = tagId;
     }
 }

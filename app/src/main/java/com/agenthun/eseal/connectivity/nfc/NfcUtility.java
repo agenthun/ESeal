@@ -1,6 +1,8 @@
 package com.agenthun.eseal.connectivity.nfc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
