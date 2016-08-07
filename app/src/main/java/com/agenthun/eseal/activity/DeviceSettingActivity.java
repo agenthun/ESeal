@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.DetailParcelable;
+import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.view.CheckableFab;
 
 import butterknife.Bind;
@@ -150,7 +151,7 @@ public class DeviceSettingActivity extends AppCompatActivity {
     private void getConfigure() {
         Intent data = new Intent();
         Bundle b = new Bundle();
-        DetailParcelable detail = new DetailParcelable();
+/*        DetailParcelable detail = new DetailParcelable();
         detail.setContainerNo(containerNumber.getText().toString().trim());
         detail.setOperationer(owner.getText().toString().trim()); //xxxxxx
         detail.setFreightName(freightName.getText().toString().trim());
@@ -159,7 +160,19 @@ public class DeviceSettingActivity extends AppCompatActivity {
 //        detail.setXXX(vessel.getText().toString().trim());
 //        detail.setContainerNo(voyage.getText().toString().trim());
         detail.setFrequency(frequency.getText().toString().trim());
-        b.putParcelable(DetailParcelable.EXTRA_DEVICE, detail);
+        b.putParcelable(DetailParcelable.EXTRA_DEVICE, detail);*/
+
+        SettingType settingType = new SettingType();
+
+        settingType.setContainerNumber(containerNumber.getText().toString().trim());
+        settingType.setOwner(owner.getText().toString().trim());
+        settingType.setFreightName(freightName.getText().toString().trim());
+        settingType.setOrigin(origin.getText().toString().trim());
+        settingType.setDestination(destination.getText().toString().trim());
+        settingType.setVessel(vessel.getText().toString().trim());
+        settingType.setVoyage(voyage.getText().toString().trim());
+        settingType.setFrequency(frequency.getText().toString().trim());
+        b.putParcelable(SettingType.EXTRA_DEVICE, settingType);
 
         data.putExtras(b);
         setResult(RESULT_OK, data);

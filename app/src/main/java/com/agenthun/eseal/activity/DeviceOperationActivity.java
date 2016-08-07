@@ -1,9 +1,7 @@
 package com.agenthun.eseal.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -22,13 +20,13 @@ import android.view.View;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.model.protocol.ESealOperation;
 import com.agenthun.eseal.model.utils.Encrypt;
 import com.agenthun.eseal.model.utils.PositionType;
 import com.agenthun.eseal.model.utils.SensorType;
+import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
 
@@ -214,16 +212,37 @@ public class DeviceOperationActivity extends AppCompatActivity {
         sendData(data);
     }
 
+    @OnClick(R.id.card_read_seting)
+    public void onReadSettingBtnClick() {
+        Log.d(TAG, "onReadSettingBtnClick() returned: ");
+        //发送读数据报文
+        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA);
+        buffer.putInt(id);
+        buffer.putInt(rn);
+        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA);
+        buffer.put(ESealOperation.operationReadData(id, rn, key,
+                ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA_WITHOUT_LIMIT)
+        );
+
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA,
+                buffer.array()
+        );
+        sendData(data);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == DEVICE_SETTING && resultCode == RESULT_OK) {
-            DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
-            Log.d(TAG, "onActivityResult() returned: " + detail.toString());
+//            DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
+            final SettingType settingType = data.getExtras().getParcelable(SettingType.EXTRA_DEVICE);
+            Log.d(TAG, "onActivityResult() returned: " + settingType.toString());
 
             int period = ESealOperation.PERIOD_DEFAULT;
-            if (detail.getFrequency() != null && detail.getFrequency().length() != 0) {
-                period = Integer.parseInt(detail.getFrequency());
+            if (settingType.getFrequency() != null && settingType.getFrequency().length() != 0) {
+                period = Integer.parseInt(settingType.getFrequency());
             }
             //发送配置操作报文
             ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
@@ -238,11 +257,39 @@ public class DeviceOperationActivity extends AppCompatActivity {
             );
 
             SocketPackage socketPackage = new SocketPackage();
-            byte[] settingData = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+            final byte[] settingData = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
                     10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG,
                     buffer.array()
             );
             sendData(settingData);
+
+            //发送写数据报文
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    settingType.setNfcTagId(App.getTagId());
+
+                    byte[] writeData = settingType.getSettingTypeString().getBytes();
+                    ByteBuffer buffer = ByteBuffer.allocate(10 +
+                            ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN +
+                            writeData.length);
+                    buffer.putInt(id);
+                    buffer.putInt(rn);
+                    buffer.putShort(
+                            (short) (ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN + writeData.length));
+                    buffer.put(ESealOperation.operationWriteData(id, rn, key,
+                            writeData,
+                            (short) writeData.length
+                    ));
+
+                    SocketPackage socketPackage = new SocketPackage();
+                    byte[] settingData = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                            10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN + writeData.length,
+                            buffer.array()
+                    );
+                    sendData(settingData);
+                }
+            }, 1000);
         }
     }
 
@@ -393,6 +440,16 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                             + "\r\n\r\n" + safeStringInfo
                                             + "\r\n\r\n锁状态 " + isLockStringInfo)
                                     .setPositiveButton(R.string.text_ok, null).show();
+                            break;
+                        case ESealOperation.ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA:
+                            Log.d(TAG, "ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA");
+                            SettingType settingType = new SettingType();
+                            ESealOperation.operationReadSettingReplay(buffer, settingType);
+
+                            builder.setTitle(R.string.device_reply_read_setting_title)
+                                    .setMessage(settingType.toString())
+                                    .setPositiveButton(R.string.text_ok, null).show();
+
                             break;
                     }
                 }

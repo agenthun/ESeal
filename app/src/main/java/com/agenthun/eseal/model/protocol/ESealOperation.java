@@ -8,8 +8,10 @@ import com.agenthun.eseal.model.utils.Crc;
 import com.agenthun.eseal.model.utils.Encrypt;
 import com.agenthun.eseal.model.utils.PositionType;
 import com.agenthun.eseal.model.utils.SensorType;
+import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.StateType;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.Time;
@@ -33,6 +35,7 @@ public class ESealOperation {
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_OPERATION = (2 + 2 + 2 + 4 + 1 + 1);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN = (2 + 2 + 2 + 4 + 2);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA = (2 + 2 + 2 + 4 + 2);
+    public static final short ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA_WITHOUT_LIMIT = 0;
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_CLEAR = (2 + 2 + 2 + 4 + 2);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_INFO = (2 + 2 + 2 + 4);
 
@@ -305,6 +308,28 @@ public class ESealOperation {
                 //S 南纬
                 Log.d(TAG, "S 南纬");
             }*/
+        }
+    }
+
+    public static void operationReadSettingReplay(ByteBuffer buffer, SettingType settingType) {
+        short len = buffer.getShort(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 10);
+
+        byte[] data = new byte[len];
+        for (int i = 0; i < len && i < (buffer.capacity() - ESEALBD_PROTOCOL_CMD_DATA_OFFSET - 12); i++) {
+            data[i] = buffer.get(ESEALBD_PROTOCOL_CMD_DATA_OFFSET + 12 + i);
+        }
+
+        String[] settingStr = new String(data).split("\r\n");
+        if (settingStr.length == 9) {
+            settingType.setContainerNumber(settingStr[0]);
+            settingType.setOwner(settingStr[1]);
+            settingType.setFreightName(settingStr[2]);
+            settingType.setOrigin(settingStr[3]);
+            settingType.setDestination(settingStr[4]);
+            settingType.setVessel(settingStr[5]);
+            settingType.setVoyage(settingStr[6]);
+            settingType.setFrequency(settingStr[7]);
+            settingType.setNfcTagId(settingStr[8]);
         }
     }
 }

@@ -47,8 +47,10 @@
     <string name="device_reply_unlock">未闭合</string>
     <string name="device_reply_info_title">设备位置信息</string>
     <string name="device_reply_info_time_error">时间未知</string>
+    <string name="device_reply_read_setting_title">配置信息</string>
     <string name="text_ok">确认</string>
 
+    <string name="card_title_read_setting">读取配置</string>
     <string name="card_title_setting">配置</string>
     <string name="card_title_lock">上封</string>
     <string name="card_title_unlock">解封</string>
