@@ -62,7 +62,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Bind(R.id.card_seting)
     CardView cardSetting;
 
-    private int id = 0x12345678;
+    private int id = 30000;
     private int rn = 0xABABABAB;
     private int key = 0x87654321;
 
