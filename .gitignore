@@ -6,3 +6,7 @@
 .DS_Store
 /build
 /captures
+app/libs/
+art/device_operation_4.png
+art/device_operation_read_setting.png
+projectFilesBackup/
