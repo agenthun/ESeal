@@ -71,6 +71,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@drawable/btn_default"
                 android:text="@string/action_sign_in"
+                android:textAllCaps="false"
                 android:textColor="@color/text_light"
                 android:textStyle="bold" />
         </LinearLayout>

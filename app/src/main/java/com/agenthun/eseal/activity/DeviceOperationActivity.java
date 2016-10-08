@@ -62,9 +62,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Bind(R.id.card_seting)
     CardView cardSetting;
 
-    private int id = 11001; //30000;//
-    private int rn = 0xABABABAB;
-    private int key = 0x00000000; //0x87654321; //
+    private static final int id = 11001; //30000;//
+    private static final int rn = 0xABABABAB;
+    private static final int key = 0x00000000; //0x87654321; //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
