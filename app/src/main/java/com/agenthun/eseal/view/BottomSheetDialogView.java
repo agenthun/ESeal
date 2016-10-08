@@ -33,7 +33,7 @@ public class BottomSheetDialogView {
         view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_dialog_recycler_view, null);
 
         AppCompatTextView textView = (AppCompatTextView) view.findViewById(R.id.bottom_sheet_title);
-        textView.setText(context.getString(R.string.text_container_no) + containerNo);
+        textView.setText(context.getString(R.string.text_container_no) + " " + containerNo);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));

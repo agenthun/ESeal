@@ -3,6 +3,8 @@ package com.agenthun.eseal.model.utils;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.agenthun.eseal.R;
+
 /**
  * @project ESeal
  * @authors agenthun

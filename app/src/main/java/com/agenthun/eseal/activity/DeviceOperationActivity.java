@@ -411,9 +411,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             String isLockStringQuery = stateType.isLocked() ?
                                     getString(R.string.device_reply_lock) : getString(R.string.device_reply_unlock);
                             builder.setTitle(R.string.device_reply_query_title)
-                                    .setMessage("上传周期 " + stateType.getPeriod()
+                                    .setMessage(getString(R.string.text_upload_period) + " " + stateType.getPeriod()
                                             + " s\r\n\r\n" + safeStringQuery
-                                            + "\r\n\r\n锁状态 " + isLockStringQuery)
+                                            + "\r\n\r\n" + getString(R.string.text_device_status) + " " + isLockStringQuery)
                                     .setPositiveButton(R.string.text_ok, null).show();
                             break;
                         case ESealOperation.ESEALBD_OPERATION_TYPE_REPLAY_INFO:
@@ -436,9 +436,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                     getString(R.string.device_reply_lock) : getString(R.string.device_reply_unlock);
                             builder.setTitle(R.string.device_reply_info_title)
                                     .setMessage(time.toString()
-                                            + "\r\n\r\n当前位置 " + positionType.getPosition()
+                                            + "\r\n\r\n" + getString(R.string.text_current_position) + " " + positionType.getPosition()
                                             + "\r\n\r\n" + safeStringInfo
-                                            + "\r\n\r\n锁状态 " + isLockStringInfo)
+                                            + "\r\n\r\n" + getString(R.string.text_device_status) + " " + isLockStringInfo)
                                     .setPositiveButton(R.string.text_ok, null).show();
                             break;
                         case ESealOperation.ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA:
@@ -447,7 +447,16 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             ESealOperation.operationReadSettingReplay(buffer, settingType);
 
                             builder.setTitle(R.string.device_reply_read_setting_title)
-                                    .setMessage(settingType.toString())
+                                    .setMessage(
+                                            getString(R.string.text_hint_freight_container_number) + " " + settingType.getContainerNumber() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_owner) + " " + settingType.getOwner() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_name) + " " + settingType.getFreightName() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_origin) + " " + settingType.getOrigin() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_destination) + " " + settingType.getDestination() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_vessel) + " " + settingType.getVessel() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_voyage) + " " + settingType.getVoyage() + "\r\n\r\n" +
+                                                    getString(R.string.text_hint_freight_frequency) + " " + settingType.getFrequency() + "\r\n\r\n" +
+                                                    getString(R.string.text_current_position) + " " + settingType.getNfcTagId())
                                     .setPositiveButton(R.string.text_ok, null).show();
 
                             break;

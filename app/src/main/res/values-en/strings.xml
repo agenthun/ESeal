@@ -20,7 +20,7 @@
     <string name="page_title_freight_query">More</string>
 
     <string name="text_hint_freight_query">Please input container No</string>
-    <string name="text_container_no">"Container No "</string>
+    <string name="text_container_no">Container No</string>
     <string name="menu_clear">Close</string>
     <string name="menu_toggle_icon">Trigger</string>
     <string name="menu_icon_type">Type</string>
@@ -40,6 +40,9 @@
     <string name="fail_device_send_data">Send failure</string>
     <string name="device_reply_query_title">Device Status</string>
     <string name="device_reply_query_period">Upload period</string>
+    <string name="text_upload_period">Upload period</string>
+    <string name="text_current_position">Current position</string>
+    <string name="text_device_status">Device status</string>
     <string name="device_reply_safe_0">Unseal</string>
     <string name="device_reply_safe_1">Sealed</string>
     <string name="device_reply_safe_2">Opened</string>
@@ -50,7 +53,7 @@
     <string name="device_reply_read_setting_title">Device Setting</string>
     <string name="text_ok">Ok</string>
 
-    <string name="card_title_read_setting">Reading Device Setting</string>
+    <string name="card_title_read_setting">Reading Device Settings</string>
     <string name="card_title_setting">Settings</string>
     <string name="card_title_lock">Lock</string>
     <string name="card_title_unlock">Unlock</string>
@@ -66,5 +69,6 @@
     <string name="text_hint_freight_vessel">Vessel</string>
     <string name="text_hint_freight_voyage">Voyage</string>
     <string name="text_hint_freight_frequency">Upload period(s)</string>
+    <string name="text_hint_nfc_id">NFC ID</string>
 
 </resources>

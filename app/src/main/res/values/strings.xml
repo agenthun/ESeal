@@ -20,7 +20,7 @@
     <string name="page_title_freight_query">查询</string>
 
     <string name="text_hint_freight_query">请输入货物箱号</string>
-    <string name="text_container_no">"箱号 "</string>
+    <string name="text_container_no">箱号</string>
     <string name="menu_clear">关闭</string>
     <string name="menu_toggle_icon">触发</string>
     <string name="menu_icon_type">种类</string>
@@ -40,6 +40,9 @@
     <string name="fail_device_send_data">发送失败</string>
     <string name="device_reply_query_title">设备状态信息</string>
     <string name="device_reply_query_period">上传周期</string>
+    <string name="text_upload_period">上传周期</string>
+    <string name="text_current_position">当前位置</string>
+    <string name="text_device_status">锁状态</string>
     <string name="device_reply_safe_0">未上封</string>
     <string name="device_reply_safe_1">已上封</string>
     <string name="device_reply_safe_2">已拆封</string>
@@ -66,5 +69,6 @@
     <string name="text_hint_freight_vessel">航班</string>
     <string name="text_hint_freight_voyage">航次</string>
     <string name="text_hint_freight_frequency">上报周期(s)</string>
+    <string name="text_hint_nfc_id">NFC封条ID</string>
 
 </resources>
