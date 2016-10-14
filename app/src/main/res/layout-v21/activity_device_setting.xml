@@ -28,7 +28,7 @@
 
     <include
         android:id="@+id/editTextLayout"
-        layout="@layout/content_device_setting" />
+        layout="@layout/content_ble_device_setting" />
 
     <com.agenthun.eseal.view.CheckableFab
         android:id="@+id/fab"

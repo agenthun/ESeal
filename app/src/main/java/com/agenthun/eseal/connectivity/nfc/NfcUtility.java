@@ -22,6 +22,8 @@ import java.util.Arrays;
 public class NfcUtility implements NfcAdapter.ReaderCallback {
     private static final String TAG = "NfcUtility";
 
+    public static int NFC_TAG_FLAGS = NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
+
     private static final String TAG_AID = "F222222222";
     private static final String SELECT_APDU_HEADER = "00A40400";
     private static final byte[] SELECT_OK_SW = {(byte) 0x90, (byte) 0x00};
@@ -34,7 +36,10 @@ public class NfcUtility implements NfcAdapter.ReaderCallback {
 
     @Override
     public void onTagDiscovered(Tag tag) {
-        IsoDep isoDep = IsoDep.get(tag);
+        String tagId = ByteArrayToHexString(tag.getId());
+        Log.d(TAG, "onTagDiscovered() returned: " + tagId);
+        mTagCallback.get().onTagReceived(tagId);
+/*        IsoDep isoDep = IsoDep.get(tag);
         if (isoDep != null) {
             try {
                 isoDep.connect();
@@ -51,7 +56,9 @@ public class NfcUtility implements NfcAdapter.ReaderCallback {
             } catch (IOException e) {
                 Log.d(TAG, "onTagDiscovered: " + e.toString());
             }
-        }
+        }*/
+
+        mTagCallback.get().onTagRemoved();
     }
 
     public static byte[] BuildSelectApdu(String aid) {
@@ -83,5 +90,7 @@ public class NfcUtility implements NfcAdapter.ReaderCallback {
 
     public interface TagCallback {
         public void onTagReceived(String tag);
+
+        public void onTagRemoved();
     }
 }

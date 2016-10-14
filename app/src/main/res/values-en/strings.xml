@@ -16,8 +16,8 @@
     <string name="error_invalid_null">Incorrect username</string>
 
     <string name="page_title_freight_track_query">Freight Query</string>
-    <string name="page_title_scan_device">Device Scan</string>
-    <string name="page_title_freight_query">More</string>
+    <string name="page_title_scan_ble_device">BLE Seal Scan</string>
+    <string name="page_title_nfc_device">NFC Seal</string>
 
     <string name="text_hint_freight_query">Please input container No</string>
     <string name="text_container_no">Container No</string>
@@ -60,6 +60,7 @@
     <string name="card_title_scan_nfc">NFC ID Scan</string>
     <string name="card_title_query_status">Status Query</string>
     <string name="card_title_query_info">Position Query</string>
+    <string name="card_title_take_picture">Take Device Picture</string>
 
     <string name="text_hint_freight_container_number">Container No</string>
     <string name="text_hint_freight_owner">Owner</string>

@@ -48,7 +48,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
-    private static int NFC_TAG_FLAGS = NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK;
 
     private ACSUtility.blePort mCurrentPort;
     private ACSUtility utility;
@@ -96,15 +95,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-//        enableNfcReaderMode();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
-//        disableNfcReaderMode();
+        disableNfcReaderMode();
     }
 
     @Override
@@ -129,7 +122,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_lock)
     public void onLockBtnClick() {
-        Log.d(TAG, "onLockBtnClick() returned: ");
+//        Log.d(TAG, "onLockBtnClick() returned: ");
         //发送上封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.putInt(id);
@@ -150,7 +143,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_unlock)
     public void onUnlockBtnClick() {
-        Log.d(TAG, "onUnlockBtnClick() returned: ");
+//        Log.d(TAG, "onUnlockBtnClick() returned: ");
         //发送解封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
         buffer.putInt(id);
@@ -171,14 +164,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_scan_nfc)
     public void onScanNfcBtnClick() {
-        Log.d(TAG, "onScanNfcBtnClick() returned: ");
+//        Log.d(TAG, "onScanNfcBtnClick() returned: ");
         //扫描NFC封条,获取ID
         enableNfcReaderMode();
     }
 
     @OnClick(R.id.card_query_status)
     public void onQueryStatusBtnClick() {
-        Log.d(TAG, "onQueryStatusBtnClick() returned: ");
+//        Log.d(TAG, "onQueryStatusBtnClick() returned: ");
         //发送查询操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
         buffer.putInt(id);
@@ -196,7 +189,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_query_info)
     public void onQueryInfoBtnClick() {
-        Log.d(TAG, "onQueryInfoBtnClick() returned: ");
+//        Log.d(TAG, "onQueryInfoBtnClick() returned: ");
         //发送位置请求信息操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
         buffer.putInt(id);
@@ -214,7 +207,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_read_seting)
     public void onReadSettingBtnClick() {
-        Log.d(TAG, "onReadSettingBtnClick() returned: ");
+//        Log.d(TAG, "onReadSettingBtnClick() returned: ");
         //发送读数据报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA);
         buffer.putInt(id);
@@ -494,7 +487,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private void enableNfcReaderMode() {
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter != null) {
-            nfcAdapter.enableReaderMode(this, mNfcUtility, NFC_TAG_FLAGS, null);
+            nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
         }
     }
 
@@ -517,6 +510,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }
             });
+        }
+
+        @Override
+        public void onTagRemoved() {
+            disableNfcReaderMode();
         }
     };
 }

@@ -39,13 +39,14 @@ import it.gmariotti.recyclerview.itemanimator.SlideScaleInOutRightItemAnimator;
 public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "ScanDeviceFragment";
-    private static final String ARG_TYPE = "TYPE";
-    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
-    private static final int REQUEST_ENABLE_BT = 1;
-    private static final long SCAN_PERIOD = 10000;
+//    private static final String ARG_TYPE = "TYPE";
+//    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
+//    private String mType;
+//    private String mContainerNo;
 
-    private String mType;
-    private String mContainerNo;
+    private static final long SCAN_PERIOD = 10000;
+    private static final int REQUEST_ENABLE_BT = 1;
+
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
@@ -60,10 +61,10 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
     private boolean utilEnable = false;
     private boolean utilIsScan = false;
 
-    public static ScanDeviceFragment newInstance(String type, String containerNo) {
+    public static ScanDeviceFragment newInstance() {
         Bundle args = new Bundle();
-        args.putString(ARG_TYPE, type);
-        args.putString(ARG_CONTAINER_NO, containerNo);
+//        args.putString(ARG_TYPE, type);
+//        args.putString(ARG_CONTAINER_NO, containerNo);
         ScanDeviceFragment fragment = new ScanDeviceFragment();
         fragment.setArguments(args);
         return fragment;
@@ -73,15 +74,15 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mType = getArguments().getString(ARG_TYPE);
-            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
+//            mType = getArguments().getString(ARG_TYPE);
+//            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
         }
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_scan_device, container, false);
+        View view = inflater.inflate(R.layout.fragment_scan_ble_device, container, false);
 
         utility = new ACSUtility(getContext(), callback);
         utilEnable = false;

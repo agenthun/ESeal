@@ -4,10 +4,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.fragment.FreightQueryFragment;
+import com.agenthun.eseal.fragment.NfcDeviceFragment;
 import com.agenthun.eseal.fragment.FreightTrackFragment;
 import com.agenthun.eseal.fragment.ScanDeviceFragment;
 
@@ -41,9 +43,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 });
                 return freightTrackFragment;
             case 1:
-                return ScanDeviceFragment.newInstance("1", "1070");
+                return ScanDeviceFragment.newInstance();
             case 2:
-                return FreightQueryFragment.newInstance("2", "1070");
+                return NfcDeviceFragment.newInstance();
         }
         return null;
     }
@@ -60,9 +62,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return App.getContext().getString(R.string.page_title_freight_track_query);
             case 1:
-                return App.getContext().getString(R.string.page_title_scan_device);
+                return App.getContext().getString(R.string.page_title_scan_ble_device);
             case 2:
-                return App.getContext().getString(R.string.page_title_freight_query);
+                return App.getContext().getString(R.string.page_title_nfc_device);
         }
         return null;
     }

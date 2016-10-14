@@ -26,8 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_container_number"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -39,8 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_owner"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -52,8 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_name"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -65,8 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_origin"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -78,8 +74,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_destination"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -91,8 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_vessel"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -104,8 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_voyage"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -118,8 +111,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/text_hint_freight_frequency"
                 android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:singleLine="true" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

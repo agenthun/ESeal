@@ -25,6 +25,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_device_operation" />
+    <include layout="@layout/content_ble_device_operation" />
 
 </android.support.design.widget.CoordinatorLayout>
