@@ -13,12 +13,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.base.DetailParcelable;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.view.CheckableFab;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * @project ESeal
@@ -28,6 +28,9 @@ import butterknife.ButterKnife;
 public class DeviceSettingActivity extends AppCompatActivity {
     private static final String TAG = "DeviceSettingActivity";
     public static final String RESULT_CONFIGURE = "result_configure";
+
+    @Bind(R.id.addPicture)
+    View addPicture;
 
     @Bind(R.id.container_number)
     AppCompatEditText containerNumber;
@@ -117,6 +120,12 @@ public class DeviceSettingActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
+
+    @OnClick(R.id.addPicture)
+    public void onAddPictureBtnClick() {
+        Log.d(TAG, "onAddPictureBtnClick() returned: ");
+    }
+
 
     private void adjustFab(final boolean settingCorrect) {
         fab.setChecked(settingCorrect);

@@ -506,8 +506,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Snackbar.make(cardSetting, tag, Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
+                    builder.setTitle(R.string.text_hint_nfc_id)
+                            .setMessage(getString(R.string.text_hint_nfc_id_info) + " " + tag)
+                            .setPositiveButton(R.string.text_ok, null).show();
                 }
             });
         }

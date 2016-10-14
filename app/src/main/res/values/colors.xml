@@ -6,6 +6,7 @@
     <color name="colorAccentDark">#FFE27B4F</color>
     <color name="colorDivider">#61616161</color>
 
+    <color name="backgroundWhite">#20616161</color>
     <color name="white">@android:color/white</color>
 
     <color name="text_title">#8A000000</color>

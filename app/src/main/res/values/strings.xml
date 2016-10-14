@@ -57,7 +57,8 @@
     <string name="card_title_setting">配置</string>
     <string name="card_title_lock">上封</string>
     <string name="card_title_unlock">解封</string>
-    <string name="card_title_scan_nfc">扫描封条ID</string>
+    <string name="card_title_scan_nfc">扫描NFC</string>
+    <string name="card_subtitle_scan_nfc">封条ID</string>
     <string name="card_title_query_status">状态查询</string>
     <string name="card_title_query_info">位置查询</string>
     <string name="card_title_take_picture">设备拍照</string>
@@ -71,5 +72,7 @@
     <string name="text_hint_freight_voyage">航次</string>
     <string name="text_hint_freight_frequency">上报周期(s)</string>
     <string name="text_hint_nfc_id">NFC封条ID</string>
+    <string name="text_hint_nfc_id_info">扫描的NFC封条ID为</string>
+    <string name="text_hint_add_device_picture">添加设备照片</string>
 
 </resources>

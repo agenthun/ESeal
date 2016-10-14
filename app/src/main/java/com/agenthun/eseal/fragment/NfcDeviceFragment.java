@@ -5,9 +5,8 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -35,9 +33,6 @@ public class NfcDeviceFragment extends Fragment {
 //    private String mContainerNo;
 
     private NfcUtility mNfcUtility;
-
-    @Bind(R.id.card_scan_nfc)
-    CardView cardScanNfc;
 
     public static NfcDeviceFragment newInstance() {
         Bundle args = new Bundle();
@@ -121,9 +116,9 @@ public class NfcDeviceFragment extends Fragment {
         enableNfcReaderMode();
     }
 
-    @OnClick(R.id.card_take_picture)
-    public void onTakePictureBtnClick() {
-//        Log.d(TAG, "onTakePictureBtnClick() returned: ");
+    @OnClick(R.id.card_add_picture)
+    public void onAddPictureBtnClick() {
+        Log.d(TAG, "onAddPictureBtnClick() returned: ");
         //设备拍照
     }
 
@@ -150,8 +145,10 @@ public class NfcDeviceFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Snackbar.make(cardScanNfc, App.getTagId(), Snackbar.LENGTH_SHORT)
-                            .setAction("Action", null).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle(R.string.text_hint_nfc_id)
+                            .setMessage(getString(R.string.text_hint_nfc_id_info) + " " + tag)
+                            .setPositiveButton(R.string.text_ok, null).show();
                 }
             });
         }
