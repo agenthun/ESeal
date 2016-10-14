@@ -147,7 +147,7 @@ public class NfcDeviceFragment extends Fragment {
                 public void run() {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setTitle(R.string.text_hint_nfc_id)
-                            .setMessage(getString(R.string.text_hint_nfc_id_info) + " " + tag)
+                            .setMessage(tag)
                             .setPositiveButton(R.string.text_ok, null).show();
                 }
             });

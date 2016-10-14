@@ -72,7 +72,6 @@
     <string name="text_hint_freight_voyage">航次</string>
     <string name="text_hint_freight_frequency">上报周期(s)</string>
     <string name="text_hint_nfc_id">NFC封条ID</string>
-    <string name="text_hint_nfc_id_info">扫描的NFC封条ID为</string>
     <string name="text_hint_add_device_picture">添加设备照片</string>
 
 </resources>
