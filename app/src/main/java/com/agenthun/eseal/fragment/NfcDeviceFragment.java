@@ -118,7 +118,7 @@ public class NfcDeviceFragment extends Fragment {
 
     @OnClick(R.id.card_add_picture)
     public void onAddPictureBtnClick() {
-        Log.d(TAG, "onAddPictureBtnClick() returned: ");
+//        Log.d(TAG, "onAddPictureBtnClick() returned: ");
         //设备拍照
     }
 
