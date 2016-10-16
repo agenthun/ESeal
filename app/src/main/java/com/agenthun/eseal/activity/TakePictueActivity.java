@@ -126,21 +126,21 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
 
     @OnClick(R.id.takePictureBtn)
     public void onTakePictureBtnClick() {
-        Log.d(TAG, "onTakePictureBtnClick() returned: ");
+//        Log.d(TAG, "onTakePictureBtnClick() returned: ");
         takePictureBtn.setEnabled(false);
         cameraView.takePicture(true, true);
     }
 
     @OnClick(R.id.acceptBtn)
     public void onAcceptBtnClick() {
-        Log.d(TAG, "onAcceptBtnClick() returned: ");
+//        Log.d(TAG, "onAcceptBtnClick() returned: ");
         Uri.fromFile(mFile);
         finish();
     }
 
     @OnClick(R.id.declineBtn)
     public void onDeclineBtnClick() {
-        Log.d(TAG, "onDeclineBtnClick() returned: ");
+//        Log.d(TAG, "onDeclineBtnClick() returned: ");
         onBackPressed();
     }
 
