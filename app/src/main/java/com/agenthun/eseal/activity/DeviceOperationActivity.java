@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
@@ -237,9 +238,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == DEVICE_SETTING && resultCode == RESULT_OK) {
-//            DetailParcelable detail = data.getExtras().getParcelable(DetailParcelable.EXTRA_DEVICE);
             final SettingType settingType = data.getExtras().getParcelable(SettingType.EXTRA_DEVICE);
-            Log.d(TAG, "onActivityResult() returned: " + settingType.toString());
+            Log.d(TAG, "onActivityResult() returned: settingType = " + settingType.toString());
+
+            String uriStr = data.getExtras().getString(TakePictueActivity.PICTURE_URI);
+            if (uriStr != null) {
+                Uri uri = Uri.parse(uriStr);
+                Log.d(TAG, "onActivityResult() returned: uri = " + uri.toString());
+            }
 
             int period = ESealOperation.PERIOD_DEFAULT;
             if (settingType.getFrequency() != null && settingType.getFrequency().length() != 0) {

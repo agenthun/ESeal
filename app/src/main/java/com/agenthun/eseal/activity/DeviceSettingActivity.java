@@ -235,7 +235,11 @@ public class DeviceSettingActivity extends AppCompatActivity {
         settingType.setVoyage(voyage.getText().toString().trim());
         settingType.setFrequency(frequency.getText().toString().trim());
         b.putParcelable(SettingType.EXTRA_DEVICE, settingType);
-
+        if (pictureUri != null) {
+            b.putString(TakePictueActivity.PICTURE_URI, pictureUri.toString());
+        } else {
+            b.putString(TakePictueActivity.PICTURE_URI, null);
+        }
         data.putExtras(b);
         setResult(RESULT_OK, data);
     }
