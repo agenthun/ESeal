@@ -62,6 +62,8 @@
     <string name="card_title_query_status">状态查询</string>
     <string name="card_title_query_info">位置查询</string>
     <string name="card_title_take_picture">设备拍照</string>
+    <string name="error_nfc_not_open">请开启NFC</string>
+    <string name="text_hint_open_nfc">打开</string>
 
     <string name="text_hint_freight_container_number">箱号</string>
     <string name="text_hint_freight_owner">货主</string>
@@ -73,5 +75,7 @@
     <string name="text_hint_freight_frequency">上报周期(s)</string>
     <string name="text_hint_nfc_id">NFC封条ID</string>
     <string name="text_hint_add_device_picture">添加设备照片</string>
+
+    <string name="text_hint_take_picture">拍照</string>
 
 </resources>

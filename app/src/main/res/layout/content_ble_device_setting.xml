@@ -18,6 +18,7 @@
             android:id="@+id/addPicture"
             android:layout_width="match_parent"
             android:layout_height="168dp"
+            android:layout_marginBottom="@dimen/spacing_double"
             android:background="@color/backgroundWhite"
             android:gravity="center"
             android:orientation="vertical">

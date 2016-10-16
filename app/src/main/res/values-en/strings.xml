@@ -62,6 +62,8 @@
     <string name="card_title_query_status">Status Query</string>
     <string name="card_title_query_info">Position Query</string>
     <string name="card_title_take_picture">Add Device Picture</string>
+    <string name="error_nfc_not_open">Please Enable NFC</string>
+    <string name="text_hint_open_nfc">Open</string>
 
     <string name="text_hint_freight_container_number">Container No</string>
     <string name="text_hint_freight_owner">Owner</string>
@@ -73,5 +75,7 @@
     <string name="text_hint_freight_frequency">Upload period(s)</string>
     <string name="text_hint_nfc_id">NFC ID</string>
     <string name="text_hint_add_device_picture">Add Device Picture</string>
+
+    <string name="text_hint_take_picture">Take Picture</string>
 
 </resources>

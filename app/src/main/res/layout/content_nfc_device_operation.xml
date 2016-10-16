@@ -49,7 +49,6 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/tipsimageView"
                     android:layout_width="match_parent"
                     android:layout_height="168dp"
                     android:scaleType="centerCrop"
@@ -64,7 +63,7 @@
                     android:layout_marginRight="20dp">
 
                     <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/tipsTitle"
+                        android:id="@+id/scanNfcTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/card_title_scan_nfc"
@@ -72,13 +71,21 @@
                         android:textSize="16sp" />
 
                     <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/tipsSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tipsTitle"
+                        android:layout_below="@id/scanNfcTitle"
                         android:text="@string/card_subtitle_scan_nfc"
                         android:textColor="@color/blue_grey_800"
                         android:textSize="14sp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/NfcId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/blue_grey_900"
+                        android:textSize="20sp" />
 
                 </RelativeLayout>
             </FrameLayout>

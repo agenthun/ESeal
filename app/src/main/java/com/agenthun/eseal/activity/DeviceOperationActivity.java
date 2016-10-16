@@ -8,7 +8,11 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -167,6 +171,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onScanNfcBtnClick() returned: ");
         //扫描NFC封条,获取ID
         enableNfcReaderMode();
+
+//        ViewCompat.animate(NfcIdTextView).alpha(0)
+//                .setInterpolator(new FastOutSlowInInterpolator())
+//                .start();
     }
 
     @OnClick(R.id.card_query_status)
@@ -487,7 +495,18 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private void enableNfcReaderMode() {
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter != null) {
-            nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
+            if (nfcAdapter.isEnabled()) {
+                nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
+            } else {
+                Snackbar.make(cardSetting, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                        .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }).show();
+            }
         }
     }
 
@@ -509,7 +528,17 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
                     builder.setTitle(R.string.text_hint_nfc_id)
                             .setMessage(tag)
-                            .setPositiveButton(R.string.text_ok, null).show();
+                            .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+/*                                    NfcIdTextView.setText(tag);
+                                    ViewCompat.animate(NfcIdTextView).alpha(1)
+                                            .setDuration(100)
+                                            .setStartDelay(200)
+                                            .setInterpolator(new LinearOutSlowInInterpolator())
+                                            .start();*/
+                                }
+                            }).show();
                 }
             });
         }

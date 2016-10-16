@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_take_pictue"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.agenthun.eseal.activity.TakePictueActivity">
+
+    <com.agenthun.eseal.view.AutoFitTextureView
+        android:id="@+id/texture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <FrameLayout
+        android:id="@+id/control"
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/blue_grey_100">
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/takePictureBtn"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_capture" />
+    </FrameLayout>
+</RelativeLayout>
