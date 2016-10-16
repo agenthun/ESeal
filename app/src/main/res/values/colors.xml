@@ -36,4 +36,7 @@
     <color name="blue_grey_800">#ff37474f</color>
     <color name="blue_grey_900">#ff263238</color>
 
+    <color name="btn_accept_background">#ff0fcb5d</color>
+    <color name="btn_decline_background">@android:color/holo_red_light</color>
+
 </resources>
