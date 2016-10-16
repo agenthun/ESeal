@@ -1,8 +1,16 @@
 package com.agenthun.eseal.activity;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
@@ -11,14 +19,18 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.model.utils.SettingType;
+import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.view.CheckableFab;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.agenthun.eseal.R.id.picturePreview;
 
 /**
  * @project ESeal
@@ -31,6 +43,9 @@ public class DeviceSettingActivity extends AppCompatActivity {
 
     @Bind(R.id.addPicture)
     View addPicture;
+
+    @Bind(R.id.picturePreview)
+    ImageView picturePreview;
 
     @Bind(R.id.container_number)
     AppCompatEditText containerNumber;
@@ -63,6 +78,8 @@ public class DeviceSettingActivity extends AppCompatActivity {
     private Runnable mHideFabRunnable;
 
     private boolean mEdited = false;
+
+    private Uri pictureUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,19 +128,55 @@ public class DeviceSettingActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        fab.hide();
         super.onResume();
+        fab.hide();
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(TakePictueActivity.PICTURE_URI);
+
+        localBroadcastManager.registerReceiver(broadcastReceiver, filter);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 
     @OnClick(R.id.addPicture)
     public void onAddPictureBtnClick() {
         Log.d(TAG, "onAddPictureBtnClick() returned: ");
+        performTakePictureWithTransition(addPicture);
+    }
+
+    private void performTakePictureWithTransition(View v) {
+        Activity activity = this;
+
+        final int[] startLocation = new int[2];
+        v.getLocationOnScreen(startLocation);
+        startLocation[0] += v.getWidth() / 2;
+
+        if (v == null || ApiLevelHelper.isLowerThan(Build.VERSION_CODES.LOLLIPOP)) {
+            TakePictueActivity.start(activity, startLocation);
+            return;
+        }
+        if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
+//            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeBasic();
+            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(v,
+                    startLocation[0],
+                    startLocation[1],
+                    0,
+                    0);
+            TakePictueActivity.start(activity, startLocation, optionsCompat);
+        }
     }
 
 
@@ -186,4 +239,20 @@ public class DeviceSettingActivity extends AppCompatActivity {
         data.putExtras(b);
         setResult(RESULT_OK, data);
     }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String uriStr = intent.getStringExtra(TakePictueActivity.PICTURE_URI);
+            pictureUri = Uri.parse(uriStr);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    picturePreview.setImageURI(pictureUri);
+                    picturePreview.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    };
 }

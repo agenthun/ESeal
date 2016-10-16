@@ -2,8 +2,13 @@ package com.agenthun.eseal.fragment;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +18,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
@@ -26,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
@@ -33,6 +40,9 @@ import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+
+import java.io.File;
+import java.io.FileInputStream;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,9 +65,13 @@ public class NfcDeviceFragment extends Fragment {
 //    private String mContainerNo;
 
     private NfcUtility mNfcUtility;
+    private Uri pictureUri = null;
 
     @Bind(R.id.card_add_picture)
     View addPicture;
+
+    @Bind(R.id.picturePreview)
+    ImageView picturePreview;
 
     @Bind(R.id.NfcId)
     AppCompatTextView NfcIdTextView;
@@ -91,8 +105,20 @@ public class NfcDeviceFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onResume() {
+        super.onResume();
+
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(TakePictueActivity.PICTURE_URI);
+
+        localBroadcastManager.registerReceiver(broadcastReceiver, filter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
     @OnClick(R.id.card_lock)
@@ -232,6 +258,21 @@ public class NfcDeviceFragment extends Fragment {
         @Override
         public void onTagRemoved() {
             disableNfcReaderMode();
+        }
+    };
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String uriStr = intent.getStringExtra(TakePictueActivity.PICTURE_URI);
+            pictureUri = Uri.parse(uriStr);
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    picturePreview.setImageURI(pictureUri);
+                }
+            });
         }
     };
 }

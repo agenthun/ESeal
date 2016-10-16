@@ -10,10 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -35,6 +35,7 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
 
     private static final String TAG = "TakePictueActivity";
     private static final String EXTRA_START_LOCATION = "location";
+    public static final String PICTURE_URI = "pictureUri";
 
     private static final int STATE_TAKE_PHOTO = 0;
     private static final int STATE_SETUP_PHOTO = 1;
@@ -134,7 +135,10 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
     @OnClick(R.id.acceptBtn)
     public void onAcceptBtnClick() {
 //        Log.d(TAG, "onAcceptBtnClick() returned: ");
-        Uri.fromFile(mFile);
+        Intent intent = new Intent(PICTURE_URI);
+        intent.putExtra(PICTURE_URI, Uri.fromFile(mFile).toString());
+        LocalBroadcastManager.getInstance(this)
+                .sendBroadcast(intent);
         finish();
     }
 
@@ -221,7 +225,4 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
         }
     }
 
-    public interface PictureCallback {
-        public void onPictureAccepted(Uri uri);
-    }
 }
