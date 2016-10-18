@@ -463,7 +463,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                                     getString(R.string.text_hint_freight_vessel) + " " + settingType.getVessel() + "\r\n\r\n" +
                                                     getString(R.string.text_hint_freight_voyage) + " " + settingType.getVoyage() + "\r\n\r\n" +
                                                     getString(R.string.text_hint_freight_frequency) + " " + settingType.getFrequency() + "\r\n\r\n" +
-                                                    getString(R.string.text_current_position) + " " + settingType.getNfcTagId())
+                                                    getString(R.string.text_hint_nfc_id) + " " + settingType.getNfcTagId())
                                     .setPositiveButton(R.string.text_ok, null).show();
 
                             break;

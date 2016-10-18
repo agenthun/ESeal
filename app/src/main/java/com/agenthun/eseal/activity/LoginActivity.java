@@ -2,10 +2,13 @@ package com.agenthun.eseal.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.agenthun.eseal.App;
@@ -13,6 +16,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
+import com.agenthun.eseal.utils.NetUtil;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -73,40 +77,51 @@ public class LoginActivity extends AppCompatActivity {
     }*/
 
     private void attemptLogin() {
-        String name = loginName.getText().toString();
-        String password = loginPassword.getText().toString();
+        if (NetUtil.isConnected(this)) { //已连接网络
+            String name = loginName.getText().toString();
+            String password = loginPassword.getText().toString();
 
-        if (TextUtils.isEmpty(name)) {
-            Toast.makeText(LoginActivity.this, R.string.error_invalid_account, Toast.LENGTH_SHORT).show();
-            return;
-        } else if (TextUtils.isEmpty(password)) {
-            Toast.makeText(LoginActivity.this, R.string.error_invalid_password, Toast.LENGTH_SHORT).show();
-            return;
-        }
+            if (TextUtils.isEmpty(name)) {
+                Toast.makeText(LoginActivity.this, R.string.error_invalid_account, Toast.LENGTH_SHORT).show();
+                return;
+            } else if (TextUtils.isEmpty(password)) {
+                Toast.makeText(LoginActivity.this, R.string.error_invalid_password, Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password);
-        call.enqueue(new Callback<UserInfoByGetToken>() {
-            @Override
-            public void onResponse(Call<UserInfoByGetToken> call, Response<UserInfoByGetToken> response) {
-                token = response.body().getTOKEN();
-                Log.d(TAG, "token: " + token);
-                if (token != null) {
-                    App.setToken(token);
+            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password);
+            call.enqueue(new Callback<UserInfoByGetToken>() {
+                @Override
+                public void onResponse(Call<UserInfoByGetToken> call, Response<UserInfoByGetToken> response) {
+                    token = response.body().getTOKEN();
+                    Log.d(TAG, "token: " + token);
+                    if (token != null) {
+                        App.setToken(token);
 //                    Intent intent = new Intent(LoginActivity.this, DeviceOperationActivity.class); //for debug
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra(RetrofitManager.TOKEN, token);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, R.string.error_invalid_null, Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra(RetrofitManager.TOKEN, token);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, R.string.error_invalid_null, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<UserInfoByGetToken> call, Throwable t) {
-                Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<UserInfoByGetToken> call, Throwable t) {
+                    Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
+                }
+            });
+        } else {
+            Snackbar.make(loginName, getString(R.string.error_network_not_open), Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.text_hint_open_network), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                            startActivity(intent);
+                        }
+                    }).show();
+        }
     }
 }
 

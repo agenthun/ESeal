@@ -64,6 +64,8 @@
     <string name="card_title_take_picture">设备拍照</string>
     <string name="error_nfc_not_open">请开启NFC</string>
     <string name="text_hint_open_nfc">打开</string>
+    <string name="error_network_not_open">请开启网络</string>
+    <string name="text_hint_open_network">设置</string>
 
     <string name="text_hint_freight_container_number">箱号</string>
     <string name="text_hint_freight_owner">货主</string>
