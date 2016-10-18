@@ -16,7 +16,7 @@
     <string name="error_invalid_null">Incorrect username</string>
 
     <string name="page_title_freight_track_query">Freight Query</string>
-    <string name="page_title_scan_ble_device">BLE Seal Scan</string>
+    <string name="page_title_scan_ble_device">BLE Seal</string>
     <string name="page_title_nfc_device">NFC Seal</string>
 
     <string name="text_hint_freight_query">Please input container No</string>
