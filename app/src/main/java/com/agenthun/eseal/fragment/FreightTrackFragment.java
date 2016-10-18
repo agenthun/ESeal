@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
@@ -47,6 +48,7 @@ public class FreightTrackFragment extends Fragment {
 
     private WebView webView;
     private FloatingSearchView floatingSearchView;
+    private ImageView blurredMap;
 
     public static FreightTrackFragment newInstance(String type, String containerNo) {
         Bundle args = new Bundle();
@@ -92,12 +94,16 @@ public class FreightTrackFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_freight_track, container, false);
 
+        blurredMap = (ImageView) view.findViewById(R.id.blurredMap);
+
         webView = (WebView) view.findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         WebSettings webSettings = webView.getSettings();
         webSettings.setAllowFileAccess(true);
         webSettings.setBuiltInZoomControls(true);
+
+        loadingMapState(false);
 
         floatingSearchView = (FloatingSearchView) view.findViewById(R.id.floatingSearchview);
         floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
@@ -127,12 +133,16 @@ public class FreightTrackFragment extends Fragment {
         floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                ((ContainerNoSuggestion) searchSuggestion).setIsHistory(true);
+
                 String containerId = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerId();
                 Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
                 String containerNo = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerNo();
                 if (mOnItemClickListener != null) {
                     mOnItemClickListener.onItemClick(containerNo, containerId);
                 }
+
+                loadingMapState(true);
                 webView.loadUrl("http://www.freight-track.com/BaiduMap/FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
             }
 
@@ -142,6 +152,16 @@ public class FreightTrackFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private void loadingMapState(boolean isLoading) {
+        if (isLoading) {
+            blurredMap.setVisibility(View.GONE);
+            webView.setVisibility(View.VISIBLE);
+        } else {
+            blurredMap.setVisibility(View.VISIBLE);
+            webView.setVisibility(View.GONE);
+        }
     }
 
     //itemClick interface

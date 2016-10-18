@@ -32,6 +32,8 @@
     <string name="action_type_4">Customs Inspection</string>
 
     <string name="error_ble_not_supported">BLE is not supported</string>
+    <string name="no_devices_all">Not Found Device</string>
+    <string name="scan_device_active">Please refresh to scan devices</string>
     <string name="device_connecting">Connecting...</string>
     <string name="success_device_connection">Connection successfully</string>
     <string name="fail_device_connection">Connection failed</string>

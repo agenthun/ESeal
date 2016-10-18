@@ -105,6 +105,14 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (cameraView != null) {
+            cameraView = null;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if (currentState == STATE_SETUP_PHOTO) {
             takePictureBtn.setEnabled(true);

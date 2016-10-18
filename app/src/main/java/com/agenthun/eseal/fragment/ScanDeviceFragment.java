@@ -23,6 +23,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.activity.DeviceOperationActivity;
 import com.agenthun.eseal.adapter.DeviceAdapter;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
+import com.agenthun.eseal.view.CheckEmptyRecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +50,8 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
 
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView recyclerView;
+    private View noDevices;
+    private CheckEmptyRecyclerView recyclerView;
     private DeviceAdapter deviceAdapter;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -95,9 +97,11 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark)
         );
 
+        noDevices = view.findViewById(R.id.noDevices);
+
         deviceList = new ArrayList<>();
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (CheckEmptyRecyclerView) view.findViewById(R.id.recyclerView);
         deviceAdapter = new DeviceAdapter(deviceList, deviceRssiValues);
         deviceAdapter.setOnItemClickListener(new DeviceAdapter.OnItemClickListener() {
             @Override
@@ -128,6 +132,8 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(deviceAdapter);
         recyclerView.setItemAnimator(new SlideScaleInOutRightItemAnimator(recyclerView));
+
+        recyclerView.setEmptyView(noDevices);
         return view;
     }
 
