@@ -50,7 +50,6 @@
 ### NFC封锁操作
 ![device_nfc_operation_1](./art/device_nfc_operation_1.png)
 ![device_nfc_operation_2](./art/device_nfc_operation_2.png)
-![device_nfc_operation_3](./art/device_nfc_operation_3.png)
 
 #### 扫描NFC ID号
 ![device_nfc_scan_id](./art/device_nfc_scan_id.png)
