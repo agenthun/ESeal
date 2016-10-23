@@ -12,6 +12,7 @@ public class App extends Application {
     private static Context mApplicationContext;
     private static String token;
     private static String tagId = "0000";
+    private static String deviceId = "13003";
 
     @Override
 
@@ -43,5 +44,13 @@ public class App extends Application {
 
     public static void setTagId(String tagId) {
         App.tagId = tagId;
+    }
+
+    public static String getDeviceId() {
+        return deviceId;
+    }
+
+    public static void setDeviceId(String deviceId) {
+        App.deviceId = deviceId;
     }
 }

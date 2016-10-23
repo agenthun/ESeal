@@ -25,11 +25,12 @@
     <string name="menu_toggle_icon">Trigger</string>
     <string name="menu_icon_type">Type</string>
 
-    <string name="action_type_0">Open</string>
-    <string name="action_type_1">Close</string>
+    <string name="action_type_0">Unlock Operation</string>
+    <string name="action_type_1">Lock Operation</string>
     <string name="action_type_2">Illegal Opening</string>
     <string name="action_type_3">Sealed(Safe)</string>
     <string name="action_type_4">Customs Inspection</string>
+    <string name="action_type_5">Setting Device</string>
 
     <string name="error_ble_not_supported">BLE is not supported</string>
     <string name="no_devices_all">Not Found Device</string>

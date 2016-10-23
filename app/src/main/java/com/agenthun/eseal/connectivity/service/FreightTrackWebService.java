@@ -103,19 +103,25 @@ public interface FreightTrackWebService {
             @Query("implementID") String implementID,
             @Query("language") String language);
 
-    //开箱操作 - 获取MAC
+    //解封、开箱操作 - 获取MAC
     @GET("OpenContainer")
     Call<MACByOpenCloseContainer> openContainer(
             @Query("token") String token,
             @Query("implementID") String implementID,
-            @Query("random") String random,
+            @Query("RFID") String RFID,
+            @Nullable @Query("images") String images,
+            @Nullable @Query("coordinate") String coordinate,
+            @Query("operateTime") String operateTime,
             @Query("language") String language);
 
-    //关箱操作(海关 / 普通用户) - 获取MAC
+    //上封、关箱操作(海关 / 普通用户) - 获取MAC
     @GET("CloseContainer")
     Call<MACByOpenCloseContainer> closeContainer(
             @Query("token") String token,
             @Query("implementID") String implementID,
-            @Query("random") String random,
+            @Query("RFID") String RFID,
+            @Nullable @Query("images") String images,
+            @Nullable @Query("coordinate") String coordinate,
+            @Query("operateTime") String operateTime,
             @Query("language") String language);
 }

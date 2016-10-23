@@ -114,6 +114,11 @@ public class BottomSheetDialogView {
                     holder.securityLevelImageView.setColorFilter(
                             App.getContext().getResources().getColor(R.color.colorPrimary));
                     break;
+                case "5":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_settings_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            App.getContext().getResources().getColor(R.color.dark_gray));
+                    break;
             }
             holder.timeTextView.setText(details.get(position).getCreateDatetime());
             holder.actionTypeTextView.setText(getActionType(actionType));
@@ -137,6 +142,8 @@ public class BottomSheetDialogView {
                     return App.getContext().getString(R.string.action_type_3);
                 case "4":
                     return App.getContext().getString(R.string.action_type_4);
+                case "5":
+                    return App.getContext().getString(R.string.action_type_5);
             }
             return "";
         }

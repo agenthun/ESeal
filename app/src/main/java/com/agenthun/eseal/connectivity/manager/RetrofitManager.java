@@ -179,14 +179,14 @@ public class RetrofitManager {
     }
 
 
-    //开箱操作 - 获取MAC implementID="12345678", random=1234
-    public Call<MACByOpenCloseContainer> getMACByOpenOperationObservable(String token, String implementID, String random) {
-        return freightTrackWebService.openContainer(token, implementID, random, "zh-CN");
+    //开箱操作 - 获取MAC implementID="12345678"
+    public Call<MACByOpenCloseContainer> getMACByOpenOperationObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
+        return freightTrackWebService.openContainer(token, implementID, RFID, images, coordinate, operateTime, "zh-CN");
     }
 
-    //关箱操作 - 获取MAC implementID="12345678", random=1234
-    public Call<MACByOpenCloseContainer> getMACByCloseOperationObservable(String token, String implementID, String random) {
-        return freightTrackWebService.closeContainer(token, implementID, random, "zh-CN");
+    //关箱操作 - 获取MAC implementID="12345678"
+    public Call<MACByOpenCloseContainer> getMACByCloseOperationObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
+        return freightTrackWebService.closeContainer(token, implementID, RFID, images, coordinate, operateTime, "zh-CN");
     }
 
 

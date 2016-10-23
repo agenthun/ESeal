@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -26,6 +27,7 @@ import android.view.View;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.FreightInfosByToken;
+import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.bean.base.Result;
@@ -41,6 +43,7 @@ import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
+import com.agenthun.eseal.utils.LocationUtil;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -65,7 +68,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private static final int DEVICE_SETTING = 1;
     private static final long TIME_OUT = 30000;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     private ACSUtility.blePort mCurrentPort;
     private ACSUtility utility;
@@ -157,6 +159,36 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 buffer.array()
         );
         sendData(data);
+
+        double[] location = LocationUtil.getLocation(this);
+        Log.d(TAG, "onLockBtnClick() returned: " + location[0] + ", " + location[1]);
+
+        String token = App.getToken();
+        if (token != null) {
+            String imgUrl = "IMG.jpg";
+            String coordinate = "31.12426242,121.72685547";
+            String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                    .getMACByCloseOperationObservable(token, App.getDeviceId(), App.getTagId(), imgUrl, coordinate, operateTime)
+                    .enqueue(new Callback<MACByOpenCloseContainer>() {
+                        @Override
+                        public void onResponse(Call<MACByOpenCloseContainer> call, Response<MACByOpenCloseContainer> response) {
+                            int result = response.body().getRESULT() == null ? 0 : response.body().getRESULT();
+                            if (result == 1) {
+                                showSnackbar(getString(R.string.success_device_setting_upload));
+                            } else {
+                                showSnackbar(getString(R.string.fail_device_setting_upload));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MACByOpenCloseContainer> call, Throwable t) {
+                            Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
+                            showSnackbar(getString(R.string.fail_device_setting_upload));
+                        }
+                    });
+        }
     }
 
     @OnClick(R.id.card_unlock)
@@ -178,6 +210,33 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 buffer.array()
         );
         sendData(data);
+
+        String token = App.getToken();
+        if (token != null) {
+            String imgUrl = "IMG.jpg";
+            String coordinate = "31.12426242,121.72685547";
+            String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                    .getMACByOpenOperationObservable(token, App.getDeviceId(), App.getTagId(), imgUrl, coordinate, operateTime)
+                    .enqueue(new Callback<MACByOpenCloseContainer>() {
+                        @Override
+                        public void onResponse(Call<MACByOpenCloseContainer> call, Response<MACByOpenCloseContainer> response) {
+                            int result = response.body().getRESULT() == null ? 0 : response.body().getRESULT();
+                            if (result == 1) {
+                                showSnackbar(getString(R.string.success_device_setting_upload));
+                            } else {
+                                showSnackbar(getString(R.string.fail_device_setting_upload));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<MACByOpenCloseContainer> call, Throwable t) {
+                            Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
+                            showSnackbar(getString(R.string.fail_device_setting_upload));
+                        }
+                    });
+        }
     }
 
     @OnClick(R.id.card_scan_nfc)
@@ -315,12 +374,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
             String token = App.getToken();
             if (token != null) {
-                String implementID = "11004";
                 String coordinate = "31.12426242,121.72685547";
                 String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
                 RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                        .configureDevice(token, implementID,
+                        .configureDevice(token, App.getDeviceId(),
                                 settingType.getContainerNumber(), settingType.getOwner(), settingType.getFreightName(),
                                 settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
                                 settingType.getFrequency(),
@@ -333,7 +391,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             public void onResponse(Call<BaseWebServiceResponseBody> call, Response<BaseWebServiceResponseBody> response) {
 //                                showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
                                 showSnackbar(getString(R.string.success_device_setting_upload));
-/*                                Result result = response.body().getResult().get(0);
+       /*                         Result result = response.body().getResult().get(0);
                                 if (result.getRESULT() == 1) {
                                     showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
                                 } else {
@@ -344,6 +402,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(Call<BaseWebServiceResponseBody> call, Throwable t) {
                                 Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
+                                showSnackbar(getString(R.string.fail_device_setting_upload));
                             }
                         });
             }
