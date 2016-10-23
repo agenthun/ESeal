@@ -1,5 +1,7 @@
 package com.agenthun.eseal.connectivity.manager;
 
+import android.support.annotation.Nullable;
+
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
 import com.agenthun.eseal.bean.DynamicDataDetailByPositionId;
@@ -8,6 +10,7 @@ import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.ResetImplementByContainerId;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.FreightTrackWebService;
 import com.agenthun.eseal.connectivity.service.PathType;
@@ -109,6 +112,10 @@ public class RetrofitManager {
                 return Api.K_API_BASE_URL_STRING;
             case AMAP_SERVICE:
                 return Api.AMAP_SERVICE_URL_STRING;
+            case WEB_SERVICE_V2_TEST:
+                return Api.WEB_SERVICE_V2_TEST;
+            case WEB_SERVICE_V2_RELEASE:
+                return Api.WEB_SERVICE_V2_RELEASE;
         }
         return "";
     }
@@ -120,7 +127,7 @@ public class RetrofitManager {
 
     //登陆,获取token
     public Call<UserInfoByGetToken> getTokenObservable(String userName, String password) {
-        return freightTrackWebService.userInfoByGetToken(userName, password, "l");
+        return freightTrackWebService.userInfoByGetToken(userName, password, "zh-CN");
 /*                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());*/
     }
@@ -128,46 +135,63 @@ public class RetrofitManager {
 
     //根据Token获取所有在途中的货物信息
     public Call<FreightInfosByToken> getFreightListObservable(String token) {
-        return freightTrackWebService.getFreightInfoByToken(token, "l");
+        return freightTrackWebService.getFreightInfoByToken(token, "zh-CN");
     }
 
     //根据设备ID获取具体某一货物信息 implementID="12345678" //2016-03-03 find not support
     public Call<FreightInfoByImplementID> getFreightObservable(String token, String implementID) {
-        return freightTrackWebService.getFreightInfoByImplementID(token, implementID, "l");
+        return freightTrackWebService.getFreightInfoByImplementID(token, implementID, "zh-CN");
     }
 
     //设置某货物终端监控参数 containerId=1070, frequency=2
     public Call<ResetImplementByContainerId> setFreightObservable(String token, String containerId, String frequency) {
-        return freightTrackWebService.resetImplement(token, containerId, frequency, "0", "0", "0", "l");
+        return freightTrackWebService.resetImplement(token, containerId, frequency, "0", "0", "0", "zh-CN");
     }
 
+    //配置终端货物信息参数
+    public Call<BaseWebServiceResponseBody> configureDevice(String token, String implementID,
+                                                            @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
+                                                            @Nullable String frequency,
+                                                            String RFID,
+                                                            @Nullable String images,
+                                                            @Nullable String coordinate,
+                                                            String operateTime) {
+        return freightTrackWebService.configureCargo(token, implementID,
+                containerNo, freightOwner, freightName, origin, destination, VesselName, voyage,
+                frequency,
+                RFID,
+                images,
+                coordinate,
+                operateTime,
+                "zh-CN");
+    }
 
     //获取集装箱数据列表 containerId=1070, currentPageIndex=1
     public Call<AllDynamicDataByContainerId> getFreightDataListObservable(final String token, final String containerId, final Integer currentPageIndex) {
-        return freightTrackWebService.getAllDynamicData(token, containerId, currentPageIndex, "l");
+        return freightTrackWebService.getAllDynamicData(token, containerId, currentPageIndex, "zh-CN");
 /*                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());*/
     }
 
     //获取集装箱某一具体数据 positionId="268996"
     public Call<DynamicDataDetailByPositionId> getFreightDataObservable(String token, String positionId) {
-        return freightTrackWebService.getDynamicDataDetail(token, positionId, "l");
+        return freightTrackWebService.getDynamicDataDetail(token, positionId, "zh-CN");
     }
 
 
     //开箱操作 - 获取MAC implementID="12345678", random=1234
     public Call<MACByOpenCloseContainer> getMACByOpenOperationObservable(String token, String implementID, String random) {
-        return freightTrackWebService.openContainer(token, implementID, random, "l");
+        return freightTrackWebService.openContainer(token, implementID, random, "zh-CN");
     }
 
     //关箱操作 - 获取MAC implementID="12345678", random=1234
     public Call<MACByOpenCloseContainer> getMACByCloseOperationObservable(String token, String implementID, String random) {
-        return freightTrackWebService.closeContainer(token, implementID, random, "l");
+        return freightTrackWebService.closeContainer(token, implementID, random, "zh-CN");
     }
 
 
     //根据ContainerId获取轨迹 Type="0", containerId="1070"
     public Call<ResponseBody> getFreightTrackPathObservable(String token, String type, String containerId) {
-        return freightTrackWebService.getFreightTrackPath(token, type, containerId, "l");
+        return freightTrackWebService.getFreightTrackPath(token, type, containerId, "zh-CN");
     }
 }

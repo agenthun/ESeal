@@ -16,6 +16,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
+import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -69,7 +70,7 @@ public class FreightTrackFragment extends Fragment {
 
         String token = App.getToken();
         if (token != null) {
-            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
                 @Override
                 public void onResponse(Call<FreightInfosByToken> call, Response<FreightInfosByToken> response) {
                     List<Detail> details = response.body().getDetails();
@@ -143,7 +144,7 @@ public class FreightTrackFragment extends Fragment {
                 }
 
                 loadingMapState(true);
-                webView.loadUrl("http://www.freight-track.com/BaiduMap/FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
+                webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
             }
 
             @Override

@@ -69,6 +69,10 @@
     <string name="error_network_not_open">Please Enable Network</string>
     <string name="text_hint_open_network">Setting</string>
 
+    <string name="text_title_device_setting_upload">Upload Info</string>
+    <string name="success_device_setting_upload">Synchronized success</string>
+    <string name="fail_device_setting_upload">Synchronized failure</string>
+
     <string name="text_hint_freight_container_number">Container No</string>
     <string name="text_hint_freight_owner">Owner</string>
     <string name="text_hint_freight_name">Freight name</string>

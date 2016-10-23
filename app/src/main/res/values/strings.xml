@@ -69,6 +69,10 @@
     <string name="error_network_not_open">请开启网络</string>
     <string name="text_hint_open_network">设置</string>
 
+    <string name="text_title_device_setting_upload">同步信息</string>
+    <string name="success_device_setting_upload">已成功同步至服务器</string>
+    <string name="fail_device_setting_upload">未成功同步至服务器</string>
+
     <string name="text_hint_freight_container_number">箱号</string>
     <string name="text_hint_freight_owner">货主</string>
     <string name="text_hint_freight_name">货物</string>

@@ -8,4 +8,7 @@ package com.agenthun.eseal.connectivity.service;
 public class Api {
     public static final String K_API_BASE_URL_STRING = "http://www.freight-track.com/webservice/FreightTrackWebService.asmx/";
     public static final String AMAP_SERVICE_URL_STRING = "http://www.freight-track.com/BaiduMap/";
+
+    public static final String WEB_SERVICE_V2_TEST = "http://dev.freight-track.com/WebService/CTMSHuWebService.asmx/";
+    public static final String WEB_SERVICE_V2_RELEASE = "http://www.freight-track.com/WebService/CTMSHuWebService.asmx/";
 }

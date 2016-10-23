@@ -45,7 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         loginName = (AppCompatEditText) findViewById(R.id.login_name);
         loginPassword = (AppCompatEditText) findViewById(R.id.login_password);
 
-        loginName.setText("demodemo");
+//        loginName.setText("demodemo");
+        loginName.setText("henghu");
         loginPassword.setText("123456");
 /*        userData = UserData.getCurrentUser(this, UserData.class);
         if (userData != null) {
@@ -89,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password);
+            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password);
             call.enqueue(new Callback<UserInfoByGetToken>() {
                 @Override
                 public void onResponse(Call<UserInfoByGetToken> call, Response<UserInfoByGetToken> response) {

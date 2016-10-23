@@ -23,6 +23,8 @@ public class Detail {
     private String Humidity;
     private String Vibration;
 
+    private String NFCID;
+
     /**
      * @return The ContainerId
      */
@@ -236,6 +238,14 @@ public class Detail {
         Vibration = vibration;
     }
 
+    public String getNFCID() {
+        return NFCID;
+    }
+
+    public void setNFCID(String NFCID) {
+        this.NFCID = NFCID;
+    }
+
     @Override
     public String toString() {
         return "Detail{" +
@@ -258,6 +268,7 @@ public class Detail {
                 ", Temperature='" + Temperature + '\'' +
                 ", Humidity='" + Humidity + '\'' +
                 ", Vibration='" + Vibration + '\'' +
+                ", NFCID='" + NFCID + '\'' +
                 '}';
     }
 }

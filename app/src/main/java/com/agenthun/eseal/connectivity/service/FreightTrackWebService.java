@@ -1,5 +1,7 @@
 package com.agenthun.eseal.connectivity.service;
 
+import android.support.annotation.Nullable;
+
 import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
 import com.agenthun.eseal.bean.DynamicDataDetailByPositionId;
 import com.agenthun.eseal.bean.FreightInfoByImplementID;
@@ -7,6 +9,7 @@ import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.ResetImplementByContainerId;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -49,6 +52,25 @@ public interface FreightTrackWebService {
             @Query("tempThreshold") String tempThreshold,
             @Query("humThreshold") String humThreshold,
             @Query("vibThreshold") String vibThreshold,
+            @Query("language") String language);
+
+    //配置终端货物信息参数
+    @GET("ConfigureCargo")
+    Call<BaseWebServiceResponseBody> configureCargo(
+            @Query("token") String token,
+            @Query("implementID") String implementID,
+            @Nullable @Query("containerNo") String containerNo,
+            @Nullable @Query("freightOwner") String freightOwner,
+            @Nullable @Query("freightName") String freightName,
+            @Nullable @Query("origin") String origin,
+            @Nullable @Query("destination") String destination,
+            @Nullable @Query("VesselName") String VesselName,
+            @Nullable @Query("voyage") String voyage,
+            @Nullable @Query("frequency") String frequency,
+            @Query("RFID") String RFID,
+            @Nullable @Query("images") String images,
+            @Nullable @Query("coordinate") String coordinate,
+            @Query("operateTime") String operateTime,
             @Query("language") String language);
 
     //获取某集装箱containerId动态数据列表

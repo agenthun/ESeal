@@ -32,6 +32,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.adapter.SectionsPagerAdapter;
 import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
 import com.agenthun.eseal.bean.base.Detail;
+import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+/*        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(false);
             builder.setTitle(getResources().getString(R.string.error_ble_not_supported))
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity
                             return;
                         }
                     }).show();
-        }
+        }*/
     }
 
     @Override
@@ -252,11 +253,16 @@ public class MainActivity extends AppCompatActivity
 
     private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo) {
         if (token != null) {
-            RetrofitManager.builder(PathType.BASE_WEB_SERVICE)
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
                     .getFreightDataListObservable(token, containerId, 1)
                     .enqueue(new Callback<AllDynamicDataByContainerId>() {
                         @Override
                         public void onResponse(Call<AllDynamicDataByContainerId> call, Response<AllDynamicDataByContainerId> response) {
+                            Result result = response.body().getResult().get(0);
+                            if (result.getRESULT() == 0) {
+                                return;
+                            }
+
                             List<Detail> details = response.body().getDetails();
                             BottomSheetDialogView.show(MainActivity.this, containerNo, details);
                         }

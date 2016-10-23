@@ -11,7 +11,7 @@ import android.content.Context;
 public class App extends Application {
     private static Context mApplicationContext;
     private static String token;
-    private static String tagId = "这是NFC封条的假ID";
+    private static String tagId = "0000";
 
     @Override
 
