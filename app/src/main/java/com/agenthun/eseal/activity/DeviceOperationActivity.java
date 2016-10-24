@@ -10,11 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -26,11 +22,8 @@ import android.view.View;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.FreightInfosByToken;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
-import com.agenthun.eseal.bean.base.Detail;
-import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
@@ -42,13 +35,11 @@ import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
-import com.agenthun.eseal.utils.ContainerNoSuggestion;
 import com.agenthun.eseal.utils.LocationUtil;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -81,7 +72,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Bind(R.id.card_seting)
     CardView cardSetting;
 
-    private int id = 11001; //30000;//
+    //    private int id = 11001;
     private static final int rn = 0xABABABAB;
     private static final int key = 0x00000000; //0x87654321; //
 
@@ -147,10 +138,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onLockBtnClick() returned: ");
         //发送上封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.putInt(id);
+        buffer.putInt(Integer.parseInt(App.getDeviceId()));
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.put(ESealOperation.operationOperation(id, rn, key,
+        buffer.put(ESealOperation.operationOperation(Integer.parseInt(App.getDeviceId()), rn, key,
                 ESealOperation.POWER_ON,
                 ESealOperation.SAFE_LOCK)
         );
@@ -198,10 +189,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onUnlockBtnClick() returned: ");
         //发送解封操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.putInt(id);
+        buffer.putInt(Integer.parseInt(App.getDeviceId()));
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-        buffer.put(ESealOperation.operationOperation(id, rn, key,
+        buffer.put(ESealOperation.operationOperation(Integer.parseInt(App.getDeviceId()), rn, key,
                 ESealOperation.POWER_ON,
                 ESealOperation.SAFE_UNLOCK)
         );
@@ -257,10 +248,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onQueryStatusBtnClick() returned: ");
         //发送查询操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
-        buffer.putInt(id);
+        buffer.putInt(Integer.parseInt(App.getDeviceId()));
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_QUERY);
-        buffer.put(ESealOperation.operationQuery(id, rn, key));
+        buffer.put(ESealOperation.operationQuery(Integer.parseInt(App.getDeviceId()), rn, key));
 
         SocketPackage socketPackage = new SocketPackage();
         byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
@@ -275,10 +266,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onQueryInfoBtnClick() returned: ");
         //发送位置请求信息操作报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
-        buffer.putInt(id);
+        buffer.putInt(Integer.parseInt(App.getDeviceId()));
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_INFO);
-        buffer.put(ESealOperation.operationInfo(id, rn, key));
+        buffer.put(ESealOperation.operationInfo(Integer.parseInt(App.getDeviceId()), rn, key));
 
         SocketPackage socketPackage = new SocketPackage();
         byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
@@ -293,10 +284,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        Log.d(TAG, "onReadSettingBtnClick() returned: ");
         //发送读数据报文
         ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA);
-        buffer.putInt(id);
+        buffer.putInt(Integer.parseInt(App.getDeviceId()));
         buffer.putInt(rn);
         buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA);
-        buffer.put(ESealOperation.operationReadData(id, rn, key,
+        buffer.put(ESealOperation.operationReadData(Integer.parseInt(App.getDeviceId()), rn, key,
                 ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA_WITHOUT_LIMIT)
         );
 
@@ -328,10 +319,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
             }
             //发送配置操作报文
             ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
-            buffer.putInt(id);
+            buffer.putInt(Integer.parseInt(App.getDeviceId()));
             buffer.putInt(rn);
             buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
-            buffer.put(ESealOperation.operationConfig(id, rn, key,
+            buffer.put(ESealOperation.operationConfig(Integer.parseInt(App.getDeviceId()), rn, key,
                     period,
                     ESealOperation.WINDOW_DEFAULT,
                     ESealOperation.CHANNEL_DEFAULT,
@@ -355,11 +346,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     ByteBuffer buffer = ByteBuffer.allocate(10 +
                             ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN +
                             writeData.length);
-                    buffer.putInt(id);
+                    buffer.putInt(Integer.parseInt(App.getDeviceId()));
                     buffer.putInt(rn);
                     buffer.putShort(
                             (short) (ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN + writeData.length));
-                    buffer.put(ESealOperation.operationWriteData(id, rn, key,
+                    buffer.put(ESealOperation.operationWriteData(Integer.parseInt(App.getDeviceId()), rn, key,
                             writeData,
                             (short) writeData.length
                     ));
@@ -533,13 +524,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
                     ByteBuffer buffer = ByteBuffer.allocate(4);
                     buffer.put(receiveData, 16, 4);
                     buffer.rewind();
-                    id = buffer.getInt();
+                    int id = buffer.getInt();
                     App.setDeviceId(String.valueOf(id));
                     Log.d(TAG, "Get device id: " + App.getDeviceId());
                     return;
                 }
 
-                Encrypt.decrypt(id, rn, key, receiveData,
+                Encrypt.decrypt(Integer.parseInt(App.getDeviceId()), rn, key, receiveData,
                         ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET,
                         lenTotal - ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET);
 
