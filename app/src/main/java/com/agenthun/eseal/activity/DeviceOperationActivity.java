@@ -81,7 +81,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
     @Bind(R.id.card_seting)
     CardView cardSetting;
 
-    private static final int id = 11001; //30000;//
+    private int id = 11001; //30000;//
     private static final int rn = 0xABABABAB;
     private static final int key = 0x00000000; //0x87654321; //
 
@@ -135,6 +135,8 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
     @OnClick(R.id.card_seting)
     public void onSettingBtnClick() {
+//        getDeviceId(); //获取设备ID
+
         //配置信息
         Intent intent = new Intent(DeviceOperationActivity.this, DeviceSettingActivity.class);
         startActivityForResult(intent, DEVICE_SETTING);
@@ -409,6 +411,17 @@ public class DeviceOperationActivity extends AppCompatActivity {
         }
     }
 
+    //获取设备ID报文
+    private void getDeviceId() {
+        //发送获取设备ID报文
+        SocketPackage socketPackage = new SocketPackage();
+        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
+                ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_GET_DEVICE_ID,
+                ESealOperation.operationGetDeviceId()
+        );
+        sendData(data);
+    }
+
     private ACSUtility.IACSUtilityCallback callback = new ACSUtility.IACSUtilityCallback() {
         @Override
         public void utilReadyForUse() {
@@ -454,7 +467,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 getProgressDialog().cancel();
                 builder.setTitle(port._device.getName())
                         .setMessage(R.string.success_device_connection)
-                        .setPositiveButton(R.string.text_ok, null).show();
+                        .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getDeviceId(); //获取设备ID
+                            }
+                        }).show();
             } else {
                 getProgressDialog().cancel();
                 builder.setTitle(port._device.getName())
@@ -503,6 +521,24 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 byte[] receiveData = socketPackageReceived.getData();
                 int lenTotal = receiveData.length;
                 Log.d(TAG, "getCount() returned: " + lenTotal);
+
+                //判断是否是获取设备ID应答报文
+                if (lenTotal == 20
+                        && receiveData[6] == (byte) 0xA0
+                        && receiveData[7] == (byte) 0x02
+                        && receiveData[12] == (byte) 0x1F
+                        && receiveData[13] == (byte) 0x02
+                        && receiveData[14] == (byte) 0x00
+                        && receiveData[15] == (byte) 0x04) {
+                    ByteBuffer buffer = ByteBuffer.allocate(4);
+                    buffer.put(receiveData, 16, 4);
+                    buffer.rewind();
+                    id = buffer.getInt();
+                    App.setDeviceId(String.valueOf(id));
+                    Log.d(TAG, "Get device id: " + App.getDeviceId());
+                    return;
+                }
+
                 Encrypt.decrypt(id, rn, key, receiveData,
                         ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET,
                         lenTotal - ESealOperation.ESEALBD_PROTOCOL_CMD_DATA_OFFSET);

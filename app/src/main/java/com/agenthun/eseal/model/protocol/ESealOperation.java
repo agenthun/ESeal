@@ -32,6 +32,7 @@ public class ESealOperation {
 
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_QUERY = (2 + 2 + 2 + 4);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_CONFIG = (2 + 2 + 2 + 4 + 2 + 1 + 1 + 9);
+    public static final short ESEALBD_OPERATION_REQUEST_SIZE_GET_DEVICE_ID = (2 + 2);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_OPERATION = (2 + 2 + 2 + 4 + 1 + 1);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_WRITE_DATA_WITHOUT_DLEN = (2 + 2 + 2 + 4 + 2);
     public static final short ESEALBD_OPERATION_REQUEST_SIZE_READ_DATA = (2 + 2 + 2 + 4 + 2);
@@ -41,6 +42,7 @@ public class ESealOperation {
 
     private static final short ESEALBD_OPERATION_TYPE_QUERY = 0x2F00;
     private static final short ESEALBD_OPERATION_TYPE_CONFIG = 0x2F01;
+    private static final short ESEALBD_OPERATION_TYPE_GET_DEVICE_ID = 0x2F02;
     private static final short ESEALBD_OPERATION_TYPE_OPERATION = 0x2F0C;
     private static final short ESEALBD_OPERATION_TYPE_WRITE_DATA = 0x2FD0;
     private static final short ESEALBD_OPERATION_TYPE_READ_DATA = 0x2FD1;
@@ -49,6 +51,7 @@ public class ESealOperation {
 
     public static final short ESEALBD_OPERATION_TYPE_REPLAY_ERROR = 0x1F0F;
     public static final short ESEALBD_OPERATION_TYPE_REPLAY_QUERY = 0x1F00;
+    public static final short ESEALBD_OPERATION_TYPE_REPLAY_GET_DEVICE_ID = 0x1F02;
     public static final short ESEALBD_OPERATION_TYPE_REPLAY_READ_DATA = 0x1FD1;
     public static final short ESEALBD_OPERATION_TYPE_REPLAY_INFO = 0x1FD0;
 
@@ -127,6 +130,22 @@ public class ESealOperation {
         temp = buffer.array();
 
         Encrypt.encrypt(id, rn, key, temp, ESEALBD_OPERATION_REQUEST_SIZE_CONFIG);
+        return temp;
+    }
+
+    //获取设备ID报文
+    public static byte[] operationGetDeviceId() {
+        ByteBuffer buffer = ByteBuffer.allocate(ESEALBD_OPERATION_REQUEST_SIZE_GET_DEVICE_ID);
+        buffer.putShort(ESEALBD_OPERATION_TYPE_GET_DEVICE_ID);
+        byte[] temp = buffer.array();
+        short crc = Crc.getCRC16(temp, ESEALBD_OPERATION_REQUEST_SIZE_GET_DEVICE_ID - 2);
+        buffer.clear();
+
+        buffer.putShort(crc);
+        buffer.putShort(ESEALBD_OPERATION_TYPE_GET_DEVICE_ID);
+        temp = buffer.array();
+
+//        Encrypt.encrypt(id, rn, key, temp, ESEALBD_OPERATION_REQUEST_SIZE_GET_DEVICE_ID);
         return temp;
     }
 
