@@ -23,7 +23,7 @@ import android.view.View;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
-import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
+import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
@@ -35,7 +35,6 @@ import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
-import com.agenthun.eseal.utils.LocationUtil;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -376,21 +375,21 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                 "IMG.jpg",
                                 coordinate,
                                 operateTime)
-                        .enqueue(new Callback<BaseWebServiceResponseBody>() {
+                        .enqueue(new Callback<Result>() {
                             @Override
-                            public void onResponse(Call<BaseWebServiceResponseBody> call, Response<BaseWebServiceResponseBody> response) {
-//                                showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
-                                showSnackbar(getString(R.string.success_device_setting_upload));
-       /*                         Result result = response.body().getResult().get(0);
-                                if (result.getRESULT() == 1) {
-                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
+                            public void onResponse(Call<Result> call, Response<Result> response) {
+                                int result = response.body().getRESULT();
+                                if (result == 1) {
+//                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
+                                    showSnackbar(getString(R.string.success_device_setting_upload));
                                 } else {
-                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.fail_device_setting_upload));
-                                }*/
+//                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.fail_device_setting_upload));
+                                    showSnackbar(getString(R.string.fail_device_setting_upload));
+                                }
                             }
 
                             @Override
-                            public void onFailure(Call<BaseWebServiceResponseBody> call, Throwable t) {
+                            public void onFailure(Call<Result> call, Throwable t) {
                                 Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
                                 showSnackbar(getString(R.string.fail_device_setting_upload));
                             }

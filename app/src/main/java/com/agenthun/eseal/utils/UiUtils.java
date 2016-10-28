@@ -24,6 +24,10 @@ public class UiUtils {
         return dip * getScreenDensity(context) + 0.5f;
     }
 
+    public static int pxToDip(Context context, float px) {
+        return (int) (px / getScreenDensity(context) + 0.5f);
+    }
+
     public static float getScreenDensity(Context context) {
         try {
             DisplayMetrics dm = new DisplayMetrics();

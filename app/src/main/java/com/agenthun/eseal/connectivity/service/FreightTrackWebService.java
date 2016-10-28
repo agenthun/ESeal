@@ -10,6 +10,7 @@ import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.ResetImplementByContainerId;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
 import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
+import com.agenthun.eseal.bean.base.Result;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -56,7 +57,7 @@ public interface FreightTrackWebService {
 
     //配置终端货物信息参数
     @GET("ConfigureCargo")
-    Call<BaseWebServiceResponseBody> configureCargo(
+    Call<Result> configureCargo(
             @Query("token") String token,
             @Query("implementID") String implementID,
             @Nullable @Query("containerNo") String containerNo,

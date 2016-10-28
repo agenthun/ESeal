@@ -11,6 +11,7 @@ import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.ResetImplementByContainerId;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
 import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
+import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.FreightTrackWebService;
 import com.agenthun.eseal.connectivity.service.PathType;
@@ -151,13 +152,13 @@ public class RetrofitManager {
     }
 
     //配置终端货物信息参数
-    public Call<BaseWebServiceResponseBody> configureDevice(String token, String implementID,
-                                                            @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
-                                                            @Nullable String frequency,
-                                                            String RFID,
-                                                            @Nullable String images,
-                                                            @Nullable String coordinate,
-                                                            String operateTime) {
+    public Call<Result> configureDevice(String token, String implementID,
+                                        @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
+                                        @Nullable String frequency,
+                                        String RFID,
+                                        @Nullable String images,
+                                        @Nullable String coordinate,
+                                        String operateTime) {
         return freightTrackWebService.configureCargo(token, implementID,
                 containerNo, freightOwner, freightName, origin, destination, VesselName, voyage,
                 frequency,

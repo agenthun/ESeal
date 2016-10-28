@@ -2,6 +2,7 @@ package com.agenthun.eseal.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -95,7 +96,9 @@ public class FreightTrackFragment extends Fragment {
         }
 
         mScreenWidth = UiUtils.getScreenWidthPixels(getActivity());
+        mScreenWidth = UiUtils.pxToDip(getActivity(), mScreenWidth);
         mScreenHeight = UiUtils.getScreenHeightPixels(getActivity());
+        mScreenHeight = UiUtils.pxToDip(getActivity(), mScreenHeight);
     }
 
     @Nullable
@@ -104,6 +107,14 @@ public class FreightTrackFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_freight_track, container, false);
 
         blurredMap = (ImageView) view.findViewById(R.id.blurredMap);
+
+/*        blurredMap.post(new Runnable() {
+            @Override
+            public void run() {
+                mScreenWidth = UiUtils.pxToDip(getActivity(), blurredMap.getWidth());
+                mScreenHeight = UiUtils.pxToDip(getActivity(), blurredMap.getHeight());
+            }
+        });*/
 
         webView = (WebView) view.findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -144,7 +155,7 @@ public class FreightTrackFragment extends Fragment {
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
                 ((ContainerNoSuggestion) searchSuggestion).setIsHistory(true);
 
-                String containerId = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerId();
+                final String containerId = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerId();
                 Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
                 String containerNo = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerNo();
                 if (mOnItemClickListener != null) {
@@ -153,14 +164,18 @@ public class FreightTrackFragment extends Fragment {
 
                 loadingMapState(true);
 
-
-//                webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
-                webView.loadUrl(Api.MAP_SERVICE_V2_URL_STRING
-                        + "GFreightTrackPath_CN_Hu.aspx?token=" + App.getToken()
-                        + "&containerId=" + containerId
-                        + "&mobileWidth=" + mScreenWidth
-                        + "&mobileHight=" + mScreenHeight
-                        + "&language=zh-CN");
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
+                        webView.loadUrl(Api.MAP_SERVICE_V2_URL_STRING
+                                + "GFreightTrackPath_CN_Hu.aspx?token=" + App.getToken()
+                                + "&containerId=" + containerId
+                                + "&mobileWidth=" + mScreenWidth
+                                + "&mobileHight=" + mScreenHeight
+                                + "&language=zh-CN");
+                    }
+                });
             }
 
             @Override
