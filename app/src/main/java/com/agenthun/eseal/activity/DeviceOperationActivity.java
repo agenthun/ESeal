@@ -153,9 +153,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
         );
         sendData(data);
 
-        double[] location = LocationUtil.getLocation(this);
-        Log.d(TAG, "onLockBtnClick() returned: " + location[0] + ", " + location[1]);
-
         String token = App.getToken();
         if (token != null) {
             String imgUrl = "IMG.jpg";

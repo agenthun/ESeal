@@ -116,6 +116,8 @@ public class RetrofitManager {
                 return Api.WEB_SERVICE_V2_TEST;
             case WEB_SERVICE_V2_RELEASE:
                 return Api.WEB_SERVICE_V2_RELEASE;
+            case MAP_SERVICE_V2_TEST:
+                return Api.MAP_SERVICE_V2_URL_STRING;
         }
         return "";
     }

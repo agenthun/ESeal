@@ -19,6 +19,7 @@ import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
+import com.agenthun.eseal.utils.UiUtils;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -51,6 +52,9 @@ public class FreightTrackFragment extends Fragment {
     private FloatingSearchView floatingSearchView;
     private ImageView blurredMap;
 
+    private int mScreenWidth;
+    private int mScreenHeight;
+
     public static FreightTrackFragment newInstance(String type, String containerNo) {
         Bundle args = new Bundle();
         args.putString(ARG_TYPE, type);
@@ -73,6 +77,7 @@ public class FreightTrackFragment extends Fragment {
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
                 @Override
                 public void onResponse(Call<FreightInfosByToken> call, Response<FreightInfosByToken> response) {
+                    if (response.body() == null) return;
                     List<Detail> details = response.body().getDetails();
                     for (Detail detail :
                             details) {
@@ -88,6 +93,9 @@ public class FreightTrackFragment extends Fragment {
                 }
             });
         }
+
+        mScreenWidth = UiUtils.getScreenWidthPixels(getActivity());
+        mScreenHeight = UiUtils.getScreenHeightPixels(getActivity());
     }
 
     @Nullable
@@ -144,7 +152,15 @@ public class FreightTrackFragment extends Fragment {
                 }
 
                 loadingMapState(true);
-                webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
+
+
+//                webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
+                webView.loadUrl(Api.MAP_SERVICE_V2_URL_STRING
+                        + "GFreightTrackPath_CN_Hu.aspx?token=" + App.getToken()
+                        + "&containerId=" + containerId
+                        + "&mobileWidth=" + mScreenWidth
+                        + "&mobileHight=" + mScreenHeight
+                        + "&language=zh-CN");
             }
 
             @Override

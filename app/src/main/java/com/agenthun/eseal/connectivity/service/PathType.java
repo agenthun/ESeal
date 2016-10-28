@@ -13,5 +13,7 @@ public enum PathType {
     //基础freight-track服务 v2.0 测试
     WEB_SERVICE_V2_TEST,
     //基础freight-track服务 v2.0
-    WEB_SERVICE_V2_RELEASE
+    WEB_SERVICE_V2_RELEASE,
+    //地图服务 v2.0 测试
+    MAP_SERVICE_V2_TEST
 }

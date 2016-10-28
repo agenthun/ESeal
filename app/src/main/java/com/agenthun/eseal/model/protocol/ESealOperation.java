@@ -1,9 +1,5 @@
 package com.agenthun.eseal.model.protocol;
 
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
-import android.util.Log;
-
 import com.agenthun.eseal.model.utils.Crc;
 import com.agenthun.eseal.model.utils.Encrypt;
 import com.agenthun.eseal.model.utils.PositionType;
@@ -11,12 +7,8 @@ import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.StateType;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * @project ESeal

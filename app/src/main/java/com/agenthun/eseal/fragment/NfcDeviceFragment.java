@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -15,21 +14,15 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
-import android.transition.Transition;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -38,18 +31,11 @@ import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
-import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.utils.ApiLevelHelper;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static android.R.attr.x;
-import static android.R.attr.y;
 
 /**
  * @project ESeal
@@ -125,21 +111,6 @@ public class NfcDeviceFragment extends Fragment {
     public void onLockBtnClick() {
 //        Log.d(TAG, "onLockBtnClick() returned: ");
         //发送上封操作报文
-//        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-//        buffer.putInt(id);
-//        buffer.putInt(rn);
-//        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-//        buffer.put(ESealOperation.operationOperation(id, rn, key,
-//                ESealOperation.POWER_ON,
-//                ESealOperation.SAFE_LOCK)
-//        );
-//
-//        SocketPackage socketPackage = new SocketPackage();
-//        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-//                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
-//                buffer.array()
-//        );
-//        sendData(data);
     }
 
     @OnClick(R.id.card_unlock)
