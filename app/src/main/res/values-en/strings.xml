@@ -67,6 +67,8 @@
     <string name="card_title_take_picture">Add Device Picture</string>
     <string name="error_nfc_not_open">Please Enable NFC</string>
     <string name="text_hint_open_nfc">Open</string>
+    <string name="text_title_hint">Hint</string>
+    <string name="text_hint_close_to_nfc_tag">Please Close Your SmartPhone to the NFC Tag</string>
     <string name="error_network_not_open">Please Enable Network</string>
     <string name="text_hint_open_network">Setting</string>
 

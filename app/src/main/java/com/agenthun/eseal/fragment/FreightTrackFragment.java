@@ -2,7 +2,6 @@ package com.agenthun.eseal.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +19,7 @@ import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
-import com.agenthun.eseal.utils.UiUtils;
+import com.agenthun.eseal.utils.UiUtil;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -95,10 +94,10 @@ public class FreightTrackFragment extends Fragment {
             });
         }
 
-        mScreenWidth = UiUtils.getScreenWidthPixels(getActivity());
-        mScreenWidth = UiUtils.pxToDip(getActivity(), mScreenWidth);
-        mScreenHeight = UiUtils.getScreenHeightPixels(getActivity());
-        mScreenHeight = UiUtils.pxToDip(getActivity(), mScreenHeight);
+        mScreenWidth = UiUtil.getScreenWidthPixels(getActivity());
+        mScreenWidth = UiUtil.pxToDip(getActivity(), mScreenWidth);
+        mScreenHeight = UiUtil.getScreenHeightPixels(getActivity());
+        mScreenHeight = UiUtil.pxToDip(getActivity(), mScreenHeight);
     }
 
     @Nullable
@@ -111,8 +110,8 @@ public class FreightTrackFragment extends Fragment {
 /*        blurredMap.post(new Runnable() {
             @Override
             public void run() {
-                mScreenWidth = UiUtils.pxToDip(getActivity(), blurredMap.getWidth());
-                mScreenHeight = UiUtils.pxToDip(getActivity(), blurredMap.getHeight());
+                mScreenWidth = UiUtil.pxToDip(getActivity(), blurredMap.getWidth());
+                mScreenHeight = UiUtil.pxToDip(getActivity(), blurredMap.getHeight());
             }
         });*/
 

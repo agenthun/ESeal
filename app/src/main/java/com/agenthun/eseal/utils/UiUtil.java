@@ -7,7 +7,7 @@ import android.view.WindowManager;
 /**
  * Created by Agent Henry on 2015/4/23.
  */
-public class UiUtils {
+public class UiUtil {
     public static int getScreenWidthPixels(Context context) {
         DisplayMetrics dm = new DisplayMetrics();
         ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);

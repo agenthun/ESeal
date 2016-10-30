@@ -79,6 +79,8 @@ public class LocationUtil {
         @Override
         public void onLocationChanged(Location location) {
             if (location != null) {
+//                longitude = location.getLongitude();
+//                latitude = location.getLatitude();
                 Log.d(TAG, "onLocationChanged() returned: " + location.getLatitude() + ", " + location.getLongitude());
             }
         }
@@ -105,6 +107,8 @@ public class LocationUtil {
 
 
         Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
         String provider = locationManager.getBestProvider(criteria, true);
 
         final double[] res = new double[2];
@@ -114,30 +118,27 @@ public class LocationUtil {
             if (provider == null || provider.equals("")) {
 //                startActivity(new Intent(Settings.ACTION_LOCALE_SETTINGS));
             }
-            provider = LocationManager.NETWORK_PROVIDER;
+//            provider = LocationManager.NETWORK_PROVIDER;
 
             Location location = null;
             switch (provider) {
                 case "passive":
-                    locationManager.requestLocationUpdates(provider, 10, 0, locationListener);
+                    locationManager.requestLocationUpdates(provider, 10000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(provider);
                     break;
                 case "network":
-                    while (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
-                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     break;
                 case "gps":
-                    while (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
-                    }
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
                     break;
             }
             if (location != null) {
-//                Log.d(TAG, "getLocation() returned: " + location.getLatitude() + ", " + location.getLongitude());
+                res[0] = location.getLatitude();
+                res[1] = location.getLongitude();
+                Log.d(TAG, "getLocation() returned: " + res[0] + ", " + res[1]);
             }
         } else {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)

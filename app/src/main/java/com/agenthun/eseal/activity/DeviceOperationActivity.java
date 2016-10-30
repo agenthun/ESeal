@@ -10,7 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -35,6 +38,7 @@ import com.agenthun.eseal.model.utils.SensorType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
+import com.agenthun.eseal.utils.LocationUtil;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -155,7 +159,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
         String token = App.getToken();
         if (token != null) {
             String imgUrl = "IMG.jpg";
-            String coordinate = "31.12426242,121.72685547";
+            String coordinate = "31.188827093272604,121.30223033185615"; //国家会展中心
+
+            double[] gps = LocationUtil.getLocation(getApplicationContext());
+            if (gps[0] != 0 && gps[1] != 0) {
+                coordinate = gps[0] + "," + gps[1];
+            }
+
             String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
@@ -203,7 +213,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
         String token = App.getToken();
         if (token != null) {
             String imgUrl = "IMG.jpg";
-            String coordinate = "31.12426242,121.72685547";
+            String coordinate = "31.188827093272604,121.30223033185615"; //国家会展中心
+
+            double[] gps = LocationUtil.getLocation(getApplicationContext());
+            if (gps[0] != 0 && gps[1] != 0) {
+                coordinate = gps[0] + "," + gps[1];
+            }
+
             String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
@@ -232,7 +248,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
     public void onScanNfcBtnClick() {
 //        Log.d(TAG, "onScanNfcBtnClick() returned: ");
         //扫描NFC封条,获取ID
-        enableNfcReaderMode();
+        showAlertDialog(getString(R.string.text_title_hint),
+                getString(R.string.text_hint_close_to_nfc_tag),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        enableNfcReaderMode();
+                    }
+                });
 
 //        ViewCompat.animate(NfcIdTextView).alpha(0)
 //                .setInterpolator(new FastOutSlowInInterpolator())
@@ -363,7 +386,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
             String token = App.getToken();
             if (token != null) {
-                String coordinate = "31.12426242,121.72685547";
+                String coordinate = "31.188827093272604,121.30223033185615"; //国家会展中心
+
+                double[] gps = LocationUtil.getLocation(getApplicationContext());
+                if (gps[0] != 0 && gps[1] != 0) {
+                    coordinate = gps[0] + "," + gps[1];
+                }
+
                 String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
                 RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
@@ -625,14 +654,14 @@ public class DeviceOperationActivity extends AppCompatActivity {
         return mProgressDialog;
     }
 
-    private void showAlertDialog(final String title, final String msg) {
+    private void showAlertDialog(final String title, final String msg, @Nullable final DialogInterface.OnClickListener listener) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(DeviceOperationActivity.this)
                         .setTitle(title)
                         .setMessage(msg)
-                        .setPositiveButton(R.string.text_ok, null).show();
+                        .setPositiveButton(R.string.text_ok, listener).show();
             }
         });
     }

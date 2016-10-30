@@ -22,6 +22,7 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +30,11 @@ import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.activity.DeviceOperationActivity;
 import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.LocationUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -111,6 +114,8 @@ public class NfcDeviceFragment extends Fragment {
     public void onLockBtnClick() {
 //        Log.d(TAG, "onLockBtnClick() returned: ");
         //发送上封操作报文
+        double[] gps = LocationUtil.getLocation(getContext());
+        showSnackbar(gps[0] + ", " + gps[1]);
     }
 
     @OnClick(R.id.card_unlock)
@@ -138,8 +143,14 @@ public class NfcDeviceFragment extends Fragment {
     public void onScanNfcBtnClick() {
 //        Log.d(TAG, "onScanNfcBtnClick() returned: ");
         //扫描NFC封条,获取ID
-        enableNfcReaderMode();
-
+        showAlertDialog(getString(R.string.text_title_hint),
+                getString(R.string.text_hint_close_to_nfc_tag),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        enableNfcReaderMode();
+                    }
+                });
         ViewCompat.animate(NfcIdTextView).alpha(0)
                 .setInterpolator(new FastOutSlowInInterpolator())
                 .start();
@@ -246,4 +257,26 @@ public class NfcDeviceFragment extends Fragment {
             });
         }
     };
+
+    private void showAlertDialog(final String title, final String msg, @Nullable final DialogInterface.OnClickListener listener) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(getContext())
+                        .setTitle(title)
+                        .setMessage(msg)
+                        .setPositiveButton(R.string.text_ok, listener).show();
+            }
+        });
+    }
+
+    private void showSnackbar(final String msg) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(addPicture, msg, Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            }
+        });
+    }
 }

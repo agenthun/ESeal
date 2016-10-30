@@ -67,6 +67,8 @@
     <string name="card_title_take_picture">设备拍照</string>
     <string name="error_nfc_not_open">请开启NFC</string>
     <string name="text_hint_open_nfc">打开</string>
+    <string name="text_title_hint">提示</string>
+    <string name="text_hint_close_to_nfc_tag">请将NFC标签贴至手机底部</string>
     <string name="error_network_not_open">请开启网络</string>
     <string name="text_hint_open_network">设置</string>
 
