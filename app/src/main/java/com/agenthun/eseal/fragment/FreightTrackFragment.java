@@ -19,6 +19,7 @@ import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
+import com.agenthun.eseal.utils.LanguageUtil;
 import com.agenthun.eseal.utils.UiUtil;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
@@ -167,12 +168,24 @@ public class FreightTrackFragment extends Fragment {
                     @Override
                     public void run() {
                         //webView.loadUrl(Api.AMAP_SERVICE_URL_STRING + "FreightTrackPath.aspx?token=" + App.getToken() + "&Type=0&ContainerId=" + containerId + "&language=l");
-                        webView.loadUrl(Api.MAP_SERVICE_V2_URL_STRING
-                                + "GFreightTrackPath_CN_Hu.aspx?token=" + App.getToken()
-                                + "&containerId=" + containerId
-                                + "&mobileWidth=" + mScreenWidth
-                                + "&mobileHight=" + mScreenHeight
-                                + "&language=zh-CN");
+                        String url = null;
+                        if (LanguageUtil.getLanguage() == "zh-CN") {
+                            url = Api.MAP_SERVICE_V2_URL_STRING
+                                    + "GFreightTrackPath_CN_Hu.aspx?token=" + App.getToken()
+                                    + "&containerId=" + containerId
+                                    + "&mobileWidth=" + mScreenWidth
+                                    + "&mobileHight=" + mScreenHeight
+                                    + "&language=zh-CN";
+                        } else {
+                            url = Api.MAP_SERVICE_V2_URL_STRING
+                                    + "GFreightTrackPath_Hu.aspx?token=" + App.getToken()
+                                    + "&containerId=" + containerId
+                                    + "&mobileWidth=" + mScreenWidth
+                                    + "&mobileHight=" + mScreenHeight
+                                    + "&language=en-US";
+                        }
+
+                        webView.loadUrl(url);
                     }
                 });
             }
