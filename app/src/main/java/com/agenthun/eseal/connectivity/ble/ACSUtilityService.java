@@ -1,5 +1,7 @@
 package com.agenthun.eseal.connectivity.ble;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,12 +14,15 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
@@ -126,7 +131,7 @@ public class ACSUtilityService extends Service {
         // TODO Auto-generated method stub
         super.onCreate();
         isInitializing = true;
-        LogCat.logToFileInit();
+        LogCat.logToFileInit(this);
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -730,7 +735,21 @@ public class ACSUtilityService extends Service {
     private static class LogCat {
         static BufferedOutputStream bos;
 
-        public static void logToFileInit() {
+        public static void logToFileInit(Context context) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                }
+            }
+
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                }
+            }
+
             File sdCard = Environment.getExternalStorageDirectory();
             File logFile = new File(sdCard, "Log.txt");
             try {
