@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.connectivity.ble.ACSUtilityService;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.NetUtil;
@@ -41,7 +42,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
         loginName = (AppCompatEditText) findViewById(R.id.login_name);
         loginPassword = (AppCompatEditText) findViewById(R.id.login_password);
 

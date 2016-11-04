@@ -123,15 +123,15 @@ public class LocationUtil {
             Location location = null;
             switch (provider) {
                 case "passive":
-                    locationManager.requestLocationUpdates(provider, 10000, 1, locationListener);
+                    locationManager.requestLocationUpdates(provider, 3000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(provider);
                     break;
                 case "network":
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     break;
                 case "gps":
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 1, locationListener);
                     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     break;
             }
@@ -143,12 +143,16 @@ public class LocationUtil {
         } else {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+//                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+//                }
             }
 
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+                }
             }
         }
 

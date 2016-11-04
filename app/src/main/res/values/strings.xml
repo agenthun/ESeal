@@ -71,6 +71,7 @@
     <string name="text_hint_close_to_nfc_tag">请将NFC标签贴至手机底部</string>
     <string name="error_network_not_open">请开启网络</string>
     <string name="text_hint_open_network">设置</string>
+    <string name="text_hint_request_take_picture_permission">需要拍照权限</string>
 
     <string name="text_title_device_setting_upload">同步信息</string>
     <string name="success_device_setting_upload">已成功同步至服务器</string>

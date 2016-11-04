@@ -1,7 +1,5 @@
 package com.agenthun.eseal.connectivity.ble;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -14,22 +12,13 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -121,7 +110,7 @@ public class ACSUtilityService extends Service {
     public boolean onUnbind(Intent intent) {
         // TODO Auto-generated method stub
         //所有的clients 都disconnected这个service或者说调用了unbindservic之后才会调用的
-        LogCat.i(TAG, "onUnbind");
+        Log.i(TAG, "onUnbind");
         //removeEventHandler();
         return super.onUnbind(intent);
     }
@@ -131,7 +120,6 @@ public class ACSUtilityService extends Service {
         // TODO Auto-generated method stub
         super.onCreate();
         isInitializing = true;
-        LogCat.logToFileInit(this);
     }
 
     // Implements callback methods for GATT events that the app cares about.  For example,
@@ -146,15 +134,15 @@ public class ACSUtilityService extends Service {
                 mConnectionState = STATE_CONNECTED;
                 msg = mCurrentEventHandler.obtainMessage(EVENT_GATT_CONNECTED);
                 //broadcastUpdate(intentAction);
-                LogCat.i(TAG, "Connected to GATT server.");
+                Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
-                LogCat.i(TAG, "Attempting to start service discovery:" +
+                Log.i(TAG, "Attempting to start service discovery:" +
                         mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 //intentAction = ACTION_GATT_DISCONNECTED;
                 mConnectionState = STATE_DISCONNECTED;
-                LogCat.i(TAG, "Disconnected from GATT server.");
+                Log.i(TAG, "Disconnected from GATT server.");
                 close();
                 msg = mCurrentEventHandler.obtainMessage(EVENT_GATT_DISCONNECTED);
                 mBluetoothDeviceAddress = null;
@@ -167,7 +155,7 @@ public class ACSUtilityService extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             //if (status == BluetoothGatt.GATT_SUCCESS) {
             //broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
-            LogCat.i(TAG, "Starting enable DATA Line Notificaiton");
+            Log.i(TAG, "Starting enable DATA Line Notificaiton");
             //setACSNotification(DATA_LINE_UUID);
             if (status == BluetoothGatt.GATT_SUCCESS)
                 setACSNotification(CMD_LINE_UUID);
@@ -176,7 +164,7 @@ public class ACSUtilityService extends Service {
                 msg.sendToTarget();
             }
             //} else {
-            //   LogCat.w(TAG, "onServicesDiscovered received: " + status);
+            //   Log.w(TAG, "onServicesDiscovered received: " + status);
             //}
         }
 
@@ -198,12 +186,12 @@ public class ACSUtilityService extends Service {
 
             Message msg = null;
 
-            LogCat.d(TAG, "onCharacteristicChanged");
+            Log.d(TAG, "onCharacteristicChanged");
             if (characteristic.getUuid().equals(CMD_LINE_UUID)) {
                 //命令线
-                // LogCat.d(tag, "data from CMD_LINE_UUID");
+                // Log.d(tag, "data from CMD_LINE_UUID");
                 if (value[0] == 0x05) {
-                    LogCat.d(TAG, "heart beat package write back ");
+                    Log.d(TAG, "heart beat package write back ");
                     /*
                      * if (userCallback != null) {
 					 * userCallback.heartbeatDebug(); }
@@ -215,7 +203,7 @@ public class ACSUtilityService extends Service {
                 }
             } else if (characteristic.getUuid().equals(DATA_LINE_UUID)) {
                 //数据线
-                LogCat.d(TAG, "data line : length = " + value.length);
+                Log.d(TAG, "data line : length = " + value.length);
                 // printHexString(value);
                 // checkPackageToSend(characteristic.getValue());
                 msg = mCurrentEventHandler.obtainMessage(EVENT_DATA_AVAILABLE);
@@ -230,21 +218,21 @@ public class ACSUtilityService extends Service {
         }
 
         public void enablePhoneMode() {
-            LogCat.i(TAG, "Enabling Phone Mode...");
+            Log.i(TAG, "Enabling Phone Mode...");
             /*if (mBluetoothGatt == null) {
-                LogCat.i(TAG, "mBtGatt == null");
+                Log.i(TAG, "mBtGatt == null");
 			}
 			BluetoothGattService disService = mBluetoothGatt.getService(ACS_SERVICE_UUID);
 			if (disService == null) {
 				// showMessage("Dis service not found!");
-				LogCat.i(TAG, "disService == null");
+				Log.i(TAG, "disService == null");
 				return;
 			}
 			BluetoothGattCharacteristic characCMD = disService
 					.getCharacteristic(CMD_LINE_UUID);*/
             BluetoothGattCharacteristic characCMD = getACSCharacteristic(CMD_LINE_UUID);
             if (characCMD == null) {
-                LogCat.i(TAG, "characCMD == null");
+                Log.i(TAG, "characCMD == null");
                 return;
             }
             byte[] value = {0x06, 0x01};
@@ -257,17 +245,17 @@ public class ACSUtilityService extends Service {
                                           BluetoothGattCharacteristic characteristic, int status) {
             // TODO Auto-generated method stub
             //super.onCharacteristicWrite(gatt, characteristic, status);
-            LogCat.d(TAG, "onCharacteristicWrite");
+            Log.d(TAG, "onCharacteristicWrite");
             if (isInitializing && characteristic.getUuid().equals(CMD_LINE_UUID)) {
                 //enable phone mode succeeded
-                LogCat.i(TAG, "data has written!");
+                Log.i(TAG, "data has written!");
                 isInitializing = false;
                 Message msg = mCurrentEventHandler.obtainMessage(status == BluetoothGatt.GATT_SUCCESS ? EVENT_OPEN_PORT_SUCCEED : EVENT_OPEN_PORT_FAILED);
                 msg.sendToTarget();
             } else if (!isInitializing && characteristic.getUuid().equals(DATA_LINE_UUID)) {
                 //数据发送的反馈
                 if (workerThread == null) {
-                    LogCat.e(TAG, "workerThread is null");
+                    Log.e(TAG, "workerThread is null");
                     return;
                 }
                 if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -276,7 +264,7 @@ public class ACSUtilityService extends Service {
                     workerThread.setOperationResult(0);
                 }
                 synchronized (workerThread) {
-                    LogCat.d(TAG, "notify workerThread");
+                    Log.d(TAG, "notify workerThread");
                     wakeTimes++;
                     workerThread.notify();
                 }
@@ -288,11 +276,11 @@ public class ACSUtilityService extends Service {
                 BluetoothGattDescriptor descriptor, int status) {
             // TODO Auto-generated method stub
             super.onDescriptorWrite(gatt, descriptor, status);
-            LogCat.i(TAG, "onDescriptorWrite");
+            Log.i(TAG, "onDescriptorWrite");
             if (status == BluetoothGatt.GATT_SUCCESS)
-                LogCat.i(TAG, descriptor.getCharacteristic().getUuid() + " Notification Enabled");
+                Log.i(TAG, descriptor.getCharacteristic().getUuid() + " Notification Enabled");
             if (descriptor.getCharacteristic().getUuid().equals(DATA_LINE_UUID)) {
-                LogCat.i(TAG, "Starting enable CMD Line Notificaiton");
+                Log.i(TAG, "Starting enable CMD Line Notificaiton");
                 setACSNotification(CMD_LINE_UUID);
                 isInitializing = false;
                 Message msg = mCurrentEventHandler.obtainMessage(EVENT_OPEN_PORT_SUCCEED);
@@ -310,13 +298,13 @@ public class ACSUtilityService extends Service {
                                       BluetoothGattDescriptor descriptor, int status) {
             // TODO Auto-generated method stub
             super.onDescriptorWrite(gatt, descriptor, status);
-            LogCat.i(TAG, "onDescriptorWrite");
+            Log.i(TAG, "onDescriptorWrite");
             if (status != BluetoothGatt.GATT_SUCCESS) {
                 Message msg = mCurrentEventHandler.obtainMessage(EVENT_OPEN_PORT_FAILED);
                 msg.sendToTarget();
                 return;
             }
-            LogCat.i(TAG, descriptor.getCharacteristic().getUuid() + " Notification Enabled");
+            Log.i(TAG, descriptor.getCharacteristic().getUuid() + " Notification Enabled");
             if (descriptor.getCharacteristic().getUuid().equals(DATA_LINE_UUID)) {
 
                 isInitializing = false;
@@ -324,7 +312,7 @@ public class ACSUtilityService extends Service {
                 msg.sendToTarget();
             } else if (descriptor.getCharacteristic().getUuid().equals(CMD_LINE_UUID)) {
                 //enablePhoneMode();
-                LogCat.i(TAG, "Starting enable DATA Line Notificaiton");
+                Log.i(TAG, "Starting enable DATA Line Notificaiton");
                 mCurrentEventHandler.postDelayed(new Runnable() {
 
                     @Override
@@ -340,21 +328,21 @@ public class ACSUtilityService extends Service {
     };
 
     private void enablePhoneMode() {
-        LogCat.i(TAG, "Enabling Phone Mode...");
+        Log.i(TAG, "Enabling Phone Mode...");
         if (mBluetoothGatt == null) {
-            LogCat.i(TAG, "mBtGatt == null");
+            Log.i(TAG, "mBtGatt == null");
         }
         BluetoothGattService disService = mBluetoothGatt
                 .getService(ACS_SERVICE_UUID);
         if (disService == null) {
             // showMessage("Dis service not found!");
-            LogCat.i(TAG, "disService == null");
+            Log.i(TAG, "disService == null");
             return;
         }
         BluetoothGattCharacteristic characCMD = disService
                 .getCharacteristic(CMD_LINE_UUID);
         if (characCMD == null) {
-            LogCat.i(TAG, "characCMD == null");
+            Log.i(TAG, "characCMD == null");
             return;
         }
         byte[] value = {0x06, 0x01};
@@ -371,18 +359,18 @@ public class ACSUtilityService extends Service {
     public boolean initialize() {
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
-        LogCat.i(TAG, "Initializing " + TAG);
+        Log.i(TAG, "Initializing " + TAG);
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
-                LogCat.e(TAG, "Unable to initialize BluetoothManager.");
+                Log.e(TAG, "Unable to initialize BluetoothManager.");
                 return false;
             }
         }
 
         mBluetoothAdapter = mBluetoothManager.getAdapter();
         if (mBluetoothAdapter == null) {
-            LogCat.e(TAG, "Unable to obtain a BluetoothAdapter.");
+            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
             return false;
         }
         return true;
@@ -399,14 +387,14 @@ public class ACSUtilityService extends Service {
      */
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
 
         // Previously connected device.  Try to reconnect.
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
-            LogCat.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
             if (mBluetoothGatt.connect()) {
                 mConnectionState = STATE_CONNECTING;
                 return true;
@@ -417,7 +405,7 @@ public class ACSUtilityService extends Service {
 
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
-            LogCat.w(TAG, "Device not found.  Unable to connect.");
+            Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
         // We want to directly connect to the device, so we are setting the autoConnect
@@ -427,7 +415,7 @@ public class ACSUtilityService extends Service {
             mBluetoothGatt = null;
         }
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
-        LogCat.d(TAG, "Trying to create a new connection.");
+        Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
         return true;
@@ -441,7 +429,7 @@ public class ACSUtilityService extends Service {
      */
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized");
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.disconnect();
@@ -468,7 +456,7 @@ public class ACSUtilityService extends Service {
      */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized");
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
         mBluetoothGatt.readCharacteristic(characteristic);
@@ -477,13 +465,13 @@ public class ACSUtilityService extends Service {
 
     private boolean setACSNotification(UUID charaUUID) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized");
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return false;
         }
         BluetoothGattCharacteristic chara = getACSCharacteristic(charaUUID);
         if (chara == null) {
-            LogCat.e(TAG, "Characteristic is null!");
-            LogCat.e(TAG, "Enableing Notification failed!");
+            Log.e(TAG, "Characteristic is null!");
+            Log.e(TAG, "Enableing Notification failed!");
             return false;
         }
         return setCharacteristicNotification(chara, true);
@@ -499,7 +487,7 @@ public class ACSUtilityService extends Service {
     private boolean setCharacteristicNotification(
             BluetoothGattCharacteristic characteristic, boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized");
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return false;
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
@@ -515,12 +503,12 @@ public class ACSUtilityService extends Service {
 
     private BluetoothGattCharacteristic getACSCharacteristic(UUID charaUUID) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            LogCat.w(TAG, "BluetoothAdapter not initialized");
+            Log.w(TAG, "BluetoothAdapter not initialized");
             return null;
         }
         BluetoothGattService service = mBluetoothGatt.getService(ACS_SERVICE_UUID);
         if (service == null) {
-            LogCat.e(TAG, "Service is not found!");
+            Log.e(TAG, "Service is not found!");
             return null;
         }
         BluetoothGattCharacteristic chara = service.getCharacteristic(charaUUID);
@@ -561,26 +549,26 @@ public class ACSUtilityService extends Service {
     }
 
     private boolean writePackage(byte[] value) {
-        LogCat.d(TAG, "writePort 1");
+        Log.d(TAG, "writePort 1");
         boolean result = false;
         if (mBluetoothGatt == null) {
             return result;
         }
-        LogCat.d(TAG, "writePort 2");
+        Log.d(TAG, "writePort 2");
         BluetoothGattService ACSService = mBluetoothGatt.getService(ACS_SERVICE_UUID);
         if (ACSService == null) {
-            LogCat.e(TAG, "ACSService == null");
+            Log.e(TAG, "ACSService == null");
             return result;
         }
-        LogCat.d(TAG, "writePort 3");
+        Log.d(TAG, "writePort 3");
         BluetoothGattCharacteristic characteristic = ACSService.getCharacteristic(DATA_LINE_UUID);
         if (characteristic == null) {
-            LogCat.e(TAG, "characteristic == null");
+            Log.e(TAG, "characteristic == null");
             return result;
         }
         characteristic.setValue(value);
-        LogCat.d(TAG, "writePort 4");
-        LogCat.d(TAG, "data: " + value.toString());
+        Log.d(TAG, "writePort 4");
+        Log.d(TAG, "data: " + value.toString());
         return mBluetoothGatt.writeCharacteristic(characteristic);
     }
 
@@ -601,7 +589,6 @@ public class ACSUtilityService extends Service {
         // TODO Auto-generated method stub
         super.onDestroy();
         //util.closeACSUtility();
-        LogCat.logToFileFini();
     }
 
     class WorkerThread extends Thread {
@@ -624,17 +611,17 @@ public class ACSUtilityService extends Service {
             super.run();
             int count = 0;
             wakeTimes = 0;
-            LogCat.d(TAG, "There are " + packagesCount + " datas to be sended...");
+            Log.d(TAG, "There are " + packagesCount + " datas to be sended...");
             while (packagesCount > 0) {
-                LogCat.d(TAG, "sending data...count" + count);
+                Log.d(TAG, "sending data...count" + count);
                 byte[] blePackage = packages.get(count);
                 writePackage(blePackage);
                 //boolean isWait = false;
                 synchronized (this) {
-                    LogCat.d(TAG, "synchronized...");
+                    Log.d(TAG, "synchronized...");
                     try {
                         if (wakeTimes == 0) {
-                            LogCat.d(TAG, "waiting...");
+                            Log.d(TAG, "waiting...");
                             //设置超时
                             //TimerThread thread = new TimerThread(packagesCount);
                             //thread.start();
@@ -651,23 +638,23 @@ public class ACSUtilityService extends Service {
                 }
                 wakeTimes--;
                 if (operationResult == 1) {
-                    LogCat.d(TAG, "send succeed");
+                    Log.d(TAG, "send succeed");
                     operationResult = 0;
                     packagesCount--;
                     count++;
 
                 } else {
                     //重传
-                    LogCat.d(TAG, "send failed");
+                    Log.d(TAG, "send failed");
                     while (repeatSendTimes < 3) {
-                        LogCat.d(TAG, "repeat send data...count" + count);
+                        Log.d(TAG, "repeat send data...count" + count);
                         writePackage(blePackage);
                         repeatSendTimes++;
                         synchronized (this) {
                             try {
                                 //this.wait();
                                 if (wakeTimes == 0) {
-                                    LogCat.d(TAG, "waiting...");
+                                    Log.d(TAG, "waiting...");
                                     //设置超时
                                     //TimerThread thread = new TimerThread(packagesCount);
                                     //thread.start();
@@ -681,7 +668,7 @@ public class ACSUtilityService extends Service {
                         }
                         wakeTimes--;
                         if (operationResult == 1) {
-                            LogCat.d(TAG, "repeat succeed");
+                            Log.d(TAG, "repeat succeed");
                             break;
                         }
                     }
@@ -720,7 +707,7 @@ public class ACSUtilityService extends Service {
                 if (mPackagesCount == packagesCount) {
                     workerThread.setOperationResult(0);
                     synchronized (workerThread) {
-                        LogCat.d(TAG, "notify workerThread from timerThread!!!");
+                        Log.d(TAG, "notify workerThread from timerThread!!!");
                         wakeTimes++;
                         workerThread.notify();
                     }
@@ -729,90 +716,6 @@ public class ACSUtilityService extends Service {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }
-    }
-
-    private static class LogCat {
-        static BufferedOutputStream bos;
-
-        public static void logToFileInit(Context context) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                }
-            }
-
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                }
-            }
-
-            File sdCard = Environment.getExternalStorageDirectory();
-            File logFile = new File(sdCard, "Log.txt");
-            try {
-                bos = new BufferedOutputStream(new FileOutputStream(logFile));
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                Log.e(TAG, "FileNotFoundException");
-                e.printStackTrace();
-            }
-        }
-
-        public static void logToFileFini() {
-            try {
-                if (bos != null) {
-                    bos.flush();
-                    bos.close();
-                }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                Log.e(TAG, "flush failed or close failed");
-                e.printStackTrace();
-            }
-
-        }
-
-        private static void logToFile(String tag, String message) {
-            if (bos == null) {
-                return;
-            }
-            StringBuilder sb = new StringBuilder(tag);
-            sb.append("   " + message + "\n");
-            try {
-                bos.write(sb.substring(0).getBytes());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                Log.e(TAG, "write failed");
-                e.printStackTrace();
-            }
-        }
-
-        public static int v(String tag, String msg) {
-            logToFile(tag, msg);
-            return Log.v(tag, msg);
-        }
-
-        public static int i(String tag, String msg) {
-            logToFile(tag, msg);
-            return Log.i(tag, msg);
-        }
-
-        public static int e(String tag, String msg) {
-            logToFile(tag, msg);
-            return Log.e(tag, msg);
-        }
-
-        public static int d(String tag, String msg) {
-            logToFile(tag, msg);
-            return Log.d(tag, msg);
-        }
-
-        public static int w(String tag, String msg) {
-            logToFile(tag, msg);
-            return Log.w(tag, msg);
         }
     }
 }

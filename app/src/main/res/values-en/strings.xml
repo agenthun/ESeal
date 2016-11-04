@@ -71,6 +71,7 @@
     <string name="text_hint_close_to_nfc_tag">Please Close Your SmartPhone to the NFC Tag</string>
     <string name="error_network_not_open">Please Enable Network</string>
     <string name="text_hint_open_network">Setting</string>
+    <string name="text_hint_request_take_picture_permission">APP Needs Camera Permission!</string>
 
     <string name="text_title_device_setting_upload">Upload Info</string>
     <string name="success_device_setting_upload">Synchronized success</string>
