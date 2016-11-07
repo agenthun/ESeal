@@ -86,6 +86,19 @@
             android:name=".activity.TakePictueActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen"></activity>
+
+        <!--百度地图API-->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.baidu.location.service_v2.2"></action>
+            </intent-filter>
+        </service>
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="ZsAwCHLDTrMGyu4Nb7HLfeAOjawrAQF6" />
     </application>
 
 </manifest>

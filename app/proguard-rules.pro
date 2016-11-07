@@ -31,3 +31,5 @@
 -dontwarn okio.**
 -dontwarn retrofit2.**
 -dontwarn rx.**
+
+-keep class com.commonsware.cwac.** { *; }

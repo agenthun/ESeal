@@ -2,6 +2,10 @@ package com.agenthun.eseal;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Vibrator;
+
+import com.agenthun.eseal.utils.baidumap.LocationService;
+import com.baidu.mapapi.SDKInitializer;
 
 /**
  * @project ESeal
@@ -14,11 +18,20 @@ public class App extends Application {
     private static String tagId = "0000";
     private static String deviceId = "13003";
 
-    @Override
+    public LocationService locationService;
+    public Vibrator mVibrator;
 
+    @Override
     public void onCreate() {
         super.onCreate();
         mApplicationContext = this;
+
+        /***
+         * 初始化定位sdk，建议在Application中创建
+         */
+        locationService = new LocationService(getApplicationContext());
+        mVibrator = (Vibrator) getApplicationContext().getSystemService(VIBRATOR_SERVICE);
+        SDKInitializer.initialize(getApplicationContext());
     }
 
     @Override
