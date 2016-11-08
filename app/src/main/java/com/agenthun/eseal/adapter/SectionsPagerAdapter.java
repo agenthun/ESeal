@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.fragment.FreightTrackBaiduMapFragment;
 import com.agenthun.eseal.fragment.NfcDeviceFragment;
 import com.agenthun.eseal.fragment.FreightTrackFragment;
 import com.agenthun.eseal.fragment.ScanDeviceFragment;
@@ -31,8 +32,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Return a PlaceholderFragment (defined as a static inner class below).
         switch (position) {
             case 0:
-                Fragment freightTrackFragment = FreightTrackFragment.newInstance("0", "1070");
-                ((FreightTrackFragment) freightTrackFragment).setOnItemClickListener(new FreightTrackFragment.OnItemClickListener() {
+                Fragment freightTrackFragment = FreightTrackBaiduMapFragment.newInstance("0", "1070");
+                ((FreightTrackBaiduMapFragment) freightTrackFragment).setOnItemClickListener(new FreightTrackBaiduMapFragment.OnItemClickListener() {
                     @Override
                     public void onItemClick(String containerNo, String containerId) {
                         Log.d(TAG, "get containerNo: " + containerNo + ", containerId: " + containerId);

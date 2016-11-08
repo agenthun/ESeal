@@ -38,6 +38,7 @@ import com.agenthun.eseal.utils.LocationUtil;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 
 import butterknife.Bind;
@@ -117,7 +118,10 @@ public class NfcDeviceFragment extends Fragment {
         //获取locationservice实例，建议应用中只初始化1个location实例，然后使用，可以参考其他示例的activity，都是通过此种方式获取locationservice实例的
         locationService.registerListener(mListener);
         //注册监听
-        locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        LocationClientOption mOption = locationService.getDefaultLocationClientOption();
+        mOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
+        mOption.setCoorType("bd09ll");
+        locationService.setLocationOption(mOption);
 //        locationService.setLocationOption(locationService.getOption());
     }
 
