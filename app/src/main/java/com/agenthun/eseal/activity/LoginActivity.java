@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
@@ -25,6 +27,7 @@ import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.NetUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -54,8 +57,8 @@ public class LoginActivity extends AppCompatActivity {
         loginName = (AppCompatEditText) findViewById(R.id.login_name);
         loginPassword = (AppCompatEditText) findViewById(R.id.login_password);
 
-//        loginName.setText("demodemo");
-        loginName.setText("henghu");
+        loginName.setText("demodemo");
+//        loginName.setText("henghu");
         loginPassword.setText("123456");
 /*        userData = UserData.getCurrentUser(this, UserData.class);
         if (userData != null) {
@@ -63,9 +66,13 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }*/
+    }
 
-        // after andrioid m,must request Permiision on runtime
-        getPersimmions();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //after andrioid m, must request Permission on runtime
+        getPermissions();
     }
 
     @Override
@@ -102,7 +109,8 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password);
+//            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password);
+            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password);
             call.enqueue(new Callback<UserInfoByGetToken>() {
                 @Override
                 public void onResponse(Call<UserInfoByGetToken> call, Response<UserInfoByGetToken> response) {
@@ -137,31 +145,25 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @TargetApi(23)
-    private void getPersimmions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ArrayList<String> permissions = new ArrayList<String>();
-            /***
-             * 定位权限为必须权限，用户如果禁止，则每次进入都会申请
-             */
-            // 定位精确位置
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            }
-            if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            }
+    private void getPermissions() {
+        List<String> permissions = new ArrayList<>();
 
-            if (permissions.size() > 0) {
-                requestPermissions(permissions.toArray(new String[permissions.size()]), SDK_PERMISSION_REQUEST);
-            }
+        // 定位为必须权限，用户如果禁止，则每次进入都会申请
+        if (ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        if (permissions.size() > 0) {
+            ActivityCompat.requestPermissions(LoginActivity.this, permissions.toArray(new String[permissions.size()]), SDK_PERMISSION_REQUEST);
         }
     }
 
-    @TargetApi(23)
-    private boolean addPermission(ArrayList<String> permissionsList, String permission) {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) { // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
-            if (shouldShowRequestPermissionRationale(permission)) {
+    private boolean addPermission(List<String> permissionsList, String permission) {
+        if (ContextCompat.checkSelfPermission(LoginActivity.this, permission) != PackageManager.PERMISSION_GRANTED) { // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
+            if (ActivityCompat.shouldShowRequestPermissionRationale(LoginActivity.this, permission)) {
                 return true;
             } else {
                 permissionsList.add(permission);

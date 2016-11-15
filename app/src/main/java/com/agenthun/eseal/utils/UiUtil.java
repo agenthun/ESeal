@@ -1,7 +1,9 @@
 package com.agenthun.eseal.utils;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.WindowManager;
 
 /**
