@@ -6,7 +6,6 @@ import com.agenthun.eseal.bean.FreightInfos;
 import com.agenthun.eseal.bean.LocationInfos;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
-import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
 import com.agenthun.eseal.bean.base.Result;
 
 import retrofit2.http.GET;

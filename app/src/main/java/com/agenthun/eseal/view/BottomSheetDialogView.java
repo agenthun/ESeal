@@ -2,6 +2,7 @@ package com.agenthun.eseal.view;
 
 import android.content.Context;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,10 @@ import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.base.Detail;
+import com.agenthun.eseal.bean.base.LocationDetail;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -22,10 +25,10 @@ import java.util.List;
  * @date 16/3/8 上午12:26.
  */
 public class BottomSheetDialogView {
-    private static List<Detail> details;
+    private static List<LocationDetail> details;
     private final View view;
 
-    public BottomSheetDialogView(Context context, String containerNo, List<Detail> details) {
+    public BottomSheetDialogView(Context context, String containerNo, List<LocationDetail> details) {
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
@@ -43,7 +46,7 @@ public class BottomSheetDialogView {
         dialog.show();
     }
 
-    public static void show(Context context, String containerNo, List<Detail> details) {
+    public static void show(Context context, String containerNo, List<LocationDetail> details) {
         new BottomSheetDialogView(context, containerNo, details);
     }
 
@@ -74,53 +77,52 @@ public class BottomSheetDialogView {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            String actionType = details.get(position).getActionType();
-/*            switch (details.get(position).getSecurityLevel()) {
-                case "0":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.orange_500));
-                    break;
-                case "1":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    if (actionType == "2") {
-                        //非法拆封
-                        holder.securityLevelImageView.setColorFilter(
-                                App.getContext().getResources().getColor(R.color.dark_gray));
-                    } else {
-                        holder.securityLevelImageView.setColorFilter(
-                                App.getContext().getResources().getColor(R.color.dark_gray));
-                    }
-                    break;
-            }*/
+            String actionType = details.get(position).getStatus();
             switch (actionType) {
                 case "0":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
+                            ContextCompat.getColor(App.getContext(), R.color.dark_gray));
                     break;
                 case "1":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
+                            ContextCompat.getColor(App.getContext(), R.color.dark_gray));
                     break;
                 case "2":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.red_500));
+                            ContextCompat.getColor(App.getContext(), R.color.red_500));
                     break;
                 case "3":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.colorPrimary));
+                            ContextCompat.getColor(App.getContext(), R.color.colorPrimary));
+                    break;
+                case "4":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            ContextCompat.getColor(App.getContext(), R.color.colorPrimary));
                     break;
                 case "5":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_settings_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            App.getContext().getResources().getColor(R.color.dark_gray));
+                            ContextCompat.getColor(App.getContext(), R.color.dark_gray));
                     break;
             }
-            holder.timeTextView.setText(details.get(position).getCreateDatetime());
+
+
+            String time = "";
+            try {
+                time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
+                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
+                                details.get(position).getReportTime()
+                        )
+                );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            holder.timeTextView.setText(time);
             holder.actionTypeTextView.setText(getActionType(actionType));
         }
 

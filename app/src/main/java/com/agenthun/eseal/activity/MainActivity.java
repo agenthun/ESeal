@@ -1,9 +1,5 @@
 package com.agenthun.eseal.activity;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -19,7 +15,6 @@ import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,20 +25,13 @@ import android.view.View;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.adapter.SectionsPagerAdapter;
-import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
-import com.agenthun.eseal.bean.base.Detail;
-import com.agenthun.eseal.bean.base.Result;
+import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
-import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
-import com.agenthun.eseal.utils.LocationUtil;
 import com.agenthun.eseal.view.BottomSheetDialogView;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class MainActivity extends AppCompatActivity
@@ -59,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private String token = null;
     private String mContainerNo = null;
     private String mContainerId = null;
+    private List<LocationDetail> mDetails = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +123,7 @@ public class MainActivity extends AppCompatActivity
 
                 String token = App.getToken();
                 if (mContainerNo != null && mContainerId != null) {
-                    showFreightDataListByBottomSheet(token, mContainerId, mContainerNo);
+                    showFreightDataListByBottomSheet(token, mContainerId, mContainerNo, mDetails);
                 } else {
                     Snackbar.make(view, getString(R.string.text_hint_freight_query), Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
@@ -155,9 +144,10 @@ public class MainActivity extends AppCompatActivity
 
         mSectionsPagerAdapter.setOnDataChangeListener(new SectionsPagerAdapter.OnDataChangeListener() {
             @Override
-            public void onContainerDataChange(String containerNo, String containerId) {
+            public void onContainerDataChange(String containerNo, String containerId, List<LocationDetail> details) {
                 mContainerNo = containerNo;
                 mContainerId = containerId;
+                mDetails = details;
             }
         });
 
@@ -256,27 +246,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo) {
-        if (token != null) {
- /*           RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .getFreightDataListObservable(token, containerId, 1)
-                    .enqueue(new Callback<AllDynamicDataByContainerId>() {
-                        @Override
-                        public void onResponse(Call<AllDynamicDataByContainerId> call, Response<AllDynamicDataByContainerId> response) {
-                            Result result = response.body().getResult().get(0);
-                            if (result.getRESULT() == 0) {
-                                return;
-                            }
-
-                            List<Detail> details = response.body().getDetails();
-                            BottomSheetDialogView.show(MainActivity.this, containerNo, details);
-                        }
-
-                        @Override
-                        public void onFailure(Call<AllDynamicDataByContainerId> call, Throwable t) {
-                            Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                        }
-                    });*/
-        }
+    private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo, List<LocationDetail> details) {
+        BottomSheetDialogView.show(MainActivity.this, containerNo, details);
     }
 }

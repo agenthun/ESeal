@@ -60,7 +60,8 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
     private static final double[] BAIDU_MAP_ZOOM = {
             50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000,
-            50000, 100000, 200000, 500000, 1000000, 2000000};
+            50000, 100000, 200000, 500000, 1000000, 2000000
+    };
 
     private List<ContainerNoSuggestion> suggestionList = new ArrayList<>();
 
@@ -112,7 +113,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                             List<Detail> details = freightInfos.getDetails();
                             for (Detail detail :
                                     details) {
-                                Log.d(TAG, "getBleDeviceFreightListObservable() returned: " + detail.toString());
+                                Log.d(TAG, "getBleDeviceFreightListObservable: " + detail.toString());
                                 ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
                                         detail,
                                         ContainerNoSuggestion.DeviceType.DEVICE_BLE);
@@ -121,6 +122,12 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                         }
                     });
 
+/*            FreightTrackWebService service = RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getFreightTrackWebService();
+            Observable.zip(
+                    service.getBleDeviceFreightList(token, LanguageUtil.getLanguage()),
+                    service.getBeidouMasterDeviceFreightList(token, LanguageUtil.getLanguage()),
+                    service.getBeidouNfcDeviceFreightList(token, LanguageUtil.getLanguage()),
+            );*/
             /**
              * 北斗终端帽访问链路
              */
@@ -239,22 +246,18 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) searchSuggestion;
+                final ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) searchSuggestion;
                 if (suggestionList.contains(containerNoSuggestion)) {
                     containerNoSuggestion.setIsHistory(true);
                 }
 
-                final String containerId = containerNoSuggestion.getDetail().getContainerId();
+                String containerId = containerNoSuggestion.getDetail().getContainerId();
                 Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
                 String containerNo = containerNoSuggestion.getDetail().getContainerNo();
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(containerNo, containerId);
-                }
 
                 loadingMapState(true);
-
                 clearLocationData();
-                getLocationData(containerId);
+                getLocationData(containerNo, containerId);
             }
 
             @Override
@@ -309,7 +312,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
     /**
      * 访问定位数据信息
      */
-    private void getLocationData(final String containerId) {
+    private void getLocationData(final String containerNo, final String containerId) {
         String token = App.getToken();
 
         if (token != null) {
@@ -338,11 +341,17 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                                 @Override
                                 public void onError(Throwable e) {
                                     Log.d(TAG, "getBleDeviceLocationObservable Error()");
+                                    clearLocationData();
+                                    loadingMapState(false);
                                 }
 
                                 @Override
                                 public void onNext(List<LocationDetail> locationDetails) {
                                     showBaiduMap(locationDetails);
+
+                                    if (mOnItemClickListener != null && locationDetails != null && locationDetails.size() != 0) {
+                                        mOnItemClickListener.onItemClick(containerNo, containerId, locationDetails);
+                                    }
                                 }
                             });
                 }
@@ -377,6 +386,8 @@ public class FreightTrackBaiduMapFragment extends Fragment {
      * 加载轨迹数据至百度地图
      */
     private void showBaiduMap(List<LocationDetail> locationDetails) {
+        if (locationDetails == null || locationDetails.size() == 0) return;
+
         int countInCircle = 0;
 
         List<LatLng> polylines = new ArrayList<>();
@@ -539,7 +550,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
     //itemClick interface
     public interface OnItemClickListener {
-        void onItemClick(String containerNo, String containerId);
+        void onItemClick(String containerNo, String containerId, List<LocationDetail> details);
     }
 
     private OnItemClickListener mOnItemClickListener;

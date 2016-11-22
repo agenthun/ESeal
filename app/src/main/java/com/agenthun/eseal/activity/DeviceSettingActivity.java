@@ -30,8 +30,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.agenthun.eseal.R.id.picturePreview;
-
 /**
  * @project ESeal
  * @authors agenthun

@@ -4,15 +4,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.fragment.FreightTrackBaiduMapFragment;
 import com.agenthun.eseal.fragment.NfcDeviceFragment;
-import com.agenthun.eseal.fragment.FreightTrackFragment;
 import com.agenthun.eseal.fragment.ScanDeviceFragment;
+
+import java.util.List;
 
 /**
  * @project ESeal
@@ -28,17 +28,15 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
         switch (position) {
             case 0:
                 Fragment freightTrackFragment = FreightTrackBaiduMapFragment.newInstance();
                 ((FreightTrackBaiduMapFragment) freightTrackFragment).setOnItemClickListener(new FreightTrackBaiduMapFragment.OnItemClickListener() {
                     @Override
-                    public void onItemClick(String containerNo, String containerId) {
+                    public void onItemClick(String containerNo, String containerId, List<LocationDetail> details) {
                         Log.d(TAG, "get containerNo: " + containerNo + ", containerId: " + containerId);
                         if (mOnDataChangeListener != null) {
-                            mOnDataChangeListener.onContainerDataChange(containerNo, containerId);
+                            mOnDataChangeListener.onContainerDataChange(containerNo, containerId, details);
                         }
                     }
                 });
@@ -72,7 +70,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     //itemClick interface
     public interface OnDataChangeListener {
-        void onContainerDataChange(String containerNo, String containerId);
+        void onContainerDataChange(String containerNo, String containerId, List<LocationDetail> details);
     }
 
     private OnDataChangeListener mOnDataChangeListener;

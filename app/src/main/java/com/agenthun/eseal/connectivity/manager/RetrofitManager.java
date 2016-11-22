@@ -7,7 +7,6 @@ import com.agenthun.eseal.bean.FreightInfos;
 import com.agenthun.eseal.bean.LocationInfos;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
-import com.agenthun.eseal.bean.base.BaseWebServiceResponseBody;
 import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.FreightTrackWebService;
@@ -129,6 +128,11 @@ public class RetrofitManager {
         return NetUtil.isConnected(App.getContext()) ? CACHE_CONTROL_NETWORK : CACHE_CONTROL_CACHE;
     }
 
+
+    //获取freightTrackWebService
+    public FreightTrackWebService getFreightTrackWebService() {
+        return freightTrackWebService;
+    }
 
     //登陆,获取token
     public Observable<UserInfoByGetToken> getTokenObservable(String userName, String password) {
