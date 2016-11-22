@@ -70,6 +70,7 @@
     <string name="text_title_hint">提示</string>
     <string name="text_hint_close_to_nfc_tag">请将NFC标签贴至手机底部</string>
     <string name="error_network_not_open">请开启网络</string>
+    <string name="error_network">网络故障</string>
     <string name="text_hint_open_network">设置</string>
     <string name="text_hint_request_take_picture_permission">需要拍照权限</string>
 

@@ -34,6 +34,11 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * A login screen that offers login via email/password.
@@ -57,8 +62,8 @@ public class LoginActivity extends AppCompatActivity {
         loginName = (AppCompatEditText) findViewById(R.id.login_name);
         loginPassword = (AppCompatEditText) findViewById(R.id.login_password);
 
-        loginName.setText("demodemo");
-//        loginName.setText("henghu");
+//        loginName.setText("demodemo");
+        loginName.setText("henghu");
         loginPassword.setText("123456");
 /*        userData = UserData.getCurrentUser(this, UserData.class);
         if (userData != null) {
@@ -109,30 +114,35 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-//            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password);
-            Call<UserInfoByGetToken> call = RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password);
-            call.enqueue(new Callback<UserInfoByGetToken>() {
-                @Override
-                public void onResponse(Call<UserInfoByGetToken> call, Response<UserInfoByGetToken> response) {
-                    token = response.body().getTOKEN();
-                    Log.d(TAG, "token: " + token);
-                    if (token != null) {
-                        App.setToken(token);
-//                    Intent intent = new Intent(LoginActivity.this, DeviceOperationActivity.class); //for debug
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra(RetrofitManager.TOKEN, token);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, R.string.error_invalid_null, Toast.LENGTH_SHORT).show();
-                    }
-                }
+//            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password)
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password)
+                    .subscribe(new Subscriber<UserInfoByGetToken>() {
+                        @Override
+                        public void onCompleted() {
 
-                @Override
-                public void onFailure(Call<UserInfoByGetToken> call, Throwable t) {
-                    Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                }
-            });
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Toast.makeText(LoginActivity.this, R.string.error_network, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNext(UserInfoByGetToken userInfoByGetToken) {
+                            if (userInfoByGetToken == null) return;
+                            token = userInfoByGetToken.getTOKEN();
+                            Log.d(TAG, "token: " + token);
+                            if (token != null) {
+                                App.setToken(token);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra(RetrofitManager.TOKEN, token);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, R.string.error_invalid_null, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
         } else {
             Snackbar.make(loginName, getString(R.string.error_network_not_open), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.text_hint_open_network), new View.OnClickListener() {

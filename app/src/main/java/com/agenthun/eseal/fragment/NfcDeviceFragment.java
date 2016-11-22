@@ -53,10 +53,6 @@ import butterknife.OnClick;
 public class NfcDeviceFragment extends Fragment {
 
     private static final String TAG = "NfcDeviceFragment";
-//    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
-//    private static final String ARG_TYPE = "TYPE";
-//    private String mType;
-//    private String mContainerNo;
 
     private NfcUtility mNfcUtility;
     private Uri pictureUri = null;
@@ -73,21 +69,13 @@ public class NfcDeviceFragment extends Fragment {
     AppCompatTextView NfcIdTextView;
 
     public static NfcDeviceFragment newInstance() {
-        Bundle args = new Bundle();
-//        args.putString(ARG_TYPE, type);
-//        args.putString(ARG_CONTAINER_NO, containerNo);
         NfcDeviceFragment fragment = new NfcDeviceFragment();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mType = getArguments().getString(ARG_TYPE);
-//            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
-        }
     }
 
     @Nullable

@@ -1,13 +1,11 @@
 package com.agenthun.eseal.fragment;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,19 +13,15 @@ import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.AllDynamicDataByContainerId;
-import com.agenthun.eseal.bean.FreightInfosByToken;
+import com.agenthun.eseal.bean.FreightInfos;
+import com.agenthun.eseal.bean.LocationInfos;
 import com.agenthun.eseal.bean.base.Detail;
+import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ContainerNoSuggestion;
-import com.agenthun.eseal.utils.UiUtil;
-import com.agenthun.eseal.utils.baidumap.Utils;
 import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.BodyTextView;
-import com.arlib.floatingsearchview.util.view.IconImageView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
@@ -38,20 +32,16 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polyline;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.CoordinateConverter;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
 
-import java.io.IOException;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Subscriber;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * @project ESeal
@@ -64,158 +54,123 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
     // 通过设置间隔时间和距离可以控制速度和图标移动的距离
     private static final int TIME_INTERVAL = 80;
-    private static final double DISTANCE = 0.0001;
-
-    private static final String ARG_TYPE = "TYPE";
-    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
+    private static final double DISTANCE_RATIO = 10000000.0D;
+    private static final double MOVE_DISTANCE_MIN = 0.0001;
     private static final int LOCATION_RADIUS = 50;
 
-    private String mType;
-    private String mContainerNo;
+    private static final double[] BAIDU_MAP_ZOOM = {
+            50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000,
+            50000, 100000, 200000, 500000, 1000000, 2000000};
+
     private List<ContainerNoSuggestion> suggestionList = new ArrayList<>();
 
     private MapView bmapView;
+
     private BaiduMap mBaiduMap;
     private Polyline mVirtureRoad;
     private Marker mMoveMarker;
     private Handler mHandler;
 
+    private double moveDistance = 0.0001;
     private Thread movingThread;
-    private boolean isMoving = true;
 
     private FloatingSearchView floatingSearchView;
     private ImageView blurredMap;
 
-    public static FreightTrackBaiduMapFragment newInstance(String type, String containerNo) {
-        Bundle args = new Bundle();
-        args.putString(ARG_TYPE, type);
-        args.putString(ARG_CONTAINER_NO, containerNo);
+    public static FreightTrackBaiduMapFragment newInstance() {
         FreightTrackBaiduMapFragment fragment = new FreightTrackBaiduMapFragment();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mType = getArguments().getString(ARG_TYPE);
-            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
-        }
-
-        String token = App.getToken();
-        if (token != null) {
-//            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
-            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
-                @Override
-                public void onResponse(Call<FreightInfosByToken> call, Response<FreightInfosByToken> response) {
-                    if (response.body() == null) return;
-                    List<Detail> details = response.body().getDetails();
-                    for (Detail detail :
-                            details) {
-                        Log.d(TAG, "onResponse() returned: " + detail.toString());
-                        ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(detail);
-                        suggestionList.add(containerNoSuggestion);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<FreightInfosByToken> call, Throwable t) {
-                    Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                }
-            });
-        }
     }
 
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_freight_track_baidu_map, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        String token = App.getToken();
+        if (token != null) {
+            /**
+             * 获取蓝牙锁访问链路
+             */
+//            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getBleDeviceFreightListObservable(token)
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBleDeviceFreightListObservable(token)
+                    .subscribe(new Action1<FreightInfos>() {
+                        @Override
+                        public void call(FreightInfos freightInfos) {
+                            if (freightInfos == null) return;
+                            List<Detail> details = freightInfos.getDetails();
+                            for (Detail detail :
+                                    details) {
+                                Log.d(TAG, "getBleDeviceFreightListObservable() returned: " + detail.toString());
+                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
+                                        detail,
+                                        ContainerNoSuggestion.DeviceType.DEVICE_BLE);
+                                suggestionList.add(containerNoSuggestion);
+                            }
+                        }
+                    });
+
+            /**
+             * 北斗终端帽访问链路
+             */
+/*            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouMasterDeviceFreightListObservable(token)
+                    .subscribe(new Action1<FreightInfos>() {
+                        @Override
+                        public void call(FreightInfos freightInfos) {
+                            if (freightInfos == null) return;
+                            List<Detail> details = freightInfos.getDetails();
+                            for (Detail detail :
+                                    details) {
+                                Log.d(TAG, "getBeidouMasterDeviceFreightListObservable() returned: " + detail.toString());
+                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
+                                        detail,
+                                        ContainerNoSuggestion.DeviceType.DEVICE_BEIDOU_MASTER);
+                                suggestionList.add(containerNoSuggestion);
+                            }
+                        }
+                    });*/
+
+            /**
+             * 北斗终端NFC访问链路
+             */
+/*            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouNfcDeviceFreightListObservable(token)
+                    .subscribe(new Action1<FreightInfos>() {
+                        @Override
+                        public void call(FreightInfos freightInfos) {
+                            if (freightInfos == null) return;
+                            List<Detail> details = freightInfos.getDetails();
+                            for (Detail detail :
+                                    details) {
+                                Log.d(TAG, "getBeidouNfcDeviceFreightListObservable() returned: " + detail.toString());
+                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
+                                        detail,
+                                        ContainerNoSuggestion.DeviceType.DEVICE_BEIDOU_NFC);
+                                suggestionList.add(containerNoSuggestion);
+                            }
+                        }
+                    });*/
+        }
 
         blurredMap = (ImageView) view.findViewById(R.id.blurredMap);
         bmapView = (MapView) view.findViewById(R.id.bmapView);
-        bmapView.showZoomControls(false); //移除地图缩放控件
-        bmapView.removeViewAt(1); //移除百度地图Logo
-
-        mBaiduMap = bmapView.getMap();
-        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
-        mBaiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(16));
-//        int padding = (int) UiUtil.dipToPx(getContext(), 8);
-//        mBaiduMap.setViewPadding(
-//                padding,
-//                0,
-//                padding,
-//                padding * 12);
-        mBaiduMap.getUiSettings().setOverlookingGesturesEnabled(false); //取消俯视手势
+        setupBaiduMap();
 
         mHandler = new Handler();
-
         loadingMapState(false);
 
         floatingSearchView = (FloatingSearchView) view.findViewById(R.id.floatingSearchview);
-        floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-            @Override
-            public void onSearchTextChanged(String oldQuery, String newQuery) {
-                if (!oldQuery.equals("") && newQuery.equals("")) {
-                    floatingSearchView.clearSuggestions();
-                } else {
-                    floatingSearchView.showProgress();
-                    floatingSearchView.swapSuggestions(suggestionList);
-                    floatingSearchView.hideProgress();
-                }
-            }
-        });
-        floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
-            @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
-                ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) item;
-                if (containerNoSuggestion.getIsHistory()) {
-                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
-                    leftIcon.setAlpha(.36f);
-                } else {
-                    Log.d(TAG, "onBindSuggestion() returned: " + containerNoSuggestion.getDetail().toString());
-                }
-            }
-        });
-        floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-            @Override
-            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                ((ContainerNoSuggestion) searchSuggestion).setIsHistory(true);
-
-                final String containerId = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerId();
-                Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
-                String containerNo = ((ContainerNoSuggestion) searchSuggestion).getDetail().getContainerNo();
-                if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(containerNo, containerId);
-                }
-
-                loadingMapState(true);
-
-
-                clearRoadData();
-                getLocationData(containerId);
-//                initRoadData(containerId);
-//                moveLooper();
-
-//                List<LatLng> pts = new ArrayList<>();
-//                for (int i = 0; i < 10; i++) {
-//                    LatLng pt = new LatLng(31.041764, 121.465735 + Math.random() % 10);
-//                    pts.add(pt);
-//                }
-//
-////                BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.avator);
-//                OverlayOptions options = new PolylineOptions().points(pts).width(10)
-//                        .color(ContextCompat.getColor(getActivity(), R.color.colorAccentDark));
-//                mBaiduMap.addOverlay(options);
-//                mBaiduMap.setMapStatus(MapStatusUpdateFactory.);
-            }
-
-            @Override
-            public void onSearchAction() {
-                Log.d(TAG, "onSearchAction");
-            }
-        });
-        return view;
+        setupFloatingSearch();
     }
 
     @Override
@@ -236,6 +191,82 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         bmapView.onDestroy();
     }
 
+    /**
+     * 设置百度地图属性
+     */
+    private void setupBaiduMap() {
+        bmapView.showZoomControls(false); //移除地图缩放控件
+        bmapView.removeViewAt(1); //移除百度地图Logo
+
+        mBaiduMap = bmapView.getMap();
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(16));
+        mBaiduMap.getUiSettings().setOverlookingGesturesEnabled(false); //取消俯视手势
+    }
+
+    /**
+     * 设置搜索框
+     */
+    private void setupFloatingSearch() {
+        floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+            @Override
+            public void onSearchTextChanged(String oldQuery, String newQuery) {
+                if (!oldQuery.equals("") && newQuery.equals("")) {
+                    floatingSearchView.clearSuggestions();
+                } else {
+                    floatingSearchView.showProgress();
+                    floatingSearchView.swapSuggestions(suggestionList);
+                    floatingSearchView.hideProgress();
+                }
+            }
+        });
+
+/*        floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
+                ContainerNoSuggestion containerNoSuggestion = suggestionList.get(itemPosition);
+                if (suggestionList.contains(containerNoSuggestion) && containerNoSuggestion.getIsHistory()) {
+                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
+                    leftIcon.setAlpha(.36f);
+                } else {
+                    Log.d(TAG, "onBindSuggestion() returned: " + containerNoSuggestion.getDetail().toString());
+                }
+
+                Log.d(TAG, "onBindSuggestion() returned: " + itemPosition);
+            }
+        });*/
+
+        floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) searchSuggestion;
+                if (suggestionList.contains(containerNoSuggestion)) {
+                    containerNoSuggestion.setIsHistory(true);
+                }
+
+                final String containerId = containerNoSuggestion.getDetail().getContainerId();
+                Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
+                String containerNo = containerNoSuggestion.getDetail().getContainerNo();
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(containerNo, containerId);
+                }
+
+                loadingMapState(true);
+
+                clearLocationData();
+                getLocationData(containerId);
+            }
+
+            @Override
+            public void onSearchAction(String currentQuery) {
+                Log.d(TAG, "onSearchAction");
+            }
+        });
+    }
+
+    /**
+     * 更新地图显示状态
+     */
     private void loadingMapState(boolean isLoading) {
         if (isLoading) {
             blurredMap.setVisibility(View.GONE);
@@ -246,7 +277,10 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         }
     }
 
-    private void clearRoadData() {
+    /**
+     * 清除百度地图覆盖物
+     */
+    private void clearLocationData() {
         mBaiduMap.clear();
         if (mVirtureRoad != null && mVirtureRoad.getPoints().size() > 0) {
             mVirtureRoad.remove();
@@ -259,7 +293,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 //            Thread.currentThread().interrupt();
 //            mVirtureRoad = null;
 //            mMoveMarker = null;
-//            Log.d(TAG, "clearRoadData() returned: movingThread end");
+//            Log.d(TAG, "clearLocationData() returned: movingThread end");
 //        }
         bmapView.getOverlay().clear();
         try {
@@ -272,168 +306,159 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         }
     }
 
-    private void initRoadData(String containerId) {
-        // init latlng data
-        double centerLatitude = 31.041764;
-        double centerLontitude = 121.465735;
-        double deltaAngle = Math.PI / 180 * 5;
-        double radius = 0.02;
-        OverlayOptions polylineOptions;
+    /**
+     * 访问定位数据信息
+     */
+    private void getLocationData(final String containerId) {
+        String token = App.getToken();
 
-        List<LatLng> polylines = new ArrayList<LatLng>();
-        for (double i = 0; i < Math.PI * 1; i = i + deltaAngle) {
-            float latitude = (float) (-Math.cos(i) * radius + centerLatitude);
-            float longtitude = (float) (Math.sin(i) * radius + centerLontitude);
-            polylines.add(new LatLng(latitude, longtitude));
-            if (i > Math.PI) {
-                deltaAngle = Math.PI / 180 * 30;
+        if (token != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                            .getBleDeviceLocationObservable(App.getToken(), "718")
+                            .map(new Func1<LocationInfos, List<LocationDetail>>() {
+                                @Override
+                                public List<LocationDetail> call(LocationInfos locationInfos) {
+                                    if (locationInfos.getResult().get(0).getRESULT() == 0) {
+                                        return new ArrayList<LocationDetail>();
+                                    }
+
+                                    List<LocationDetail> res = locationInfosToLocationDetailList(locationInfos.getDetails());
+                                    return res;
+                                }
+                            })
+                            .subscribe(new Subscriber<List<LocationDetail>>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Log.d(TAG, "getBleDeviceLocationObservable Error()");
+                                }
+
+                                @Override
+                                public void onNext(List<LocationDetail> locationDetails) {
+                                    showBaiduMap(locationDetails);
+                                }
+                            });
+                }
+            }).start();
+        }
+    }
+
+    private List<LocationDetail> locationInfosToLocationDetailList(List<Detail> details) {
+        List<LocationDetail> result = new ArrayList<LocationDetail>();
+
+        //GPS坐标转百度地图坐标
+//        CoordinateConverter converter = new CoordinateConverter();
+//        converter.from(CoordinateConverter.CoordType.GPS);
+        for (Detail detail :
+                details) {
+            String time = detail.getReportTime();
+            String status = detail.getStatus();
+            String[] location = detail.getBaiduCoordinate().split(",");
+            LatLng lng = new LatLng(
+                    Double.parseDouble(location[0]),
+                    Double.parseDouble(location[1])
+            );
+//            converter.coord(lng);
+//            lng = converter.convert();
+            result.add(new LocationDetail(time, status, lng));
+        }
+
+        return result;
+    }
+
+    /**
+     * 加载轨迹数据至百度地图
+     */
+    private void showBaiduMap(List<LocationDetail> locationDetails) {
+        int countInCircle = 0;
+
+        List<LatLng> polylines = new ArrayList<>();
+        for (LocationDetail locationDetail :
+                locationDetails) {
+            LatLng lng = locationDetail.getLatLng();
+            polylines.add(lng);
+
+            if (polylines.size() > 1) {
+                if (SpatialRelationUtil.isCircleContainsPoint(polylines.get(0), LOCATION_RADIUS, lng)) {
+                    countInCircle++;
+                }
             }
         }
 
-//        Random r = new Random();
-//        for (int i = 0; i < 10; i++) {
-//            int rlat = r.nextInt(370000);
-//            int rlng = r.nextInt(370000);
-//            int lat = (int) (centerLatitude * 1E6 + rlat);
-//            int lng = (int) (centerLontitude * 1E6 + rlng);
-//            LatLng ll = new LatLng(lat / 1E6, lng / 1E6);
-//            polylines.add(ll);
-//        }
+        Collections.reverse(polylines); //按时间正序
 
-//        polylines = getLocationData(containerId);
-
-        //设置中心点
-        LatLng pt = new LatLng(centerLatitude, centerLontitude);
-        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(pt));
-
-        polylineOptions = new PolylineOptions()
+        OverlayOptions polylineOptions = new PolylineOptions()
                 .points(polylines)
                 .width(8)
-                .color(ContextCompat.getColor(getActivity(), R.color.colorAccentDark));
+                .color(ContextCompat.getColor(getActivity(), R.color.red_500));
 
         mVirtureRoad = (Polyline) mBaiduMap.addOverlay(polylineOptions);
         OverlayOptions markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory
                 .fromResource(R.drawable.ic_car)).position(polylines.get(0)).rotate((float) getAngle(0));
         mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
+
+        //设置中心点
+        setBaiduMapAdaptedZoom(polylines);
+        if (countInCircle < polylines.size() / 2) {
+            movingThread = new Thread(new MyThread());
+            movingThread.start();
+        }
+
     }
 
-    private void getLocationData(final String containerId) {
-        String token = App.getToken();
+    /**
+     * 自适应百度地图显示大小
+     */
+    private void setBaiduMapAdaptedZoom(List<LatLng> polylines) {
+        if (polylines == null || polylines.size() == 0) return;
 
-        if (token != null) {
-            Map<String, LatLng> map = new TreeMap<>();
-            final SoftReference<Map<String, LatLng>> reference = new SoftReference<Map<String, LatLng>>(map);
+        double minLat = polylines.get(0).latitude;
+        double maxLat = polylines.get(0).latitude;
+        double minLng = polylines.get(0).longitude;
+        double maxLng = polylines.get(0).longitude;
 
-            final WebPage webPage = new WebPage(1, Integer.MAX_VALUE, true);
-
-/*            while (webPage.getCurrent() <= webPage.getTotal()) {
-
-                int tempPage = webPage.getCurrent();
-                RetrofitManager.builder(PathType.BASE_WEB_SERVICE)
-                        .getFreightDataListObservable(token, containerId, tempPage)
-                        .enqueue(new Callback<AllDynamicDataByContainerId>() {
-                            @Override
-                            public void onResponse(Call<AllDynamicDataByContainerId> call, Response<AllDynamicDataByContainerId> response) {
-                                Result result = response.body().getResult().get(0);
-                                if (result.getRESULT() == 0) {
-                                    return;
-                                }
-
-                                if (webPage.isFirstRequest()) {
-                                    webPage.setFirstRequest(false);
-                                    webPage.setTotal(result.getCOUNTPAGES());
-                                }
-
-                                String time = "";
-                                float latitude = 0;
-                                float longtitude = 0;
-                                reference.get().put(time, new LatLng(latitude, longtitude));
-
-                                int currentPage = webPage.getCurrent();
-                                webPage.setCurrent(++currentPage);
-                            }
-
-                            @Override
-                            public void onFailure(Call<AllDynamicDataByContainerId> call, Throwable t) {
-                                Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                            }
-                        });
-
-                int currentPage = webPage.getCurrent();
-                webPage.setCurrent(++currentPage);
-            }*/
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        AllDynamicDataByContainerId r = RetrofitManager.builder(PathType.BASE_WEB_SERVICE)
-                                .getFreightDataListObservable(App.getToken(), containerId, 1)
-                                .execute().body();
-
-                        if (r.getResult().get(0).getRESULT() == 0) {
-                            return;
-                        }
-
-                        //GPS坐标转百度地图坐标
-                        CoordinateConverter converter = new CoordinateConverter();
-                        converter.from(CoordinateConverter.CoordType.GPS);
-
-                        List<Detail> details = r.getDetails();
-                        for (Detail detail :
-                                details) {
-                            String time = detail.getCreateDatetime();
-                            String[] location = detail.getCoordinate().split(",");
-                            LatLng lng = new LatLng(
-                                    Double.parseDouble(location[0]),
-                                    Double.parseDouble(location[1])
-                            );
-                            converter.coord(lng);
-
-                            reference.get().put(time, converter.convert());
-                        }
-
-                        int countInCircle = 0;
-
-                        List<LatLng> polylines = new ArrayList<>();
-                        Iterator iterator = reference.get().values().iterator();
-                        while (iterator.hasNext()) {
-                            LatLng lng = (LatLng) iterator.next();
-                            polylines.add(lng);
-
-                            if (polylines.size() > 1) {
-                                if (SpatialRelationUtil.isCircleContainsPoint(polylines.get(0), LOCATION_RADIUS, lng)) {
-                                    countInCircle++;
-                                }
-                            }
-                        }
-
-                        OverlayOptions polylineOptions = new PolylineOptions()
-                                .points(polylines)
-                                .width(8)
-                                .color(ContextCompat.getColor(getActivity(), R.color.red_500));
-
-                        mVirtureRoad = (Polyline) mBaiduMap.addOverlay(polylineOptions);
-                        OverlayOptions markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.ic_car)).position(polylines.get(0)).rotate((float) getAngle(0));
-                        mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
-
-                        //设置中心点
-                        if (countInCircle < polylines.size() / 2) {
-                            mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(polylines.get(0), 16));
-
-//                            moveLooper();
-                            movingThread = new Thread(new MyThread());
-                            movingThread.start();
-                        } else {
-                            mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(polylines.get(0), 20));
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
+        LatLng point;
+        for (int i = 1; i < polylines.size(); i++) {
+            point = polylines.get(i);
+            if (point.latitude < minLat) minLat = point.latitude;
+            if (point.latitude > maxLat) maxLat = point.latitude;
+            if (point.longitude < minLng) minLng = point.longitude;
+            if (point.longitude > maxLng) maxLng = point.longitude;
         }
+
+        double centerLat = (maxLat + minLat) / 2;
+        double centerLng = (maxLng + minLng) / 2;
+        LatLng centerLatLng = new LatLng(centerLat, centerLng);
+
+        float zoom = getZoom(minLat, maxLat, minLng, maxLng);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLngZoom(centerLatLng, zoom));
+    }
+
+    /**
+     * 获取百度地图显示等级
+     * 范围3-21级
+     */
+    private int getZoom(double minLat, double maxLat, double minLng, double maxLng) {
+
+        LatLng minLatLng = new LatLng(minLat, minLng);
+        LatLng maxLatLng = new LatLng(maxLat, maxLng);
+        double distance = DistanceUtil.getDistance(minLatLng, maxLatLng);
+
+        for (int i = 0; i < BAIDU_MAP_ZOOM.length; i++) {
+            if (BAIDU_MAP_ZOOM[i] - distance > 0) {
+                moveDistance = (BAIDU_MAP_ZOOM[i] - distance) / DISTANCE_RATIO;
+                Log.d(TAG, "getZoom() moveDistance = " + moveDistance);
+                return 19 - i + 3;
+            }
+        }
+        return 16;
     }
 
     /**
@@ -506,80 +531,11 @@ public class FreightTrackBaiduMapFragment extends Fragment {
      */
     private double getXMoveDistance(double slope) {
         if (slope == Double.MAX_VALUE) {
-            return DISTANCE;
+            return MOVE_DISTANCE_MIN;
         }
-        return Math.abs((DISTANCE * slope) / Math.sqrt(1 + slope * slope));
+        return Math.abs((moveDistance * slope) / Math.sqrt(1 + slope * slope));
     }
 
-    /**
-     * 循环进行移动逻辑
-     */
-    public void moveLooper() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (isMoving) {
-
-                    for (int i = 0; isMoving && i < mVirtureRoad.getPoints().size() - 1; i++) {
-
-                        final LatLng startPoint = mVirtureRoad.getPoints().get(i);
-                        final LatLng endPoint = mVirtureRoad.getPoints().get(i + 1);
-                        mMoveMarker.setPosition(startPoint);
-
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // refresh marker's rotate
-                                if (bmapView == null) {
-                                    return;
-                                }
-                                mMoveMarker.setRotate((float) getAngle(startPoint,
-                                        endPoint));
-                            }
-                        });
-                        double slope = getSlope(startPoint, endPoint);
-                        //是不是正向的标示（向上设为正向）
-                        boolean isReverse = (startPoint.latitude > endPoint.latitude);
-
-                        double intercept = getInterception(slope, startPoint);
-
-                        double xMoveDistance = isReverse ? getXMoveDistance(slope)
-                                : -1 * getXMoveDistance(slope);
-
-
-                        for (double j = startPoint.latitude;
-                             !((j > endPoint.latitude) ^ isReverse);
-
-                             j = j - xMoveDistance) {
-                            LatLng latLng = null;
-                            if (slope != Double.MAX_VALUE) {
-                                latLng = new LatLng(j, (j - intercept) / slope);
-                            } else {
-                                latLng = new LatLng(j, startPoint.longitude);
-                            }
-
-                            final LatLng finalLatLng = latLng;
-                            mHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (bmapView == null) {
-                                        return;
-                                    }
-                                    // refresh marker's position
-                                    mMoveMarker.setPosition(finalLatLng);
-                                }
-                            });
-                            try {
-                                Thread.sleep(TIME_INTERVAL);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
 
     //itemClick interface
     public interface OnItemClickListener {
@@ -666,45 +622,6 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                     Thread.currentThread().interrupt();
                 }
             }
-        }
-    }
-
-    private class WebPage {
-        int current;
-        int total;
-        boolean isFirstRequest;
-
-        public WebPage() {
-        }
-
-        public WebPage(int current, int total, boolean isFirstRequest) {
-            this.current = current;
-            this.total = total;
-            this.isFirstRequest = isFirstRequest;
-        }
-
-        public int getCurrent() {
-            return current;
-        }
-
-        public void setCurrent(int current) {
-            this.current = current;
-        }
-
-        public int getTotal() {
-            return total;
-        }
-
-        public void setTotal(int total) {
-            this.total = total;
-        }
-
-        public boolean isFirstRequest() {
-            return isFirstRequest;
-        }
-
-        public void setFirstRequest(boolean firstRequest) {
-            isFirstRequest = firstRequest;
         }
     }
 }

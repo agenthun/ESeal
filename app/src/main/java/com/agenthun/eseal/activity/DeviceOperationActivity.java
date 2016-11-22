@@ -50,6 +50,7 @@ import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.functions.Action1;
 
 /**
  * @project ESeal
@@ -170,21 +171,15 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
                     .getMACByCloseOperationObservable(token, App.getDeviceId(), App.getTagId(), imgUrl, coordinate, operateTime)
-                    .enqueue(new Callback<MACByOpenCloseContainer>() {
+                    .subscribe(new Action1<MACByOpenCloseContainer>() {
                         @Override
-                        public void onResponse(Call<MACByOpenCloseContainer> call, Response<MACByOpenCloseContainer> response) {
-                            int result = response.body().getRESULT() == null ? 0 : response.body().getRESULT();
+                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
+                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
                             if (result == 1) {
                                 showSnackbar(getString(R.string.success_device_setting_upload));
                             } else {
                                 showSnackbar(getString(R.string.fail_device_setting_upload));
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Call<MACByOpenCloseContainer> call, Throwable t) {
-                            Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
-                            showSnackbar(getString(R.string.fail_device_setting_upload));
                         }
                     });
         }
@@ -224,21 +219,15 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
                     .getMACByOpenOperationObservable(token, App.getDeviceId(), App.getTagId(), imgUrl, coordinate, operateTime)
-                    .enqueue(new Callback<MACByOpenCloseContainer>() {
+                    .subscribe(new Action1<MACByOpenCloseContainer>() {
                         @Override
-                        public void onResponse(Call<MACByOpenCloseContainer> call, Response<MACByOpenCloseContainer> response) {
-                            int result = response.body().getRESULT() == null ? 0 : response.body().getRESULT();
+                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
+                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
                             if (result == 1) {
                                 showSnackbar(getString(R.string.success_device_setting_upload));
                             } else {
                                 showSnackbar(getString(R.string.fail_device_setting_upload));
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Call<MACByOpenCloseContainer> call, Throwable t) {
-                            Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
-                            showSnackbar(getString(R.string.fail_device_setting_upload));
                         }
                     });
         }
@@ -404,23 +393,15 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                 "IMG.jpg",
                                 coordinate,
                                 operateTime)
-                        .enqueue(new Callback<Result>() {
+                        .subscribe(new Action1<Result>() {
                             @Override
-                            public void onResponse(Call<Result> call, Response<Result> response) {
-                                int result = response.body().getRESULT();
-                                if (result == 1) {
-//                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.success_device_setting_upload));
+                            public void call(Result result) {
+                                int res = result.getRESULT();
+                                if (res == 1) {
                                     showSnackbar(getString(R.string.success_device_setting_upload));
                                 } else {
-//                                    showAlertDialog(getString(R.string.text_title_device_setting_upload), getString(R.string.fail_device_setting_upload));
                                     showSnackbar(getString(R.string.fail_device_setting_upload));
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Result> call, Throwable t) {
-                                Log.d(TAG, "onFailure() returned: " + t.getLocalizedMessage());
-                                showSnackbar(getString(R.string.fail_device_setting_upload));
                             }
                         });
             }

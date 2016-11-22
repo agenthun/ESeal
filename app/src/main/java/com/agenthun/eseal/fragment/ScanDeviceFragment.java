@@ -40,10 +40,6 @@ import it.gmariotti.recyclerview.itemanimator.SlideScaleInOutRightItemAnimator;
 public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "ScanDeviceFragment";
-//    private static final String ARG_TYPE = "TYPE";
-//    private static final String ARG_CONTAINER_NO = "CONTAINER_NO";
-//    private String mType;
-//    private String mContainerNo;
 
     private static final long SCAN_PERIOD = 10000;
     private static final int REQUEST_ENABLE_BT = 1;
@@ -64,21 +60,13 @@ public class ScanDeviceFragment extends Fragment implements SwipeRefreshLayout.O
     private boolean utilIsScan = false;
 
     public static ScanDeviceFragment newInstance() {
-        Bundle args = new Bundle();
-//        args.putString(ARG_TYPE, type);
-//        args.putString(ARG_CONTAINER_NO, containerNo);
         ScanDeviceFragment fragment = new ScanDeviceFragment();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mType = getArguments().getString(ARG_TYPE);
-//            mContainerNo = getArguments().getString(ARG_CONTAINER_NO);
-        }
     }
 
     @Nullable

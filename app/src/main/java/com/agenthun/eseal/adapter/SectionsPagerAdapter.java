@@ -32,7 +32,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Return a PlaceholderFragment (defined as a static inner class below).
         switch (position) {
             case 0:
-                Fragment freightTrackFragment = FreightTrackBaiduMapFragment.newInstance("0", "1070");
+                Fragment freightTrackFragment = FreightTrackBaiduMapFragment.newInstance();
                 ((FreightTrackBaiduMapFragment) freightTrackFragment).setOnItemClickListener(new FreightTrackBaiduMapFragment.OnItemClickListener() {
                     @Override
                     public void onItemClick(String containerNo, String containerId) {

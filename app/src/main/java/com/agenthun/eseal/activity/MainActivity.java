@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity
 
     private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo) {
         if (token != null) {
-            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+ /*           RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
                     .getFreightDataListObservable(token, containerId, 1)
                     .enqueue(new Callback<AllDynamicDataByContainerId>() {
                         @Override
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity
                         public void onFailure(Call<AllDynamicDataByContainerId> call, Throwable t) {
                             Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
                         }
-                    });
+                    });*/
         }
     }
 }

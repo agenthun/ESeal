@@ -25,6 +25,9 @@ public class Detail {
 
     private String NFCID;
 
+    private String ReportTime;
+    private String BaiduCoordinate;
+
     /**
      * @return The ContainerId
      */
@@ -246,6 +249,22 @@ public class Detail {
         this.NFCID = NFCID;
     }
 
+    public String getReportTime() {
+        return ReportTime;
+    }
+
+    public void setReportTime(String reportTime) {
+        ReportTime = reportTime;
+    }
+
+    public String getBaiduCoordinate() {
+        return BaiduCoordinate;
+    }
+
+    public void setBaiduCoordinate(String baiduCoordinate) {
+        BaiduCoordinate = baiduCoordinate;
+    }
+
     @Override
     public String toString() {
         return "Detail{" +
@@ -269,6 +288,8 @@ public class Detail {
                 ", Humidity='" + Humidity + '\'' +
                 ", Vibration='" + Vibration + '\'' +
                 ", NFCID='" + NFCID + '\'' +
+                ", ReportTime='" + ReportTime + '\'' +
+                ", BaiduCoordinate='" + BaiduCoordinate + '\'' +
                 '}';
     }
 }

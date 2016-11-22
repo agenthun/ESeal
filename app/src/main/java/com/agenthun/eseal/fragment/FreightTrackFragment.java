@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.FreightInfosByToken;
+import com.agenthun.eseal.bean.FreightInfos;
 import com.agenthun.eseal.bean.base.Detail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.Api;
@@ -24,15 +24,11 @@ import com.agenthun.eseal.utils.UiUtil;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.BodyTextView;
-import com.arlib.floatingsearchview.util.view.IconImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.functions.Action1;
 
 /**
  * @project ESeal
@@ -75,24 +71,21 @@ public class FreightTrackFragment extends Fragment {
 
         String token = App.getToken();
         if (token != null) {
-            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getFreightListObservable(token).enqueue(new Callback<FreightInfosByToken>() {
-                @Override
-                public void onResponse(Call<FreightInfosByToken> call, Response<FreightInfosByToken> response) {
-                    if (response.body() == null) return;
-                    List<Detail> details = response.body().getDetails();
-                    for (Detail detail :
-                            details) {
-                        Log.d(TAG, "onResponse() returned: " + detail.toString());
-                        ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(detail);
-                        suggestionList.add(containerNoSuggestion);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<FreightInfosByToken> call, Throwable t) {
-                    Log.d(TAG, "Response onFailure: " + t.getLocalizedMessage());
-                }
-            });
+            //获取蓝牙锁访问链路
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBleDeviceFreightListObservable(token)
+                    .subscribe(new Action1<FreightInfos>() {
+                        @Override
+                        public void call(FreightInfos freightInfos) {
+                            if (freightInfos == null) return;
+                            List<Detail> details = freightInfos.getDetails();
+                            for (Detail detail :
+                                    details) {
+                                Log.d(TAG, "onResponse() returned: " + detail.toString());
+                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(detail);
+                                suggestionList.add(containerNoSuggestion);
+                            }
+                        }
+                    });
         }
 
         mScreenWidth = UiUtil.getScreenWidthPixels(getActivity());
@@ -138,7 +131,7 @@ public class FreightTrackFragment extends Fragment {
                 }
             }
         });
-        floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+     /*   floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
                 ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) item;
@@ -194,7 +187,7 @@ public class FreightTrackFragment extends Fragment {
             public void onSearchAction() {
                 Log.d(TAG, "onSearchAction");
             }
-        });
+        });*/
         return view;
     }
 
