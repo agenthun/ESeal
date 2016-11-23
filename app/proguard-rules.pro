@@ -32,4 +32,22 @@
 -dontwarn retrofit2.**
 -dontwarn rx.**
 
+-dontwarn com.squareup.okhttp.*
+
 -keep class com.commonsware.cwac.** { *; }
+
+#-libraryjars libs/BaiduLBS_Android.jar
+-keep class com.baidu.** { *; }
+-keep class vi.com.gdi.bgl.android.**{*;}
+
+-keepattributes Signature
+-keepattributes EnclosingMethod
+
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}

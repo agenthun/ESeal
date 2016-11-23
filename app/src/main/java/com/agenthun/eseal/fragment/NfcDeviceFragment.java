@@ -81,7 +81,6 @@ public class NfcDeviceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_nfc_device_operation, container, false);
         ButterKnife.bind(this, view);
 
-        mNfcUtility = new NfcUtility(tagCallback);
         return view;
     }
 
@@ -94,6 +93,8 @@ public class NfcDeviceFragment extends Fragment {
         filter.addAction(TakePictueActivity.PICTURE_URI);
 
         localBroadcastManager.registerReceiver(broadcastReceiver, filter);
+
+        mNfcUtility = new NfcUtility(tagCallback);
     }
 
     @Override
@@ -197,7 +198,6 @@ public class NfcDeviceFragment extends Fragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void enableNfcReaderMode() {
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
         if (nfcAdapter != null) {
@@ -216,7 +216,6 @@ public class NfcDeviceFragment extends Fragment {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     private void disableNfcReaderMode() {
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
         if (nfcAdapter != null) {

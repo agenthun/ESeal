@@ -34,25 +34,6 @@ public class NfcUtility implements NfcAdapter.ReaderCallback {
         String tagId = ByteArrayToHexString(tag.getId());
         Log.d(TAG, "onTagDiscovered() returned: " + tagId);
         mTagCallback.get().onTagReceived(tagId);
-/*        IsoDep isoDep = IsoDep.get(tag);
-        if (isoDep != null) {
-            try {
-                isoDep.connect();
-                byte[] command = BuildSelectApdu(TAG_AID);
-                byte[] result = isoDep.transceive(command);
-                int resultLength = result.length;
-                byte[] statusWord = {result[resultLength - 2], result[resultLength - 1]};
-                byte[] payload = Arrays.copyOf(result, resultLength - 2);
-                if (Arrays.equals(SELECT_OK_SW, statusWord)) {
-                    String number = new String(payload, "UTF-8");
-                    mTagCallback.get().onTagReceived(number);
-                    Log.d(TAG, "onTagDiscovered() number: " + number);
-                }
-            } catch (IOException e) {
-                Log.d(TAG, "onTagDiscovered: " + e.toString());
-            }
-        }*/
-
         mTagCallback.get().onTagRemoved();
     }
 

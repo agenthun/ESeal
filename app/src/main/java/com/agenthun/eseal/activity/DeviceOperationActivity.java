@@ -1,12 +1,10 @@
 package com.agenthun.eseal.activity;
 
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -64,7 +62,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
     private boolean utilEnable = false;
 
     private boolean isPortOpen = false;
-    private NfcUtility mNfcUtility;
 
     private AppCompatDialog mProgressDialog;
 
@@ -88,8 +85,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
         utility = new ACSUtility(this, callback);
         mCurrentPort = utility.new blePort(device);
 
-        mNfcUtility = new NfcUtility(tagCallback);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(device.getAddress());
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -102,12 +97,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
         });
 
         getProgressDialog().show();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        disableNfcReaderMode();
     }
 
     @Override
@@ -226,24 +215,6 @@ public class DeviceOperationActivity extends AppCompatActivity {
                         }
                     });
         }
-    }
-
-    @OnClick(R.id.card_scan_nfc)
-    public void onScanNfcBtnClick() {
-//        Log.d(TAG, "onScanNfcBtnClick() returned: ");
-        //扫描NFC封条,获取ID
-        showAlertDialog(getString(R.string.text_title_hint),
-                getString(R.string.text_hint_close_to_nfc_tag),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        enableNfcReaderMode();
-                    }
-                });
-
-//        ViewCompat.animate(NfcIdTextView).alpha(0)
-//                .setInterpolator(new FastOutSlowInInterpolator())
-//                .start();
     }
 
     @OnClick(R.id.card_query_status)
@@ -652,66 +623,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
         });
     }
 
-
     private void sendData(byte[] data) {
         utility.writePort(data);
     }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void enableNfcReaderMode() {
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfcAdapter != null) {
-            if (nfcAdapter.isEnabled()) {
-                nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
-            } else {
-                Snackbar.make(cardSetting, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
-                        .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
-                                startActivity(intent);
-                            }
-                        }).show();
-            }
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    private void disableNfcReaderMode() {
-        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (nfcAdapter != null) {
-            nfcAdapter.disableReaderMode(this);
-        }
-    }
-
-    private NfcUtility.TagCallback tagCallback = new NfcUtility.TagCallback() {
-        @Override
-        public void onTagReceived(final String tag) {
-            App.setTagId(tag);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceOperationActivity.this);
-                    builder.setTitle(R.string.text_hint_nfc_id)
-                            .setMessage(tag)
-                            .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-/*                                    NfcIdTextView.setText(tag);
-                                    ViewCompat.animate(NfcIdTextView).alpha(1)
-                                            .setDuration(100)
-                                            .setStartDelay(200)
-                                            .setInterpolator(new LinearOutSlowInInterpolator())
-                                            .start();*/
-                                }
-                            }).show();
-                }
-            });
-        }
-
-        @Override
-        public void onTagRemoved() {
-            disableNfcReaderMode();
-        }
-    };
 }

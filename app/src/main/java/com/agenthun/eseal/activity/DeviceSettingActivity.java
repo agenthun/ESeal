@@ -3,14 +3,19 @@ package com.agenthun.eseal.activity;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +26,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.view.CheckableFab;
@@ -44,6 +51,9 @@ public class DeviceSettingActivity extends AppCompatActivity {
 
     @Bind(R.id.picturePreview)
     ImageView picturePreview;
+
+    @Bind(R.id.nfc_id)
+    AppCompatEditText nfcId;
 
     @Bind(R.id.container_number)
     AppCompatEditText containerNumber;
@@ -77,6 +87,8 @@ public class DeviceSettingActivity extends AppCompatActivity {
 
     private boolean mEdited = false;
 
+    private NfcUtility mNfcUtility;
+
     private Uri pictureUri = null;
 
     @Override
@@ -84,6 +96,8 @@ public class DeviceSettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_setting);
         ButterKnife.bind(this);
+
+        mNfcUtility = new NfcUtility(tagCallback);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -155,6 +169,14 @@ public class DeviceSettingActivity extends AppCompatActivity {
         performTakePictureWithTransition(addPicture);
     }
 
+    @OnClick(R.id.nfc_id)
+    public void onGetNfcIdBtnClick() {
+        Log.d(TAG, "onGetNfcIdBtnClick() returned: ");
+        enableNfcReaderMode();
+        Snackbar.make(nfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                .setAction("Action", null).show();
+    }
+
     private void performTakePictureWithTransition(View v) {
         Activity activity = this;
 
@@ -177,6 +199,56 @@ public class DeviceSettingActivity extends AppCompatActivity {
         }
     }
 
+    private void enableNfcReaderMode() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            if (nfcAdapter.isEnabled()) {
+                nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
+            } else {
+                Snackbar.make(nfcId, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                        .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }).show();
+            }
+        }
+    }
+
+    private void disableNfcReaderMode() {
+        NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (nfcAdapter != null) {
+            nfcAdapter.disableReaderMode(this);
+        }
+    }
+
+    private NfcUtility.TagCallback tagCallback = new NfcUtility.TagCallback() {
+        @Override
+        public void onTagReceived(final String tag) {
+            App.setTagId(tag);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DeviceSettingActivity.this);
+                    builder.setTitle(R.string.text_hint_nfc_id)
+                            .setMessage(tag)
+                            .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    nfcId.setText(tag);
+                                }
+                            }).show();
+                }
+            });
+        }
+
+        @Override
+        public void onTagRemoved() {
+            disableNfcReaderMode();
+        }
+    };
 
     private void adjustFab(final boolean settingCorrect) {
         fab.setChecked(settingCorrect);

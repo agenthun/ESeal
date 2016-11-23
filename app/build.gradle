@@ -5,11 +5,12 @@ android {
     buildToolsVersion '24.0.2'
     defaultConfig {
         applicationId "com.agenthun.eseal"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
         versionName "1.1 Alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     //签名

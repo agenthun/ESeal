@@ -58,6 +58,22 @@
             android:paddingRight="@dimen/spacing_double">
 
             <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/nfc_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:hint="@string/text_hint_nfc_id"
+                android:maxLines="1"
+                android:text="@string/text_hint_get_nfc_tag" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_double"
+            android:paddingRight="@dimen/spacing_double">
+
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/container_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
