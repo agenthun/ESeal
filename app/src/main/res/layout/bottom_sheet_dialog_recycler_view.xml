@@ -13,7 +13,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="7dp"
         android:gravity="center_vertical|left"
-        android:text="箱号"
+        android:text="@string/text_hint_freight_container_number"
         android:textColor="?android:textColor"
         android:textSize="16sp" />
 

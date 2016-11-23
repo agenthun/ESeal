@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/CradView.Light.App"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/amber_a100_mask">
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="132dp"
+        android:layout_marginBottom="36dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cell_lock" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingBottom="@dimen/spacing_normal"
+        android:paddingLeft="@dimen/spacing_double"
+        android:paddingRight="@dimen/spacing_normal"
+        android:paddingTop="@dimen/spacing_normal"
+        android:text="@string/card_title_lock"
+        android:textAppearance="@style/TextAppearance.Title"
+        android:textColor="@color/blue_grey_800" />
+</FrameLayout>

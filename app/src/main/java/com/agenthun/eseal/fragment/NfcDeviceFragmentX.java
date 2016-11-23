@@ -1,6 +1,5 @@
 package com.agenthun.eseal.fragment;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,21 +10,19 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
@@ -37,6 +34,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
+import com.ramotion.foldingcell.FoldingCell;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,7 +45,7 @@ import butterknife.OnClick;
  * @authors agenthun
  * @date 16/3/7 上午5:47.
  */
-public class NfcDeviceFragment extends Fragment {
+public class NfcDeviceFragmentX extends Fragment {
 
     private static final String TAG = "NfcDeviceFragment";
 
@@ -56,17 +54,40 @@ public class NfcDeviceFragment extends Fragment {
 
     private LocationService locationService;
 
-    @Bind(R.id.card_add_picture)
+/*    @Bind(R.id.card_add_picture)
     View addPicture;
 
     @Bind(R.id.picturePreview)
-    ImageView picturePreview;
+    ImageView picturePreview;*/
 
-    @Bind(R.id.NfcId)
-    AppCompatTextView NfcIdTextView;
+    @Bind(R.id.folding_cell_lock)
+    FoldingCell foldingCellLock;
 
-    public static NfcDeviceFragment newInstance() {
-        NfcDeviceFragment fragment = new NfcDeviceFragment();
+    @Bind(R.id.cell_content_lock)
+    View cellContentLockView;
+
+    @Bind(R.id.cell_title_lock)
+    View cellTitleLockView;
+
+    @Bind(R.id.folding_cell_unlock)
+    FoldingCell foldingCellUnlock;
+
+    @Bind(R.id.cell_content_unlock)
+    View cellContentUnlockView;
+
+    @Bind(R.id.cell_title_unlock)
+    View cellTitleUnlockView;
+
+    private AppCompatTextView lockTime;
+    private AppCompatTextView lockLocation;
+    private AppCompatTextView lockNfcId;
+
+    private AppCompatTextView unlockTime;
+    private AppCompatTextView unlockLocation;
+    private AppCompatTextView unlockNfcId;
+
+    public static NfcDeviceFragmentX newInstance() {
+        NfcDeviceFragmentX fragment = new NfcDeviceFragmentX();
         return fragment;
     }
 
@@ -81,6 +102,22 @@ public class NfcDeviceFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_nfc_device_operation, container, false);
         ButterKnife.bind(this, view);
 
+        ((AppCompatTextView) cellTitleLockView.findViewById(R.id.title)).setText(getString(R.string.card_title_lock));
+        ((ImageView) cellTitleLockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_lock);
+        cellTitleLockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.amber_a100_mask));
+        ((AppCompatTextView) cellContentLockView.findViewById(R.id.title)).setText(getString(R.string.text_hint_lock_operation));
+        lockTime = (AppCompatTextView) cellContentLockView.findViewById(R.id.time);
+        lockLocation = (AppCompatTextView) cellContentLockView.findViewById(R.id.location);
+        lockNfcId = (AppCompatTextView) cellContentLockView.findViewById(R.id.nfc_id);
+
+        ((AppCompatTextView) cellTitleUnlockView.findViewById(R.id.title)).setText(getString(R.string.card_title_unlock));
+        ((ImageView) cellTitleUnlockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_unlock);
+        cellTitleUnlockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green_mask));
+        ((AppCompatTextView) cellContentUnlockView.findViewById(R.id.title)).setText(getString(R.string.text_hint_unlock_operation));
+        unlockTime = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.time);
+        unlockLocation = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.location);
+        unlockNfcId = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.nfc_id);
+
         return view;
     }
 
@@ -94,7 +131,7 @@ public class NfcDeviceFragment extends Fragment {
 
         localBroadcastManager.registerReceiver(broadcastReceiver, filter);
 
-        mNfcUtility = new NfcUtility(tagCallback);
+//        mNfcUtility = new NfcUtility(tagCallback);
     }
 
     @Override
@@ -124,56 +161,21 @@ public class NfcDeviceFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
-    @OnClick(R.id.card_lock)
-    public void onLockBtnClick() {
-//        Log.d(TAG, "onLockBtnClick() returned: ");
-        //发送上封操作报文
-        locationService.start();// 定位SDK
-    }
-
-    @OnClick(R.id.card_unlock)
-    public void onUnlockBtnClick() {
-//        Log.d(TAG, "onUnlockBtnClick() returned: ");
-        //发送解封操作报文
-//        ByteBuffer buffer = ByteBuffer.allocate(10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-//        buffer.putInt(id);
-//        buffer.putInt(rn);
-//        buffer.putShort(ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION);
-//        buffer.put(ESealOperation.operationOperation(id, rn, key,
-//                ESealOperation.POWER_ON,
-//                ESealOperation.SAFE_UNLOCK)
-//        );
-//
-//        SocketPackage socketPackage = new SocketPackage();
-//        byte[] data = socketPackage.packageAddHeader(ESealOperation.ESEALBD_OPERATION_PORT,
-//                10 + ESealOperation.ESEALBD_OPERATION_REQUEST_SIZE_OPERATION,
-//                buffer.array()
-//        );
-//        sendData(data);
-    }
-
-    @OnClick(R.id.card_scan_nfc)
-    public void onScanNfcBtnClick() {
-//        Log.d(TAG, "onScanNfcBtnClick() returned: ");
-        //扫描NFC封条,获取ID
-        showAlertDialog(getString(R.string.text_title_hint),
-                getString(R.string.text_hint_close_to_nfc_tag),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        enableNfcReaderMode();
-                    }
-                });
-        ViewCompat.animate(NfcIdTextView).alpha(0)
-                .setInterpolator(new FastOutSlowInInterpolator())
-                .start();
-    }
-
-    @OnClick(R.id.card_add_picture)
+/*    @OnClick(R.id.card_add_picture)
     public void onAddPictureBtnClick() {
 //        Log.d(TAG, "onAddPictureBtnClick() returned: ");
         //设备拍照
         performTakePictureWithTransition(addPicture);
+    }*/
+
+    @OnClick(R.id.folding_cell_lock)
+    public void onFoldingCellLockBtnClick() {
+        foldingCellLock.toggle(false);
+    }
+
+    @OnClick(R.id.folding_cell_unlock)
+    public void onFoldingCellUnlockBtnClick() {
+        foldingCellUnlock.toggle(false);
     }
 
     private void performTakePictureWithTransition(View v) {
@@ -204,14 +206,14 @@ public class NfcDeviceFragment extends Fragment {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(getActivity(), mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
             } else {
-                Snackbar.make(NfcIdTextView, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+/*                Snackbar.make(NfcIdTextView, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                                 startActivity(intent);
                             }
-                        }).show();
+                        }).show();*/
             }
         }
     }
@@ -236,12 +238,12 @@ public class NfcDeviceFragment extends Fragment {
                             .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    NfcIdTextView.setText(tag);
+                   /*                 NfcIdTextView.setText(tag);
                                     ViewCompat.animate(NfcIdTextView).alpha(1)
                                             .setDuration(100)
                                             .setStartDelay(200)
                                             .setInterpolator(new LinearOutSlowInInterpolator())
-                                            .start();
+                                            .start();*/
                                 }
                             }).show();
                 }
@@ -263,7 +265,7 @@ public class NfcDeviceFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    picturePreview.setImageURI(pictureUri);
+//                    picturePreview.setImageURI(pictureUri);
                 }
             });
         }
@@ -281,7 +283,7 @@ public class NfcDeviceFragment extends Fragment {
         });
     }
 
-    private void showSnackbar(final String msg) {
+/*    private void showSnackbar(final String msg) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -289,7 +291,7 @@ public class NfcDeviceFragment extends Fragment {
                         .setAction("Action", null).show();
             }
         });
-    }
+    }*/
 
     /**
      * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改

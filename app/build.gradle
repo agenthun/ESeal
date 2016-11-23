@@ -10,7 +10,7 @@ android {
         versionCode 1
         versionName "1.1 Alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+//        multiDexEnabled true
     }
 
     //签名
@@ -69,7 +69,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -90,4 +90,5 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:2.0.3'
     compile 'com.github.gabrielemariotti.recyclerview:recyclerview-animators:0.3.0-SNAPSHOT@aar'
     compile 'com.commonsware.cwac:camera:0.6.+'
+    compile 'com.ramotion.foldingcell:folding-cell:1.0.1'
 }

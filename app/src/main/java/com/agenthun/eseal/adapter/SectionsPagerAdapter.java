@@ -10,6 +10,7 @@ import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.fragment.FreightTrackBaiduMapFragment;
 import com.agenthun.eseal.fragment.NfcDeviceFragment;
+import com.agenthun.eseal.fragment.NfcDeviceFragmentX;
 import com.agenthun.eseal.fragment.ScanDeviceFragment;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 1:
                 return ScanDeviceFragment.newInstance();
             case 2:
-                return NfcDeviceFragment.newInstance();
+                return NfcDeviceFragmentX.newInstance();
         }
         return null;
     }

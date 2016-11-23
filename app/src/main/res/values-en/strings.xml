@@ -59,7 +59,9 @@
     <string name="card_title_read_setting">Reading Device Settings</string>
     <string name="card_title_setting">Settings</string>
     <string name="card_title_lock">Lock</string>
+    <string name="text_hint_lock_operation">Lock Operation</string>
     <string name="card_title_unlock">Unlock</string>
+    <string name="text_hint_unlock_operation">Unlock Operation</string>
     <string name="card_title_scan_nfc">NFC Scan</string>
     <string name="card_subtitle_scan_nfc">Device ID</string>
     <string name="card_title_query_status">Status Query</string>
@@ -91,5 +93,7 @@
     <string name="text_hint_add_device_picture">Add Device Picture</string>
 
     <string name="text_hint_take_picture">Take Picture</string>
+
+    <string name="text_hint_time">Time</string>
 
 </resources>
