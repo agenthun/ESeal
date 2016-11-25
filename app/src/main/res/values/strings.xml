@@ -70,6 +70,8 @@
     <string name="text_title_hint">提示</string>
     <string name="text_hint_close_to_nfc_tag">请将NFC封条贴至手机底部</string>
     <string name="text_hint_get_nfc_tag">点击获取NFC封条ID</string>
+    <string name="text_hint_get_current_location">正在获取当前地址...</string>
+    <string name="fail_get_current_location">定位失败, 请重新定位</string>
     <string name="error_network_not_open">请开启网络</string>
     <string name="error_network">网络故障</string>
     <string name="text_hint_open_network">设置</string>

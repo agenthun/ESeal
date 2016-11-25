@@ -10,7 +10,7 @@ android {
         versionCode 1
         versionName "1.1 Alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-//        multiDexEnabled true
+        multiDexEnabled true
     }
 
     //签名

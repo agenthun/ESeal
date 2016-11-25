@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -91,6 +92,10 @@ public class NfcDeviceFragmentX extends Fragment {
     private AppCompatTextView unlockLocation;
     private AppCompatTextView unlockNfcId;
 
+    //-1:初始化状态; 0:上封; 1:解封
+    private int operationSealSwitch = -1;
+    private boolean isLocationServiceStarting = false;
+
     public static NfcDeviceFragmentX newInstance() {
         NfcDeviceFragmentX fragment = new NfcDeviceFragmentX();
         return fragment;
@@ -107,8 +112,6 @@ public class NfcDeviceFragmentX extends Fragment {
         View view = inflater.inflate(R.layout.fragment_nfc_device_operation, container, false);
         ButterKnife.bind(this, view);
 
-        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
-
         ((AppCompatTextView) cellTitleLockView.findViewById(R.id.title)).setText(getString(R.string.card_title_lock));
         ((ImageView) cellTitleLockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_lock);
         cellTitleLockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.amber_a100_mask));
@@ -116,11 +119,23 @@ public class NfcDeviceFragmentX extends Fragment {
         lockTime = (AppCompatTextView) cellContentLockView.findViewById(R.id.time);
         lockLocation = (AppCompatTextView) cellContentLockView.findViewById(R.id.location);
         lockNfcId = (AppCompatTextView) cellContentLockView.findViewById(R.id.nfc_id);
+        lockNfcId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableNfcReaderMode();
+                Snackbar.make(lockNfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            }
+        });
         AppCompatTextView lockConfirmBtn = (AppCompatTextView) cellContentLockView.findViewById(R.id.confirm_button);
         lockConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 foldingCellLock.toggle(false);
+                if (isLocationServiceStarting) {
+                    locationService.stop();
+                }
+                operationSealSwitch = -1;
             }
         });
 
@@ -131,11 +146,23 @@ public class NfcDeviceFragmentX extends Fragment {
         unlockTime = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.time);
         unlockLocation = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.location);
         unlockNfcId = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.nfc_id);
+        unlockNfcId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableNfcReaderMode();
+                Snackbar.make(unlockNfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
+            }
+        });
         AppCompatTextView unlockConfirmBtn = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.confirm_button);
         unlockConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 foldingCellUnlock.toggle(false);
+                if (isLocationServiceStarting) {
+                    locationService.stop();
+                }
+                operationSealSwitch = -1;
             }
         });
 
@@ -152,7 +179,7 @@ public class NfcDeviceFragmentX extends Fragment {
 
         localBroadcastManager.registerReceiver(broadcastReceiver, filter);
 
-//        mNfcUtility = new NfcUtility(tagCallback);
+        mNfcUtility = new NfcUtility(tagCallback);
     }
 
     @Override
@@ -164,9 +191,7 @@ public class NfcDeviceFragmentX extends Fragment {
         //注册监听
         LocationClientOption mOption = locationService.getDefaultLocationClientOption();
         mOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
-        mOption.setCoorType("bd09ll");
         locationService.setLocationOption(mOption);
-//        locationService.setLocationOption(locationService.getOption());
     }
 
     @Override
@@ -191,12 +216,40 @@ public class NfcDeviceFragmentX extends Fragment {
 
     @OnClick(R.id.cell_title_lock)
     public void onFoldingCellLockBtnClick() {
+        if (operationSealSwitch == 1) {
+            foldingCellUnlock.toggle(true);
+        }
+        operationSealSwitch = 0; //上封
+
         foldingCellLock.toggle(false);
+        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+        lockTime.setText(operateTime);
+        lockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
+
+        if (isLocationServiceStarting) {
+            locationService.stop();
+        }
+        locationService.start();// 定位SDK
+        isLocationServiceStarting = true;
     }
 
     @OnClick(R.id.cell_title_unlock)
     public void onFoldingCellUnlockBtnClick() {
+        if (operationSealSwitch == 0) {
+            foldingCellLock.toggle(true);
+        }
+        operationSealSwitch = 1; //解封
+
         foldingCellUnlock.toggle(false);
+        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+        unlockTime.setText(operateTime);
+        unlockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
+
+        if (isLocationServiceStarting) {
+            locationService.stop();
+        }
+        locationService.start();// 定位SDK
+        isLocationServiceStarting = true;
     }
 
     private void performTakePictureWithTransition(View v) {
@@ -227,14 +280,14 @@ public class NfcDeviceFragmentX extends Fragment {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(getActivity(), mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
             } else {
-/*                Snackbar.make(NfcIdTextView, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                Snackbar.make(foldingCellLock, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                                 startActivity(intent);
                             }
-                        }).show();*/
+                        }).show();
             }
         }
     }
@@ -259,12 +312,14 @@ public class NfcDeviceFragmentX extends Fragment {
                             .setPositiveButton(R.string.text_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                   /*                 NfcIdTextView.setText(tag);
-                                    ViewCompat.animate(NfcIdTextView).alpha(1)
-                                            .setDuration(100)
-                                            .setStartDelay(200)
-                                            .setInterpolator(new LinearOutSlowInInterpolator())
-                                            .start();*/
+                                    switch (operationSealSwitch) {
+                                        case 0: //上封
+                                            lockNfcId.setText(tag);
+                                            break;
+                                        case 1: //解封
+                                            unlockNfcId.setText(tag);
+                                            break;
+                                    }
                                 }
                             }).show();
                 }
@@ -323,91 +378,31 @@ public class NfcDeviceFragmentX extends Fragment {
         public void onReceiveLocation(BDLocation location) {
             // TODO Auto-generated method stub
             if (null != location && location.getLocType() != BDLocation.TypeServerError) {
-                StringBuffer sb = new StringBuffer(256);
-                sb.append("time : ");
-                /**
-                 * 时间也可以使用systemClock.elapsedRealtime()方法 获取的是自从开机以来，每次回调的时间；
-                 * location.getTime() 是指服务端出本次结果的时间，如果位置不发生变化，则时间不变
-                 */
-                sb.append(location.getTime());
-                sb.append("\nlocType : ");// 定位类型
-                sb.append(location.getLocType());
-                sb.append("\nlocType description : ");// *****对应的定位类型说明*****
-                sb.append(location.getLocTypeDescription());
-                sb.append("\nlatitude : ");// 纬度
-                sb.append(location.getLatitude());
-                sb.append("\nlontitude : ");// 经度
-                sb.append(location.getLongitude());
-                sb.append("\nradius : ");// 半径
-                sb.append(location.getRadius());
-                sb.append("\nCountryCode : ");// 国家码
-                sb.append(location.getCountryCode());
-                sb.append("\nCountry : ");// 国家名称
-                sb.append(location.getCountry());
-                sb.append("\ncitycode : ");// 城市编码
-                sb.append(location.getCityCode());
-                sb.append("\ncity : ");// 城市
-                sb.append(location.getCity());
-                sb.append("\nDistrict : ");// 区
-                sb.append(location.getDistrict());
-                sb.append("\nStreet : ");// 街道
-                sb.append(location.getStreet());
-                sb.append("\naddr : ");// 地址信息
-                sb.append(location.getAddrStr());
-                sb.append("\nUserIndoorState: ");// *****返回用户室内外判断结果*****
-                sb.append(location.getUserIndoorState());
-                sb.append("\nDirection(not all devices have value): ");
-                sb.append(location.getDirection());// 方向
-                sb.append("\nlocationdescribe: ");
-                sb.append(location.getLocationDescribe());// 位置语义化信息
-                sb.append("\nPoi: ");// POI信息
-                if (location.getPoiList() != null && !location.getPoiList().isEmpty()) {
-                    for (int i = 0; i < location.getPoiList().size(); i++) {
-                        Poi poi = (Poi) location.getPoiList().get(i);
-                        sb.append(poi.getName() + ";");
-                    }
+                String time = location.getTime();
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+                String address = location.getAddrStr() + ", " + lat + "," + lng;
+//                String address = lat + "," + lng;
+                switch (operationSealSwitch) {
+                    case 0: //上封
+                        lockTime.setText(time);
+                        lockLocation.setText(address);
+                        break;
+                    case 1: //解封
+                        unlockTime.setText(time);
+                        unlockLocation.setText(address);
+                        break;
                 }
-                if (location.getLocType() == BDLocation.TypeGpsLocation) {// GPS定位结果
-                    sb.append("\nspeed : ");
-                    sb.append(location.getSpeed());// 速度 单位：km/h
-                    sb.append("\nsatellite : ");
-                    sb.append(location.getSatelliteNumber());// 卫星数目
-                    sb.append("\nheight : ");
-                    sb.append(location.getAltitude());// 海拔高度 单位：米
-                    sb.append("\ngps status : ");
-                    sb.append(location.getGpsAccuracyStatus());// *****gps质量判断*****
-                    sb.append("\ndescribe : ");
-                    sb.append("gps定位成功");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkLocation) {// 网络定位结果
-                    // 运营商信息
-                    if (location.hasAltitude()) {// *****如果有海拔高度*****
-                        sb.append("\nheight : ");
-                        sb.append(location.getAltitude());// 单位：米
-                    }
-                    sb.append("\noperationers : ");// 运营商信息
-                    sb.append(location.getOperators());
-                    sb.append("\ndescribe : ");
-                    sb.append("网络定位成功");
-                } else if (location.getLocType() == BDLocation.TypeOffLineLocation) {// 离线定位结果
-                    sb.append("\ndescribe : ");
-                    sb.append("离线定位成功，离线定位结果也是有效的");
-                } else if (location.getLocType() == BDLocation.TypeServerError) {
-                    sb.append("\ndescribe : ");
-                    sb.append("服务端网络定位失败，可以反馈IMEI号和大体定位时间到loc-bugs@baidu.com，会有人追查原因");
-                } else if (location.getLocType() == BDLocation.TypeNetWorkException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("网络不同导致定位失败，请检查网络是否通畅");
-                } else if (location.getLocType() == BDLocation.TypeCriteriaException) {
-                    sb.append("\ndescribe : ");
-                    sb.append("无法获取有效定位依据导致定位失败，一般是由于手机的原因，处于飞行模式下一般会造成这种结果，可以试着重启手机");
-                }
-                showAlertDialog("定位", sb.toString(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        locationService.stop();
-                    }
-                });
+            } else if (null != location && location.getLocType() == BDLocation.TypeServerError) {
+                lockLocation.setText(getString(R.string.fail_get_current_location));
+            } else if (null != location && location.getLocType() == BDLocation.TypeNetWorkException) {
+                lockLocation.setText(getString(R.string.fail_get_current_location));
+            } else if (null != location && location.getLocType() == BDLocation.TypeCriteriaException) {
+                lockLocation.setText(getString(R.string.fail_get_current_location));
             }
+
+            locationService.stop();
+            isLocationServiceStarting = false;
         }
     };
 }

@@ -72,6 +72,8 @@
     <string name="text_title_hint">Hint</string>
     <string name="text_hint_close_to_nfc_tag">Please Close Your SmartPhone to the NFC Tag</string>
     <string name="text_hint_get_nfc_tag">Please Click to Get the NFC Tag ID</string>
+    <string name="text_hint_get_current_location">Getting the Current Location...</string>
+    <string name="fail_get_current_location">Location Failed, Please Try Again</string>
     <string name="error_network_not_open">Please Enable Network</string>
     <string name="error_network">Network Error</string>
     <string name="text_hint_open_network">Setting</string>
