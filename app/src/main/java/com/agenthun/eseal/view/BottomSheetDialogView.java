@@ -3,6 +3,7 @@ package com.agenthun.eseal.view;
 import android.content.Context;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,12 @@ import android.widget.ImageView;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.LocationDetail;
+import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.geocode.GeoCodeResult;
+import com.baidu.mapapi.search.geocode.GeoCoder;
+import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
+import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +35,7 @@ public class BottomSheetDialogView {
     private static List<LocationDetail> details;
     private final View view;
 
-    public BottomSheetDialogView(Context context, String containerNo, List<LocationDetail> details) {
+    public BottomSheetDialogView(final Context context, String containerNo, List<LocationDetail> details) {
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
@@ -40,7 +47,32 @@ public class BottomSheetDialogView {
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.bottom_sheet_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new SimpleAdapter());
+        SimpleAdapter simpleAdapter = new SimpleAdapter();
+        recyclerView.setAdapter(simpleAdapter);
+
+        simpleAdapter.setOnItemClickListener(new SimpleAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, final LocationDetail locationDetail) {
+                GeoCoder geoCoder = GeoCoder.newInstance();
+                geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(locationDetail.getLatLng()));
+                geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
+                    @Override
+                    public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+
+                    }
+
+                    @Override
+                    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+                        String title = context.getString(R.string.text_current_position);
+                        String msg = locationDetail.getReportTime() + "\r\n\r\n" + reverseGeoCodeResult.getAddress();
+                        new AlertDialog.Builder(context)
+                                .setTitle(title)
+                                .setMessage(msg)
+                                .setPositiveButton(R.string.text_ok, null).show();
+                    }
+                });
+            }
+        });
 
         dialog.setContentView(view);
         dialog.show();
@@ -58,12 +90,14 @@ public class BottomSheetDialogView {
         private ImageView securityLevelImageView;
         private AppCompatTextView timeTextView;
         private AppCompatTextView actionTypeTextView;
+        private View itemContent;
 
         public ViewHolder(View itemView) {
             super(itemView);
             securityLevelImageView = (ImageView) itemView.findViewById(R.id.securityLevel);
             timeTextView = (AppCompatTextView) itemView.findViewById(R.id.createDatetime);
             actionTypeTextView = (AppCompatTextView) itemView.findViewById(R.id.actionType);
+            itemContent = itemView.findViewById(R.id.item_content);
         }
     }
 
@@ -76,7 +110,7 @@ public class BottomSheetDialogView {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             String actionType = details.get(position).getStatus();
             switch (actionType) {
                 case "0":
@@ -124,6 +158,15 @@ public class BottomSheetDialogView {
             }
             holder.timeTextView.setText(time);
             holder.actionTypeTextView.setText(getActionType(actionType));
+
+            holder.itemContent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onItemClick(v, details.get(position));
+                    }
+                }
+            });
         }
 
         @Override
@@ -148,6 +191,17 @@ public class BottomSheetDialogView {
                     return App.getContext().getString(R.string.action_type_5);
             }
             return "";
+        }
+
+        //itemClick interface
+        private interface OnItemClickListener {
+            void onItemClick(View view, LocationDetail locationDetail);
+        }
+
+        private OnItemClickListener mOnItemClickListener;
+
+        private void setOnItemClickListener(OnItemClickListener mOnItemClickListener) {
+            this.mOnItemClickListener = mOnItemClickListener;
         }
     }
 }

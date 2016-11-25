@@ -36,6 +36,9 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 import com.ramotion.foldingcell.FoldingCell;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -48,6 +51,8 @@ import butterknife.OnClick;
 public class NfcDeviceFragmentX extends Fragment {
 
     private static final String TAG = "NfcDeviceFragment";
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private NfcUtility mNfcUtility;
     private Uri pictureUri = null;
@@ -102,6 +107,8 @@ public class NfcDeviceFragmentX extends Fragment {
         View view = inflater.inflate(R.layout.fragment_nfc_device_operation, container, false);
         ButterKnife.bind(this, view);
 
+        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+
         ((AppCompatTextView) cellTitleLockView.findViewById(R.id.title)).setText(getString(R.string.card_title_lock));
         ((ImageView) cellTitleLockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_lock);
         cellTitleLockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.amber_a100_mask));
@@ -109,6 +116,13 @@ public class NfcDeviceFragmentX extends Fragment {
         lockTime = (AppCompatTextView) cellContentLockView.findViewById(R.id.time);
         lockLocation = (AppCompatTextView) cellContentLockView.findViewById(R.id.location);
         lockNfcId = (AppCompatTextView) cellContentLockView.findViewById(R.id.nfc_id);
+        AppCompatTextView lockConfirmBtn = (AppCompatTextView) cellContentLockView.findViewById(R.id.confirm_button);
+        lockConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                foldingCellLock.toggle(false);
+            }
+        });
 
         ((AppCompatTextView) cellTitleUnlockView.findViewById(R.id.title)).setText(getString(R.string.card_title_unlock));
         ((ImageView) cellTitleUnlockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_unlock);
@@ -117,6 +131,13 @@ public class NfcDeviceFragmentX extends Fragment {
         unlockTime = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.time);
         unlockLocation = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.location);
         unlockNfcId = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.nfc_id);
+        AppCompatTextView unlockConfirmBtn = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.confirm_button);
+        unlockConfirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                foldingCellUnlock.toggle(false);
+            }
+        });
 
         return view;
     }
@@ -168,12 +189,12 @@ public class NfcDeviceFragmentX extends Fragment {
         performTakePictureWithTransition(addPicture);
     }*/
 
-    @OnClick(R.id.folding_cell_lock)
+    @OnClick(R.id.cell_title_lock)
     public void onFoldingCellLockBtnClick() {
         foldingCellLock.toggle(false);
     }
 
-    @OnClick(R.id.folding_cell_unlock)
+    @OnClick(R.id.cell_title_unlock)
     public void onFoldingCellUnlockBtnClick() {
         foldingCellUnlock.toggle(false);
     }
