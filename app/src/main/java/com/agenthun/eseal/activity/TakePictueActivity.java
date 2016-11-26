@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.app.AlertDialog;
@@ -33,6 +34,8 @@ import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -99,14 +102,18 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
                 }
             }
         }, 100);
-
-        requestCameraPermission();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        getPermissions(this);
         cameraView.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -132,6 +139,44 @@ public class TakePictueActivity extends AppCompatActivity implements CameraHostP
         } else {
             super.onBackPressed();
             finish();
+        }
+    }
+
+    private void getPermissions(Context context) {
+        List<String> permissions = new ArrayList<>();
+
+        // 拍照为必须权限，用户如果禁止，则每次进入都会申请
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.CAMERA);
+        }
+
+//        addPermission(context, permissions, Manifest.permission.CAMERA);
+//        requestCameraPermission();
+
+        // 读写外设为必须权限，用户如果禁止，则每次进入都会申请
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (permissions.size() > 0) {
+            ActivityCompat.requestPermissions(this, permissions.toArray(new String[permissions.size()]), REQUEST_CAMERA_PERMISSION);
+        }
+    }
+
+    private boolean addPermission(Context context, List<String> permissionsList, String permission) {
+        if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) { // 如果应用没有获得对应权限,则添加到列表中,准备批量申请
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, permission)) {
+                return true;
+            } else {
+                permissionsList.add(permission);
+                return false;
+            }
+
+        } else {
+            return true;
         }
     }
 

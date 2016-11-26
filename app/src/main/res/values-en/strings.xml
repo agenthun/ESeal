@@ -82,6 +82,7 @@
     <string name="text_title_device_setting_upload">Upload Info</string>
     <string name="success_device_setting_upload">Synchronized success</string>
     <string name="fail_device_setting_upload">Synchronized failure</string>
+    <string name="fail_device_nfc_tag">Invalid NFC Tag ID</string>
 
     <string name="text_hint_freight_container_number">Container No</string>
     <string name="text_hint_freight_owner">Owner</string>

@@ -2,6 +2,8 @@ package com.agenthun.eseal.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -68,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         //after andrioid m, must request Permission on runtime
-        getPermissions();
+        getPermissions(this);
     }
 
     @Override
@@ -146,19 +148,19 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void getPermissions() {
+    private void getPermissions(Context context) {
         List<String> permissions = new ArrayList<>();
 
         // 定位为必须权限，用户如果禁止，则每次进入都会申请
-        if (ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (ContextCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
         if (permissions.size() > 0) {
-            ActivityCompat.requestPermissions(LoginActivity.this, permissions.toArray(new String[permissions.size()]), SDK_PERMISSION_REQUEST);
+            ActivityCompat.requestPermissions((Activity) context, permissions.toArray(new String[permissions.size()]), SDK_PERMISSION_REQUEST);
         }
     }
 

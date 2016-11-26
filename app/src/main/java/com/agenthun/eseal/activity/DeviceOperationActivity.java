@@ -277,12 +277,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
             final SettingType settingType = data.getExtras().getParcelable(SettingType.EXTRA_DEVICE);
             Log.d(TAG, "onActivityResult() returned: settingType = " + settingType.toString());
 
-            String uriStr = data.getExtras().getString(TakePictueActivity.PICTURE_URI);
-            Uri imgUri = null;
-            if (uriStr != null) {
-                imgUri = Uri.parse(uriStr);
-                Log.d(TAG, "onActivityResult() returned: uri = " + imgUri.toString());
-            }
+            String imageResourceStr = data.getExtras().getString(TakePictueActivity.PICTURE_URI);
 
             int period = ESealOperation.PERIOD_DEFAULT;
             if (settingType.getFrequency() != null && settingType.getFrequency().length() != 0) {
@@ -353,7 +348,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                 settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
                                 settingType.getFrequency(),
                                 App.getTagId(),
-                                "IMG.jpg",
+                                imageResourceStr,
                                 coordinate,
                                 operateTime)
                         .subscribe(new Action1<Result>() {

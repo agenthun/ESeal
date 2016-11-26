@@ -6,10 +6,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,8 +20,13 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.graphics.BitmapCompat;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +36,12 @@ import android.widget.TextView;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.activity.TakePictueActivity;
+import com.agenthun.eseal.bean.MACByOpenCloseContainer;
+import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
+import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.LocationUtil;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -37,12 +49,15 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.Poi;
 import com.ramotion.foldingcell.FoldingCell;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.functions.Action1;
 
 /**
  * @project ESeal
@@ -54,6 +69,12 @@ public class NfcDeviceFragmentX extends Fragment {
     private static final String TAG = "NfcDeviceFragment";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static final int STATE_OPERATION_INITIAL = -1;
+    private static final int STATE_OPERATION_LOCK = 0;
+    private static final int STATE_OPERATION_UNLOCK = 1;
+    private static final int STATE_DEVICE_PICTURE_ADD = 0;
+    private static final int STATE_DEVICE_PICTURE_PREVIEW = 1;
 
     private NfcUtility mNfcUtility;
     private Uri pictureUri = null;
@@ -84,16 +105,22 @@ public class NfcDeviceFragmentX extends Fragment {
     @Bind(R.id.cell_title_unlock)
     View cellTitleUnlockView;
 
+    private View lockAddDevicePicture;
+    private ImageView lockPicturePreview;
+    private View lockAddPicture;
     private AppCompatTextView lockTime;
     private AppCompatTextView lockLocation;
     private AppCompatTextView lockNfcId;
 
+    private View unlockAddDevicePicture;
+    private ImageView unlockPicturePreview;
+    private View unlockAddPicture;
     private AppCompatTextView unlockTime;
     private AppCompatTextView unlockLocation;
     private AppCompatTextView unlockNfcId;
 
     //-1:初始化状态; 0:上封; 1:解封
-    private int operationSealSwitch = -1;
+    private int operationSealSwitch = STATE_OPERATION_INITIAL;
     private boolean isLocationServiceStarting = false;
 
     public static NfcDeviceFragmentX newInstance() {
@@ -115,7 +142,17 @@ public class NfcDeviceFragmentX extends Fragment {
         ((AppCompatTextView) cellTitleLockView.findViewById(R.id.title)).setText(getString(R.string.card_title_lock));
         ((ImageView) cellTitleLockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_lock);
         cellTitleLockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.amber_a100_mask));
+
         ((AppCompatTextView) cellContentLockView.findViewById(R.id.title)).setText(getString(R.string.text_hint_lock_operation));
+        lockAddDevicePicture = cellContentLockView.findViewById(R.id.addDevicePicture);
+        lockAddDevicePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performTakePictureWithTransition(lockAddDevicePicture);
+            }
+        });
+        lockPicturePreview = (ImageView) cellContentLockView.findViewById(R.id.picturePreview);
+        lockAddPicture = cellContentLockView.findViewById(R.id.addPicture);
         lockTime = (AppCompatTextView) cellContentLockView.findViewById(R.id.time);
         lockLocation = (AppCompatTextView) cellContentLockView.findViewById(R.id.location);
         lockNfcId = (AppCompatTextView) cellContentLockView.findViewById(R.id.nfc_id);
@@ -123,8 +160,6 @@ public class NfcDeviceFragmentX extends Fragment {
             @Override
             public void onClick(View v) {
                 enableNfcReaderMode();
-                Snackbar.make(lockNfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
             }
         });
         AppCompatTextView lockConfirmBtn = (AppCompatTextView) cellContentLockView.findViewById(R.id.confirm_button);
@@ -135,14 +170,28 @@ public class NfcDeviceFragmentX extends Fragment {
                 if (isLocationServiceStarting) {
                     locationService.stop();
                 }
-                operationSealSwitch = -1;
+
+                //服务器访问上封操作
+                serviceOerationLock();
+
+                operationSealSwitch = STATE_OPERATION_INITIAL;
             }
         });
 
         ((AppCompatTextView) cellTitleUnlockView.findViewById(R.id.title)).setText(getString(R.string.card_title_unlock));
         ((ImageView) cellTitleUnlockView.findViewById(R.id.background)).setImageResource(R.drawable.cell_unlock);
         cellTitleUnlockView.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.green_mask));
+
         ((AppCompatTextView) cellContentUnlockView.findViewById(R.id.title)).setText(getString(R.string.text_hint_unlock_operation));
+        unlockAddDevicePicture = cellContentUnlockView.findViewById(R.id.addDevicePicture);
+        unlockAddDevicePicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performTakePictureWithTransition(unlockAddDevicePicture);
+            }
+        });
+        unlockPicturePreview = (ImageView) cellContentUnlockView.findViewById(R.id.picturePreview);
+        unlockAddPicture = cellContentUnlockView.findViewById(R.id.addPicture);
         unlockTime = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.time);
         unlockLocation = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.location);
         unlockNfcId = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.nfc_id);
@@ -150,8 +199,6 @@ public class NfcDeviceFragmentX extends Fragment {
             @Override
             public void onClick(View v) {
                 enableNfcReaderMode();
-                Snackbar.make(unlockNfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
             }
         });
         AppCompatTextView unlockConfirmBtn = (AppCompatTextView) cellContentUnlockView.findViewById(R.id.confirm_button);
@@ -162,7 +209,11 @@ public class NfcDeviceFragmentX extends Fragment {
                 if (isLocationServiceStarting) {
                     locationService.stop();
                 }
-                operationSealSwitch = -1;
+
+                //服务器访问解封操作
+                serviceOerationUnlock();
+
+                operationSealSwitch = STATE_OPERATION_INITIAL;
             }
         });
 
@@ -207,48 +258,34 @@ public class NfcDeviceFragmentX extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
-/*    @OnClick(R.id.card_add_picture)
-    public void onAddPictureBtnClick() {
-//        Log.d(TAG, "onAddPictureBtnClick() returned: ");
-        //设备拍照
-        performTakePictureWithTransition(addPicture);
-    }*/
-
     @OnClick(R.id.cell_title_lock)
     public void onFoldingCellLockBtnClick() {
-        if (operationSealSwitch == 1) {
+        if (operationSealSwitch == STATE_OPERATION_UNLOCK) {
             foldingCellUnlock.toggle(true);
         }
-        operationSealSwitch = 0; //上封
+        operationSealSwitch = STATE_OPERATION_LOCK; //上封
 
-        foldingCellLock.toggle(false);
-        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
-        lockTime.setText(operateTime);
-        lockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
-
-        if (isLocationServiceStarting) {
+        updateFoldingCellState(operationSealSwitch);
+/*        if (isLocationServiceStarting) {
             locationService.stop();
-        }
-        locationService.start();// 定位SDK
+        }*/
+        locationService.requestLocation(getContext());// 定位SDK
         isLocationServiceStarting = true;
     }
 
     @OnClick(R.id.cell_title_unlock)
     public void onFoldingCellUnlockBtnClick() {
-        if (operationSealSwitch == 0) {
+        if (operationSealSwitch == STATE_OPERATION_LOCK) {
             foldingCellLock.toggle(true);
         }
-        operationSealSwitch = 1; //解封
+        operationSealSwitch = STATE_OPERATION_UNLOCK; //解封
 
-        foldingCellUnlock.toggle(false);
-        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
-        unlockTime.setText(operateTime);
-        unlockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
+        updateFoldingCellState(operationSealSwitch);
 
-        if (isLocationServiceStarting) {
+/*        if (isLocationServiceStarting) {
             locationService.stop();
-        }
-        locationService.start();// 定位SDK
+        }*/
+        locationService.requestLocation(getContext());// 定位SDK
         isLocationServiceStarting = true;
     }
 
@@ -279,6 +316,8 @@ public class NfcDeviceFragmentX extends Fragment {
         if (nfcAdapter != null) {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(getActivity(), mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
+                Snackbar.make(foldingCellLock, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
             } else {
                 Snackbar.make(foldingCellLock, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
@@ -313,10 +352,10 @@ public class NfcDeviceFragmentX extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     switch (operationSealSwitch) {
-                                        case 0: //上封
+                                        case STATE_OPERATION_LOCK: //上封
                                             lockNfcId.setText(tag);
                                             break;
-                                        case 1: //解封
+                                        case STATE_OPERATION_UNLOCK: //解封
                                             unlockNfcId.setText(tag);
                                             break;
                                     }
@@ -341,11 +380,172 @@ public class NfcDeviceFragmentX extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    picturePreview.setImageURI(pictureUri);
+                    updateAddDevicePictureState(operationSealSwitch, STATE_DEVICE_PICTURE_PREVIEW);
+                    switch (operationSealSwitch) {
+                        case STATE_OPERATION_LOCK: //上封
+                            Log.d(TAG, "onAddDevicePictureBtnClick() returned: 上封");
+                            lockPicturePreview.setImageURI(pictureUri);
+                            break;
+                        case STATE_OPERATION_UNLOCK: //解封
+                            Log.d(TAG, "onAddDevicePictureBtnClick() returned: 解封");
+                            unlockPicturePreview.setImageURI(pictureUri);
+                            break;
+                    }
                 }
             });
         }
     };
+
+    private void updateAddDevicePictureState(int operationSealSwitch, int state) {
+        switch (operationSealSwitch) {
+            case STATE_OPERATION_LOCK: //上封
+                if (state == STATE_DEVICE_PICTURE_ADD) {
+                    lockAddPicture.setVisibility(View.VISIBLE);
+                    lockPicturePreview.setVisibility(View.GONE);
+                } else if (state == STATE_DEVICE_PICTURE_PREVIEW) {
+                    lockAddPicture.setVisibility(View.GONE);
+                    lockPicturePreview.setVisibility(View.VISIBLE);
+                }
+                break;
+            case STATE_OPERATION_UNLOCK: //解封
+                if (state == STATE_DEVICE_PICTURE_ADD) {
+                    unlockAddPicture.setVisibility(View.VISIBLE);
+                    unlockPicturePreview.setVisibility(View.GONE);
+                } else if (state == STATE_DEVICE_PICTURE_PREVIEW) {
+                    unlockAddPicture.setVisibility(View.GONE);
+                    unlockPicturePreview.setVisibility(View.VISIBLE);
+                }
+                break;
+        }
+    }
+
+    private void updateFoldingCellState(int operationSealSwitch) {
+        updateAddDevicePictureState(operationSealSwitch, STATE_DEVICE_PICTURE_ADD);
+
+        String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+
+        switch (operationSealSwitch) {
+            case STATE_OPERATION_LOCK: //上封
+                foldingCellLock.toggle(false);
+                lockTime.setText(operateTime);
+                lockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
+                break;
+            case STATE_OPERATION_UNLOCK: //解封
+                foldingCellUnlock.toggle(false);
+                unlockTime.setText(operateTime);
+                unlockNfcId.setText(getString(R.string.text_hint_get_nfc_tag));
+                break;
+        }
+    }
+
+    private void serviceOerationLock() {
+        String token = App.getToken();
+        if (token != null) {
+            String imgUrl = getImageResourceBase64(lockPicturePreview);
+            String operateTime = lockTime.getText().toString();
+            String coordinate = "0.000000,0.000000";
+            if (!TextUtils.equals(lockLocation.getText(), getString(R.string.text_hint_get_current_location))) {
+                coordinate = lockLocation.getText().toString().split(", ")[1];
+            }
+            String tagId = "00000000000000";
+            if (!TextUtils.equals(lockNfcId.getText(), getString(R.string.text_hint_get_nfc_tag))) {
+                tagId = lockNfcId.getText().toString();
+            }
+
+            imgUrl = "";
+
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                    .getMACByCloseOperationObservable(token, "", tagId, imgUrl, coordinate, operateTime)
+                    .subscribe(new Action1<MACByOpenCloseContainer>() {
+                        @Override
+                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
+                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
+                            if (result == 1) {
+                                showSnackbar(getString(R.string.success_device_setting_upload));
+                            } else {
+                                if (macByOpenCloseContainer.getERRORINFO().equals("15")) {
+                                    showSnackbar(getString(R.string.fail_device_nfc_tag));
+                                } else {
+                                    showSnackbar(getString(R.string.fail_device_setting_upload));
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void serviceOerationUnlock() {
+        String token = App.getToken();
+        if (token != null) {
+            String imgUrl = getImageResourceBase64(unlockPicturePreview);
+            String operateTime = unlockTime.getText().toString();
+            String coordinate = "0.000000,0.000000";
+            if (!TextUtils.equals(unlockLocation.getText(), getString(R.string.text_hint_get_current_location))) {
+                coordinate = unlockLocation.getText().toString().split(", ")[1];
+            }
+            String tagId = "00000000000000";
+            if (!TextUtils.equals(unlockNfcId.getText(), getString(R.string.text_hint_get_nfc_tag))) {
+                tagId = unlockNfcId.getText().toString();
+            }
+
+            imgUrl = "";
+
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                    .getMACByOpenOperationObservable(token, "", tagId, imgUrl, coordinate, operateTime)
+                    .subscribe(new Action1<MACByOpenCloseContainer>() {
+                        @Override
+                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
+                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
+                            if (result == 1) {
+                                showSnackbar(getString(R.string.success_device_setting_upload));
+                            } else {
+                                if (macByOpenCloseContainer.getERRORINFO().equals("15")) {
+                                    showSnackbar(getString(R.string.fail_device_nfc_tag));
+                                } else {
+                                    showSnackbar(getString(R.string.fail_device_setting_upload));
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
+    private String getImageResourceBase64(ImageView imageView) {
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        if (drawable == null) return "";
+        Bitmap bitmap = drawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream);
+        String result = Base64.encodeToString(stream.toByteArray(), 0);
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            Log.e(TAG, "flush failed or close failed");
+            e.printStackTrace();
+        }
+        bitmap.recycle();
+        return result;
+    }
+
+/*    private void setImageResourceBase64(ImageView imageView) {
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        if (drawable == null) return "";
+        Bitmap bitmap = drawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream);
+        String result = Base64.encodeToString(stream.toByteArray(), 0);
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            Log.e(TAG, "flush failed or close failed");
+            e.printStackTrace();
+        }
+        bitmap.recycle();
+    }*/
 
     private void showAlertDialog(final String title, final String msg, @Nullable final DialogInterface.OnClickListener listener) {
         getActivity().runOnUiThread(new Runnable() {
@@ -359,15 +559,15 @@ public class NfcDeviceFragmentX extends Fragment {
         });
     }
 
-/*    private void showSnackbar(final String msg) {
+    private void showSnackbar(final String msg) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Snackbar.make(addPicture, msg, Snackbar.LENGTH_SHORT)
+                Snackbar.make(foldingCellLock, msg, Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();
             }
         });
-    }*/
+    }
 
     /**
      * 定位结果回调，重写onReceiveLocation方法，可以直接拷贝如下代码到自己工程中修改
@@ -384,11 +584,11 @@ public class NfcDeviceFragmentX extends Fragment {
                 String address = location.getAddrStr() + ", " + lat + "," + lng;
 //                String address = lat + "," + lng;
                 switch (operationSealSwitch) {
-                    case 0: //上封
+                    case STATE_OPERATION_LOCK: //上封
                         lockTime.setText(time);
                         lockLocation.setText(address);
                         break;
-                    case 1: //解封
+                    case STATE_OPERATION_UNLOCK: //解封
                         unlockTime.setText(time);
                         unlockLocation.setText(address);
                         break;
@@ -401,7 +601,6 @@ public class NfcDeviceFragmentX extends Fragment {
                 lockLocation.setText(getString(R.string.fail_get_current_location));
             }
 
-            locationService.stop();
             isLocationServiceStarting = false;
         }
     };

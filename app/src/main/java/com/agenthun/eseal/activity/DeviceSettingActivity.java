@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -22,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,6 +35,9 @@ import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.view.CheckableFab;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -173,8 +179,6 @@ public class DeviceSettingActivity extends AppCompatActivity {
     public void onGetNfcIdBtnClick() {
         Log.d(TAG, "onGetNfcIdBtnClick() returned: ");
         enableNfcReaderMode();
-        Snackbar.make(nfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
     }
 
     private void performTakePictureWithTransition(View v) {
@@ -204,6 +208,8 @@ public class DeviceSettingActivity extends AppCompatActivity {
         if (nfcAdapter != null) {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
+                Snackbar.make(nfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null).show();
             } else {
                 Snackbar.make(nfcId, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
@@ -283,16 +289,6 @@ public class DeviceSettingActivity extends AppCompatActivity {
     private void getConfigure() {
         Intent data = new Intent();
         Bundle b = new Bundle();
-/*        DetailParcelable detail = new DetailParcelable();
-        detail.setContainerNo(containerNumber.getText().toString().trim());
-        detail.setOperationer(owner.getText().toString().trim()); //xxxxxx
-        detail.setFreightName(freightName.getText().toString().trim());
-        detail.setOrigin(origin.getText().toString().trim());
-//        detail.setPositionName(destination.getText().toString().trim());
-//        detail.setXXX(vessel.getText().toString().trim());
-//        detail.setContainerNo(voyage.getText().toString().trim());
-        detail.setFrequency(frequency.getText().toString().trim());
-        b.putParcelable(DetailParcelable.EXTRA_DEVICE, detail);*/
 
         SettingType settingType = new SettingType();
 
@@ -306,9 +302,10 @@ public class DeviceSettingActivity extends AppCompatActivity {
         settingType.setFrequency(frequency.getText().toString().trim());
         b.putParcelable(SettingType.EXTRA_DEVICE, settingType);
         if (pictureUri != null) {
-            b.putString(TakePictueActivity.PICTURE_URI, pictureUri.toString());
+            String imgUrl = getImageResourceBase64(picturePreview);
+            b.putString(TakePictueActivity.PICTURE_URI, imgUrl);
         } else {
-            b.putString(TakePictueActivity.PICTURE_URI, null);
+            b.putString(TakePictueActivity.PICTURE_URI, "");
         }
         data.putExtras(b);
         setResult(RESULT_OK, data);
@@ -329,4 +326,23 @@ public class DeviceSettingActivity extends AppCompatActivity {
             });
         }
     };
+
+    private String getImageResourceBase64(ImageView imageView) {
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        if (drawable == null) return "";
+        Bitmap bitmap = drawable.getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream);
+        String result = Base64.encodeToString(stream.toByteArray(), 0);
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            Log.e(TAG, "flush failed or close failed");
+            e.printStackTrace();
+        }
+        bitmap.recycle();
+        return result;
+    }
 }
