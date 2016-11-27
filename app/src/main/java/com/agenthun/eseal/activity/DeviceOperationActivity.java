@@ -49,7 +49,6 @@ import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
-import com.agenthun.eseal.utils.LocationUtil;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;

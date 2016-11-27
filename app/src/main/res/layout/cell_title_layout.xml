@@ -20,7 +20,7 @@
         android:layout_gravity="bottom"
         android:paddingBottom="@dimen/spacing_normal"
         android:paddingLeft="@dimen/spacing_double"
-        android:paddingRight="@dimen/spacing_normal"
+        android:paddingRight="@dimen/spacing_double"
         android:paddingTop="@dimen/spacing_normal"
         android:text="@string/card_title_lock"
         android:textAppearance="@style/TextAppearance.Title"

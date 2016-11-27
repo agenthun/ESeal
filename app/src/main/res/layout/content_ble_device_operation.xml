@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/spacing_normal"
+    android:layout_marginLeft="@dimen/spacing_normal"
+    android:layout_marginRight="@dimen/spacing_normal"
+    android:layout_marginTop="@dimen/spacing_normal"
     android:fillViewport="false"
-    android:paddingBottom="@dimen/spacing_normal"
-    android:paddingLeft="@dimen/spacing_normal"
-    android:paddingRight="@dimen/spacing_normal"
-    android:paddingTop="@dimen/spacing_normal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_device_operation">
 
@@ -37,7 +37,7 @@
                 android:layout_gravity="bottom"
                 android:paddingBottom="@dimen/spacing_normal"
                 android:paddingLeft="@dimen/spacing_double"
-                android:paddingRight="@dimen/spacing_normal"
+                android:paddingRight="@dimen/spacing_double"
                 android:paddingTop="@dimen/spacing_normal"
                 android:text="@string/card_title_setting"
                 android:textAppearance="@style/TextAppearance.Title"
@@ -100,14 +100,14 @@
                 android:id="@+id/card_query_status"
                 style="@style/CradView.Light.App"
                 android:layout_width="match_parent"
-                android:layout_height="216dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:cardBackgroundColor="@color/rose_quartz_mask">
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="48dp"
+                    android:layout_height="168dp"
+                    android:layout_marginBottom="36dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/card_query_status" />
 
@@ -115,7 +115,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:padding="@dimen/spacing_double"
+                    android:paddingBottom="@dimen/spacing_normal"
+                    android:paddingLeft="@dimen/spacing_double"
+                    android:paddingRight="@dimen/spacing_double"
+                    android:paddingTop="@dimen/spacing_normal"
                     android:text="@string/card_title_query_status"
                     android:textAppearance="@style/TextAppearance.Title"
                     android:textColor="@color/blue_grey_800" />
@@ -125,14 +128,14 @@
                 android:id="@+id/card_query_info"
                 style="@style/CradView.Light.App"
                 android:layout_width="match_parent"
-                android:layout_height="216dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:cardBackgroundColor="@color/teal_mask">
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="48dp"
+                    android:layout_height="168dp"
+                    android:layout_marginBottom="36dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/card_query_info" />
 
@@ -140,7 +143,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:padding="@dimen/spacing_double"
+                    android:paddingBottom="@dimen/spacing_normal"
+                    android:paddingLeft="@dimen/spacing_double"
+                    android:paddingRight="@dimen/spacing_double"
+                    android:paddingTop="@dimen/spacing_normal"
                     android:text="@string/card_title_query_info"
                     android:textAppearance="@style/TextAppearance.Title"
                     android:textColor="@color/blue_grey_800" />
@@ -167,7 +173,7 @@
                 android:layout_gravity="bottom"
                 android:paddingBottom="@dimen/spacing_normal"
                 android:paddingLeft="@dimen/spacing_double"
-                android:paddingRight="@dimen/spacing_normal"
+                android:paddingRight="@dimen/spacing_double"
                 android:paddingTop="@dimen/spacing_normal"
                 android:text="@string/card_title_read_setting"
                 android:textAppearance="@style/TextAppearance.Title"

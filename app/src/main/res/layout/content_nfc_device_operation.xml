@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/spacing_normal"
+    android:layout_marginLeft="@dimen/spacing_normal"
+    android:layout_marginRight="@dimen/spacing_normal"
+    android:layout_marginTop="@dimen/spacing_normal"
     android:fillViewport="false"
-    android:paddingBottom="@dimen/spacing_normal"
-    android:paddingLeft="@dimen/spacing_normal"
-    android:paddingRight="@dimen/spacing_normal"
-    android:paddingTop="@dimen/spacing_normal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
@@ -16,168 +16,51 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/picturePreview"
-                android:layout_width="match_parent"
-                android:layout_height="168dp"
-                android:background="@android:color/transparent"
-                android:scaleType="centerCrop" />
-
-            <LinearLayout
-                android:id="@+id/card_add_picture"
-                android:layout_width="match_parent"
-                android:layout_height="168dp"
-                android:background="@color/backgroundWhite"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_photo_camera_black_24dp" />
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_normal"
-                    android:text="@string/text_hint_add_device_picture"
-                    android:textColor="@color/blue_grey_800" />
-            </LinearLayout>
-        </FrameLayout>
-
         <android.support.v7.widget.CardView
-            android:id="@+id/card_scan_nfc"
             style="@style/CradView.Light.App"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-            <FrameLayout
+            <com.ramotion.foldingcell.FoldingCell
+                android:id="@+id/folding_cell_lock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="168dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/card_scan_nfc" />
+                <include
+                    android:id="@+id/cell_content_lock"
+                    layout="@layout/cell_centent_layout" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_marginBottom="13dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
+                <include
+                    android:id="@+id/cell_title_lock"
+                    layout="@layout/cell_title_layout" />
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/scanNfcTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/card_title_scan_nfc"
-                        android:textColor="@color/blue_grey_800"
-                        android:textSize="16sp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/scanNfcTitle"
-                        android:text="@string/card_subtitle_scan_nfc"
-                        android:textColor="@color/blue_grey_800"
-                        android:textSize="14sp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/NfcId"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:textColor="@color/blue_grey_900"
-                        android:textSize="20sp" />
-
-                </RelativeLayout>
-            </FrameLayout>
+            </com.ramotion.foldingcell.FoldingCell>
         </android.support.v7.widget.CardView>
 
-        <!--        <android.support.v7.widget.CardView
-                    android:id="@+id/card_scan_nfc1"
-                    style="@style/CradView.Light.App"
-                    android:layout_width="match_parent"
-                    android:layout_height="168dp"
-                    app:cardBackgroundColor="@color/blue_mask">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="48dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/card_scan_nfc" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:padding="@dimen/spacing_double"
-                        android:text="@string/card_title_scan_nfc"
-                        android:textAppearance="@style/TextAppearance.Title" />
-                </android.support.v7.widget.CardView>-->
-
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            style="@style/CradView.Light.App"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_lock"
-                style="@style/CradView.Light.App"
+            <com.ramotion.foldingcell.FoldingCell
+                android:id="@+id/folding_cell_unlock"
                 android:layout_width="match_parent"
-                android:layout_height="216dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="@color/amber_a100_mask">
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="48dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/card_lock" />
+                <include
+                    android:id="@+id/cell_content_unlock"
+                    layout="@layout/cell_centent_layout" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:padding="@dimen/spacing_double"
-                    android:text="@string/card_title_lock"
-                    android:textAppearance="@style/TextAppearance.Title" />
-            </android.support.v7.widget.CardView>
+                <include
+                    android:id="@+id/cell_title_unlock"
+                    layout="@layout/cell_title_layout" />
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/card_unlock"
-                style="@style/CradView.Light.App"
-                android:layout_width="match_parent"
-                android:layout_height="216dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="@color/green_mask">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="48dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/card_unlock" />
-
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:padding="@dimen/spacing_double"
-                    android:text="@string/card_title_unlock"
-                    android:textAppearance="@style/TextAppearance.Title" />
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
+            </com.ramotion.foldingcell.FoldingCell>
+        </android.support.v7.widget.CardView>
 
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
