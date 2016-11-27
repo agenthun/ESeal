@@ -25,4 +25,23 @@
         android:text="@string/card_title_lock"
         android:textAppearance="@style/TextAppearance.Title"
         android:textColor="@color/blue_grey_800" />
+    <!--
+        <ImageView
+            android:id="@+id/background"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:layout_marginBottom="48dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/cell_lock" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:padding="@dimen/spacing_double"
+            android:text="@string/card_title_lock"
+            android:textAppearance="@style/TextAppearance.Title"
+            android:textColor="@color/blue_grey_800" />-->
+
 </FrameLayout>

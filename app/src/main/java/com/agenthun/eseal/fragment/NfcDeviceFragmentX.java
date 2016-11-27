@@ -81,12 +81,6 @@ public class NfcDeviceFragmentX extends Fragment {
 
     private LocationService locationService;
 
-/*    @Bind(R.id.card_add_picture)
-    View addPicture;
-
-    @Bind(R.id.picturePreview)
-    ImageView picturePreview;*/
-
     @Bind(R.id.folding_cell_lock)
     FoldingCell foldingCellLock;
 

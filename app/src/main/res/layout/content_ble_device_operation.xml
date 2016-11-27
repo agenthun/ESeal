@@ -21,13 +21,13 @@
             android:id="@+id/card_seting"
             style="@style/CradView.Light.App"
             android:layout_width="match_parent"
-            android:layout_height="242dp"
+            android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/serenity_mask">
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="48dp"
+                android:layout_height="132dp"
+                android:layout_marginBottom="36dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/card_setting" />
 
@@ -35,9 +35,60 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:padding="@dimen/spacing_double"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_normal"
+                android:paddingTop="@dimen/spacing_normal"
                 android:text="@string/card_title_setting"
-                android:textAppearance="@style/TextAppearance.Title" />
+                android:textAppearance="@style/TextAppearance.Title"
+                android:textColor="@color/blue_grey_800" />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            style="@style/CradView.Light.App"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <com.ramotion.foldingcell.FoldingCell
+                android:id="@+id/folding_cell_lock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include
+                    android:id="@+id/cell_content_lock"
+                    layout="@layout/cell_centent_layout" />
+
+                <include
+                    android:id="@+id/cell_title_lock"
+                    layout="@layout/cell_title_layout" />
+
+            </com.ramotion.foldingcell.FoldingCell>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            style="@style/CradView.Light.App"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <com.ramotion.foldingcell.FoldingCell
+                android:id="@+id/folding_cell_unlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include
+                    android:id="@+id/cell_content_unlock"
+                    layout="@layout/cell_centent_layout" />
+
+                <include
+                    android:id="@+id/cell_title_unlock"
+                    layout="@layout/cell_title_layout" />
+
+            </com.ramotion.foldingcell.FoldingCell>
         </android.support.v7.widget.CardView>
 
         <LinearLayout
@@ -46,134 +97,67 @@
             android:orientation="horizontal">
 
             <android.support.v7.widget.CardView
-                android:id="@+id/card_lock"
+                android:id="@+id/card_query_status"
                 style="@style/CradView.Light.App"
                 android:layout_width="match_parent"
                 android:layout_height="216dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="@color/amber_a100_mask">
+                app:cardBackgroundColor="@color/rose_quartz_mask">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="48dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/card_lock" />
+                    android:src="@drawable/card_query_status" />
 
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:padding="@dimen/spacing_double"
-                    android:text="@string/card_title_lock"
-                    android:textAppearance="@style/TextAppearance.Title" />
+                    android:text="@string/card_title_query_status"
+                    android:textAppearance="@style/TextAppearance.Title"
+                    android:textColor="@color/blue_grey_800" />
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:id="@+id/card_unlock"
+                android:id="@+id/card_query_info"
                 style="@style/CradView.Light.App"
                 android:layout_width="match_parent"
                 android:layout_height="216dp"
                 android:layout_weight="1"
-                app:cardBackgroundColor="@color/green_mask">
+                app:cardBackgroundColor="@color/teal_mask">
 
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="48dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/card_unlock" />
+                    android:src="@drawable/card_query_info" />
 
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:padding="@dimen/spacing_double"
-                    android:text="@string/card_title_unlock"
-                    android:textAppearance="@style/TextAppearance.Title" />
+                    android:text="@string/card_title_query_info"
+                    android:textAppearance="@style/TextAppearance.Title"
+                    android:textColor="@color/blue_grey_800" />
             </android.support.v7.widget.CardView>
         </LinearLayout>
-
-<!--        <android.support.v7.widget.CardView
-            android:id="@+id/card_scan_nfc"
-            style="@style/CradView.Light.App"
-            android:layout_width="match_parent"
-            android:layout_height="242dp"
-            app:cardBackgroundColor="@color/blue_mask">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="48dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/card_scan_nfc" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:padding="@dimen/spacing_double"
-                android:text="@string/card_title_scan_nfc"
-                android:textAppearance="@style/TextAppearance.Title" />
-        </android.support.v7.widget.CardView>-->
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_query_status"
-            style="@style/CradView.Light.App"
-            android:layout_width="match_parent"
-            android:layout_height="242dp"
-            app:cardBackgroundColor="@color/rose_quartz_mask">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="48dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/card_query_status" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:padding="@dimen/spacing_double"
-                android:text="@string/card_title_query_status"
-                android:textAppearance="@style/TextAppearance.Title" />
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:id="@+id/card_query_info"
-            style="@style/CradView.Light.App"
-            android:layout_width="match_parent"
-            android:layout_height="242dp"
-            app:cardBackgroundColor="@color/teal_mask">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="48dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/card_query_info" />
-
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:padding="@dimen/spacing_double"
-                android:text="@string/card_title_query_info"
-                android:textAppearance="@style/TextAppearance.Title" />
-        </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_read_seting"
             style="@style/CradView.Light.App"
             android:layout_width="match_parent"
-            android:layout_height="242dp"
+            android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/red_mask">
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="48dp"
+                android:layout_height="132dp"
+                android:layout_marginBottom="36dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/card_read_seting" />
 
@@ -181,9 +165,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:padding="@dimen/spacing_double"
+                android:paddingBottom="@dimen/spacing_normal"
+                android:paddingLeft="@dimen/spacing_double"
+                android:paddingRight="@dimen/spacing_normal"
+                android:paddingTop="@dimen/spacing_normal"
                 android:text="@string/card_title_read_setting"
-                android:textAppearance="@style/TextAppearance.Title" />
+                android:textAppearance="@style/TextAppearance.Title"
+                android:textColor="@color/blue_grey_800" />
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
