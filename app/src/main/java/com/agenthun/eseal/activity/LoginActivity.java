@@ -15,6 +15,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.util.Log;
@@ -48,6 +50,8 @@ public class LoginActivity extends AppCompatActivity {
     private AppCompatEditText loginPassword;
 
     private String token;
+
+    private AppCompatDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,16 +114,19 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
+            getProgressDialog().show();
+
 //            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password)
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password)
                     .subscribe(new Subscriber<UserInfoByGetToken>() {
                         @Override
                         public void onCompleted() {
-
+                            getProgressDialog().cancel();
                         }
 
                         @Override
                         public void onError(Throwable e) {
+                            getProgressDialog().cancel();
                             Toast.makeText(LoginActivity.this, R.string.error_network, Toast.LENGTH_SHORT).show();
                         }
 
@@ -185,6 +192,18 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private AppCompatDialog getProgressDialog() {
+        if (mProgressDialog != null) {
+            return mProgressDialog;
+        }
+        mProgressDialog = new AppCompatDialog(LoginActivity.this, AppCompatDelegate.MODE_NIGHT_AUTO);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setContentView(R.layout.dialog_logging_in);
+        mProgressDialog.setTitle(getString(R.string.action_login));
+        mProgressDialog.setCancelable(false);
+        return mProgressDialog;
     }
 }
 
