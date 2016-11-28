@@ -64,7 +64,17 @@ public class BottomSheetDialogView {
                     @Override
                     public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
                         String title = context.getString(R.string.text_current_position);
-                        String msg = locationDetail.getReportTime() + "\r\n\r\n" + reverseGeoCodeResult.getAddress();
+                        String time = "";
+                        try {
+                            time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
+                                    new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
+                                            locationDetail.getReportTime()
+                                    )
+                            );
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        String msg = time + "\r\n\r\n" + reverseGeoCodeResult.getAddress();
                         new AlertDialog.Builder(context)
                                 .setTitle(title)
                                 .setMessage(msg)

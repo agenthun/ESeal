@@ -257,7 +257,8 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
                 loadingMapState(true);
                 clearLocationData();
-                getLocationData(containerNo, containerId);
+//                getLocationData(containerNo, containerId);
+                getLocationData(containerNo, "718");
             }
 
             @Override
@@ -320,7 +321,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                 @Override
                 public void run() {
                     RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                            .getBleDeviceLocationObservable(App.getToken(), "718")
+                            .getBleDeviceLocationObservable(App.getToken(), containerId)
                             .map(new Func1<LocationInfos, List<LocationDetail>>() {
                                 @Override
                                 public List<LocationDetail> call(LocationInfos locationInfos) {

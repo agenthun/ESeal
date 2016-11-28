@@ -60,5 +60,4 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-art/device_operation_read_setting.png
-art/device-2016-10-29-035139.mp4
+#art/art.mp4

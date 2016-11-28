@@ -137,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "token: " + token);
                             if (token != null) {
                                 App.setToken(token);
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivityX.class);
                                 intent.putExtra(RetrofitManager.TOKEN, token);
                                 startActivity(intent);
                                 finish();

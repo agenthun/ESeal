@@ -301,7 +301,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
             isPortOpen = false;
             utility.closeACSUtility();
         }
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, MainActivityX.class));
         finish();
     }
 
@@ -946,6 +946,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
                                         .format(calendar.getTime()));
                             } else {
                                 time.append(getString(R.string.device_reply_info_time_error));
+//                                time.append(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+//                                        .format(Calendar.getInstance().getTime()));
+//                                positionType.setPosition("121.44755, 31.029331");
                             }
                             String safeStringInfo = (positionType.getSafe() == 0 ?
                                     getString(R.string.device_reply_safe_0) :

@@ -2,6 +2,8 @@
 > 物流安全 Material Design
 
 ## 更新
+> 2016/11/28  Version 1.1 Beta
+>
 > 2016/10/20  Version 1.1 Alpha
 >
 > 2016/03/13  Version 1.0
@@ -14,6 +16,11 @@
 ## 分类
 > 物流安全监控
 
+## Demo视频
+<video id="video" controls="" preload="none" poster="./art/sign_in.png" width="50%" height="50%">
+      <source id="mp4" src="./art/art.mp4" type="video/mp4"/>
+</video>
+
 ## 截图
 
 ### 登录
@@ -21,38 +28,37 @@
 
 ### 货讯速查
 ![freight_track_query_preview](./art/freight_track_query_preview.png)
-![freight_track_query_search](./art/freight_track_query_search.png)
-![freight_track_query_detail](./art/freight_track_query_detail.png)
-
-### 扫描设备
-![scan_device](./art/scan_device_1.png)
-![scan_device](./art/scan_device_2.png)
+![freight_track_query_detail_1](./art/freight_track_query_detail_1.png)
+![freight_track_query_detail_2](./art/freight_track_query_detail_2.png)
 
 ### 蓝牙锁操作
-![device_operation_1](./art/device_operation_1.png)
-![device_operation_2](./art/device_operation_2.png)
-![device_operation_3](./art/device_operation_3.png)
+
+#### 扫描设备
+![ble_scan_device_1](./art/device_ble_scan_device_1.png)
+![ble_scan_device_2](./art/device_ble_scan_device_2.png)
+
+#### 操作设备
+![device_ble_operation_1](./art/device_ble_operation_1.png)
+![device_ble_operation_2](./art/device_ble_operation_2.png)
 
 #### 配置设备
-![device_setting](./art/device_setting.png)
+![ble_operation_setting](./art/device_ble_operation_setting.png)
 
-##### 拍照
-![device_take_picture_1](./art/device_take_picture_1.png)
-![device_take_picture_2](./art/device_take_picture_2.png)
-![device_take_picture_3](./art/device_take_picture_3.png)
-
-#### 设备状态信息
-![device_operation_state_info](./art/device_operation_state_info.png)
-
-#### 设备位置信息
-![device_operation_position_info](./art/device_operation_position_info.png)
+#### 查询设备各状态
+![ble_operation_state_info](./art/device_ble_operation_state_info.png)
+![ble_operation_position_info](./art/device_ble_operation_position_info.png)
+![ble_operation_read_setting](./art/device_ble_operation_read_setting.png)
 
 ### NFC封锁操作
-![device_nfc_operation_1](./art/device_nfc_operation_1.png)
-![device_nfc_operation_2](./art/device_nfc_operation_2.png)
+![nfc_operation_1](./art/device_nfc_operation_1.png)
 
-#### 扫描NFC ID号
-![device_nfc_scan_id](./art/device_nfc_scan_id.png)
+#### 上封
+![nfc_operation_lock](./art/device_nfc_operation_lock.png)
+
+#### 拍照
+![nfc_operation_take_picture_1](./art/device_nfc_operation_take_picture_1.png)
+![nfc_operation_take_picture_2](./art/device_nfc_operation_take_picture_2.png)
+![nfc_operation_take_picture_3](./art/device_nfc_operation_take_picture_3.png)
 
 
 
