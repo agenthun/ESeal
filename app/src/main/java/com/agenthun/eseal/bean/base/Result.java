@@ -1,93 +1,104 @@
 
 package com.agenthun.eseal.bean.base;
 
-public class Result {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Result implements Parcelable {
 
     private Integer RESULT;
     private Integer EFFECTIVETOKEN;
     private String ERRORINFO;
-    private Integer TOTAL;
-    private Integer COUNTPAGES;
+    private Integer ICOUNT;
 
-    private String MAC;
+    public Result(Integer RESULT, Integer EFFECTIVETOKEN, String ERRORINFO, Integer ICOUNT) {
+        this.RESULT = RESULT;
+        this.EFFECTIVETOKEN = EFFECTIVETOKEN;
+        this.ERRORINFO = ERRORINFO;
+        this.ICOUNT = ICOUNT;
+    }
 
-    /**
-     * @return The RESULT
-     */
     public Integer getRESULT() {
         return RESULT;
     }
 
-    /**
-     * @param RESULT The RESULT
-     */
     public void setRESULT(Integer RESULT) {
         this.RESULT = RESULT;
     }
 
-    /**
-     * @return The EFFECTIVETOKEN
-     */
     public Integer getEFFECTIVETOKEN() {
         return EFFECTIVETOKEN;
     }
 
-    /**
-     * @param EFFECTIVETOKEN The EFFECTIVETOKEN
-     */
     public void setEFFECTIVETOKEN(Integer EFFECTIVETOKEN) {
         this.EFFECTIVETOKEN = EFFECTIVETOKEN;
     }
 
-    /**
-     * @return The ERRORINFO
-     */
     public String getERRORINFO() {
         return ERRORINFO;
     }
 
-    /**
-     * @param ERRORINFO The ERRORINFO
-     */
     public void setERRORINFO(String ERRORINFO) {
         this.ERRORINFO = ERRORINFO;
     }
 
-    /**
-     * @return The TOTAL
-     */
-    public Integer getTOTAL() {
-        return TOTAL;
+    public Integer getICOUNT() {
+        return ICOUNT;
     }
 
-    /**
-     * @param TOTAL The TOTAL
-     */
-    public void setTOTAL(Integer TOTAL) {
-        this.TOTAL = TOTAL;
+    public void setICOUNT(Integer ICOUNT) {
+        this.ICOUNT = ICOUNT;
     }
 
-    /**
-     * @return The COUNTPAGES
-     */
-    public Integer getCOUNTPAGES() {
-        return COUNTPAGES;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    /**
-     * @param COUNTPAGES The COUNTPAGES
-     */
-    public void setCOUNTPAGES(Integer COUNTPAGES) {
-        this.COUNTPAGES = COUNTPAGES;
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.RESULT);
+        dest.writeValue(this.EFFECTIVETOKEN);
+        dest.writeString(this.ERRORINFO);
+        dest.writeValue(this.ICOUNT);
     }
 
-
-    public String getMAC() {
-        return MAC;
+    protected Result(Parcel in) {
+        this.RESULT = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.EFFECTIVETOKEN = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.ERRORINFO = in.readString();
+        this.ICOUNT = (Integer) in.readValue(Integer.class.getClassLoader());
     }
 
-    public void setMAC(String MAC) {
-        this.MAC = MAC;
+    public static final Parcelable.Creator<Result> CREATOR = new Parcelable.Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel source) {
+            return new Result(source);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Result result = (Result) o;
+
+        if (!RESULT.equals(result.RESULT)) return false;
+        return EFFECTIVETOKEN.equals(result.EFFECTIVETOKEN);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = RESULT.hashCode();
+        result = 31 * result + EFFECTIVETOKEN.hashCode();
+        return result;
     }
 
     @Override
@@ -96,9 +107,7 @@ public class Result {
                 "RESULT=" + RESULT +
                 ", EFFECTIVETOKEN=" + EFFECTIVETOKEN +
                 ", ERRORINFO='" + ERRORINFO + '\'' +
-                ", TOTAL=" + TOTAL +
-                ", COUNTPAGES=" + COUNTPAGES +
-                ", MAC='" + MAC + '\'' +
+                ", ICOUNT=" + ICOUNT +
                 '}';
     }
 }

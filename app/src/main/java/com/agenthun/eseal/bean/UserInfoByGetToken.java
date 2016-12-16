@@ -6,48 +6,72 @@ package com.agenthun.eseal.bean;
  * @date 16/3/2 下午4:56.
  */
 public class UserInfoByGetToken {
-    private String USERID;
-    private String USERNAME;
+    private Integer EFFECTIVETOKEN;
     private String EMAIL;
     private String ENTERPRISE;
+    private String ERRORINFO;
     private String FREIGHTOWNER;
-    private String REALNAME;
-    private String MOBILE;
-    private Boolean ISEMAIL;
-    private Boolean ISSMS;
     private String IMGURL;
+    private String ISEMAIL;
+    private String ISSMS;
+    private String MOBILE;
+    private String REALNAME;
+    private Integer RESULT;
     private String ROLEID;
     private String TOKEN;
+    private String USERID;
+    private String USERNAME;
 
     public UserInfoByGetToken() {
 
     }
 
-    public UserInfoByGetToken(String USERID, String USERNAME, String EMAIL, String ENTERPRISE, String REALNAME, String MOBILE, Boolean ISEMAIL, Boolean ISSMS) {
-        this.USERID = USERID;
-        this.USERNAME = USERNAME;
+    public UserInfoByGetToken(String EMAIL, String ENTERPRISE,
+                              String FREIGHTOWNER, String IMGURL,
+                              String MOBILE, String REALNAME,
+                              String ROLEID, String TOKEN,
+                              String USERID, String USERNAME) {
+        this(1, EMAIL,
+                ENTERPRISE, "",
+                FREIGHTOWNER, IMGURL,
+                "1", "1",
+                MOBILE, REALNAME,
+                1, ROLEID,
+                TOKEN, USERID,
+                USERNAME);
+    }
+
+    public UserInfoByGetToken(Integer EFFECTIVETOKEN, String EMAIL,
+                              String ENTERPRISE, String ERRORINFO,
+                              String FREIGHTOWNER, String IMGURL,
+                              String ISEMAIL, String ISSMS,
+                              String MOBILE, String REALNAME,
+                              Integer RESULT, String ROLEID,
+                              String TOKEN, String USERID,
+                              String USERNAME) {
+        this.EFFECTIVETOKEN = EFFECTIVETOKEN;
         this.EMAIL = EMAIL;
         this.ENTERPRISE = ENTERPRISE;
-        this.REALNAME = REALNAME;
-        this.MOBILE = MOBILE;
+        this.ERRORINFO = ERRORINFO;
+        this.FREIGHTOWNER = FREIGHTOWNER;
+        this.IMGURL = IMGURL;
         this.ISEMAIL = ISEMAIL;
         this.ISSMS = ISSMS;
-    }
-
-    public String getUSERID() {
-        return USERID;
-    }
-
-    public void setUSERID(String USERID) {
+        this.MOBILE = MOBILE;
+        this.REALNAME = REALNAME;
+        this.RESULT = RESULT;
+        this.ROLEID = ROLEID;
+        this.TOKEN = TOKEN;
         this.USERID = USERID;
-    }
-
-    public String getUSERNAME() {
-        return USERNAME;
-    }
-
-    public void setUSERNAME(String USERNAME) {
         this.USERNAME = USERNAME;
+    }
+
+    public Integer getEFFECTIVETOKEN() {
+        return EFFECTIVETOKEN;
+    }
+
+    public void setEFFECTIVETOKEN(Integer EFFECTIVETOKEN) {
+        this.EFFECTIVETOKEN = EFFECTIVETOKEN;
     }
 
     public String getEMAIL() {
@@ -66,6 +90,14 @@ public class UserInfoByGetToken {
         this.ENTERPRISE = ENTERPRISE;
     }
 
+    public String getERRORINFO() {
+        return ERRORINFO;
+    }
+
+    public void setERRORINFO(String ERRORINFO) {
+        this.ERRORINFO = ERRORINFO;
+    }
+
     public String getFREIGHTOWNER() {
         return FREIGHTOWNER;
     }
@@ -74,12 +106,28 @@ public class UserInfoByGetToken {
         this.FREIGHTOWNER = FREIGHTOWNER;
     }
 
-    public String getREALNAME() {
-        return REALNAME;
+    public String getIMGURL() {
+        return IMGURL;
     }
 
-    public void setREALNAME(String REALNAME) {
-        this.REALNAME = REALNAME;
+    public void setIMGURL(String IMGURL) {
+        this.IMGURL = IMGURL;
+    }
+
+    public String getISEMAIL() {
+        return ISEMAIL;
+    }
+
+    public void setISEMAIL(String ISEMAIL) {
+        this.ISEMAIL = ISEMAIL;
+    }
+
+    public String getISSMS() {
+        return ISSMS;
+    }
+
+    public void setISSMS(String ISSMS) {
+        this.ISSMS = ISSMS;
     }
 
     public String getMOBILE() {
@@ -90,28 +138,20 @@ public class UserInfoByGetToken {
         this.MOBILE = MOBILE;
     }
 
-    public Boolean getISEMAIL() {
-        return ISEMAIL;
+    public String getREALNAME() {
+        return REALNAME;
     }
 
-    public void setISEMAIL(Boolean ISEMAIL) {
-        this.ISEMAIL = ISEMAIL;
+    public void setREALNAME(String REALNAME) {
+        this.REALNAME = REALNAME;
     }
 
-    public Boolean getISSMS() {
-        return ISSMS;
+    public Integer getRESULT() {
+        return RESULT;
     }
 
-    public void setISSMS(Boolean ISSMS) {
-        this.ISSMS = ISSMS;
-    }
-
-    public String getIMGURL() {
-        return IMGURL;
-    }
-
-    public void setIMGURL(String IMGURL) {
-        this.IMGURL = IMGURL;
+    public void setRESULT(Integer RESULT) {
+        this.RESULT = RESULT;
     }
 
     public String getROLEID() {
@@ -126,21 +166,44 @@ public class UserInfoByGetToken {
         return TOKEN;
     }
 
+    public void setTOKEN(String TOKEN) {
+        this.TOKEN = TOKEN;
+    }
+
+    public String getUSERID() {
+        return USERID;
+    }
+
+    public void setUSERID(String USERID) {
+        this.USERID = USERID;
+    }
+
+    public String getUSERNAME() {
+        return USERNAME;
+    }
+
+    public void setUSERNAME(String USERNAME) {
+        this.USERNAME = USERNAME;
+    }
+
     @Override
     public String toString() {
         return "UserInfoByGetToken{" +
-                "USERID='" + USERID + '\'' +
-                ", USERNAME='" + USERNAME + '\'' +
+                "EFFECTIVETOKEN=" + EFFECTIVETOKEN +
                 ", EMAIL='" + EMAIL + '\'' +
                 ", ENTERPRISE='" + ENTERPRISE + '\'' +
+                ", ERRORINFO='" + ERRORINFO + '\'' +
                 ", FREIGHTOWNER='" + FREIGHTOWNER + '\'' +
-                ", REALNAME='" + REALNAME + '\'' +
-                ", MOBILE='" + MOBILE + '\'' +
-                ", ISEMAIL=" + ISEMAIL +
-                ", ISSMS=" + ISSMS +
                 ", IMGURL='" + IMGURL + '\'' +
+                ", ISEMAIL='" + ISEMAIL + '\'' +
+                ", ISSMS='" + ISSMS + '\'' +
+                ", MOBILE='" + MOBILE + '\'' +
+                ", REALNAME='" + REALNAME + '\'' +
+                ", RESULT=" + RESULT +
                 ", ROLEID='" + ROLEID + '\'' +
                 ", TOKEN='" + TOKEN + '\'' +
+                ", USERID='" + USERID + '\'' +
+                ", USERNAME='" + USERNAME + '\'' +
                 '}';
     }
 }

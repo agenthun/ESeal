@@ -15,7 +15,8 @@ import com.baidu.mapapi.SDKInitializer;
 public class App extends Application {
     private static Context mApplicationContext;
     private static String token;
-    private static String tagId = "00000000000000";
+    //    private static String tagId = "00000000000000";
+    private static String tagId = "043B88F2994080";
     private static String deviceId = "13003";
 
     public LocationService locationService;

@@ -519,7 +519,11 @@ public class DeviceOperationActivity extends AppCompatActivity {
                             if (res == 1) {
                                 showSnackbar(getString(R.string.success_device_setting_upload));
                             } else {
-                                showSnackbar(getString(R.string.fail_device_setting_upload));
+                                if (result.getERRORINFO().equals("15")) {
+                                    showSnackbar(getString(R.string.fail_device_nfc_tag));
+                                } else {
+                                    showSnackbar(getString(R.string.fail_device_setting_upload));
+                                }
                             }
                         }
                     });

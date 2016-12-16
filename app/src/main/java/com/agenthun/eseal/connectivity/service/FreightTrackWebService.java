@@ -2,8 +2,10 @@ package com.agenthun.eseal.connectivity.service;
 
 import android.support.annotation.Nullable;
 
-import com.agenthun.eseal.bean.FreightInfos;
-import com.agenthun.eseal.bean.LocationInfos;
+import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
+import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
+import com.agenthun.eseal.bean.BleDeviceInfos;
+import com.agenthun.eseal.bean.DeviceLocationInfos;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.UserInfoByGetToken;
 import com.agenthun.eseal.bean.base.Result;
@@ -30,7 +32,7 @@ public interface FreightTrackWebService {
     @GET("ConfigureCargo")
     Observable<Result> configureCargo(
             @Query("token") String token,
-            @Query("implementID") String implementID,
+            @Nullable @Query("implementID") String implementID,
             @Nullable @Query("containerNo") String containerNo,
             @Nullable @Query("freightOwner") String freightOwner,
             @Nullable @Query("freightName") String freightName,
@@ -73,13 +75,13 @@ public interface FreightTrackWebService {
      */
     //根据Token获取所有在途中的货物设置信息
     @GET("GetFreightInfoByToken")
-    Observable<FreightInfos> getBleDeviceFreightList(
+    Observable<BleDeviceInfos> getBleDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
 
     //根据containerId获取该货物状态列表
     @GET("GetAllBaiduCoordinateByContainerId")
-    Observable<LocationInfos> getBleDeviceLocation(
+    Observable<DeviceLocationInfos> getBleDeviceLocation(
             @Query("token") String token,
             @Query("containerId") String containerId,
             @Query("language") String language);
@@ -99,13 +101,13 @@ public interface FreightTrackWebService {
      */
     //根据Token获取所有在途中的货物设置信息
     @GET("GetAllImplement")
-    Observable<FreightInfos> getBeidouMasterDeviceFreightList(
+    Observable<BeidouMasterDeviceInfos> getBeidouMasterDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
 
     //根据implementID获取该货物状态列表
     @GET("GetImplementPositionInfoByID")
-    Observable<LocationInfos> getBeidouMasterDeviceLocation(
+    Observable<DeviceLocationInfos> getBeidouMasterDeviceLocation(
             @Query("token") String token,
             @Query("implementID") String implementID,
             @Query("language") String language);
@@ -115,13 +117,13 @@ public interface FreightTrackWebService {
      */
     //根据Token获取所有在途中的货物设置信息
     @GET("GetAllNFCByToken")
-    Observable<FreightInfos> getBeidouNfcDeviceFreightList(
+    Observable<BeidouNfcDeviceInfos> getBeidouNfcDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
 
     //根据NFCId获取该货物状态列表
     @GET("GetNFCPositionInfoByID")
-    Observable<LocationInfos> getBeidouNfcDeviceLocation(
+    Observable<DeviceLocationInfos> getBeidouNfcDeviceLocation(
             @Query("token") String token,
             @Query("NFCId") String nfcId,
             @Query("language") String language);

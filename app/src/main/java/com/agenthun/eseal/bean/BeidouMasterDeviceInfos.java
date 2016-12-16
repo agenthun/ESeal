@@ -1,4 +1,7 @@
-package com.agenthun.eseal.bean.base;
+package com.agenthun.eseal.bean;
+
+import com.agenthun.eseal.bean.base.BeidouMasterDevice;
+import com.agenthun.eseal.bean.base.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,11 +9,12 @@ import java.util.List;
 /**
  * @project ESeal
  * @authors agenthun
- * @date 16/3/3 下午9:23.
+ * @date 2016/12/16 04:36.
  */
-public class BaseWebServiceResponseBody {
+
+public class BeidouMasterDeviceInfos {
     private List<Result> Result = new ArrayList<>();
-    private List<Detail> Details = new ArrayList<>();
+    private List<BeidouMasterDevice> Details = new ArrayList<>();
 
     public List<com.agenthun.eseal.bean.base.Result> getResult() {
         return Result;
@@ -20,11 +24,11 @@ public class BaseWebServiceResponseBody {
         Result = result;
     }
 
-    public List<Detail> getDetails() {
+    public List<BeidouMasterDevice> getDetails() {
         return Details;
     }
 
-    public void setDetails(List<Detail> details) {
+    public void setDetails(List<BeidouMasterDevice> details) {
         Details = details;
     }
 }

@@ -31,11 +31,14 @@ import android.widget.ImageView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.activity.DeviceSettingActivity;
 import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.bean.MACByOpenCloseContainer;
+import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.connectivity.service.PathType;
+import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
@@ -64,9 +67,12 @@ public class NfcDeviceFragment extends Fragment {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    private static final int DEVICE_SETTING = 1;
+
     private static final int STATE_OPERATION_INITIAL = -1;
     private static final int STATE_OPERATION_LOCK = 0;
     private static final int STATE_OPERATION_UNLOCK = 1;
+    private static final int STATE_OPERATION_SETTING = 2;
     private static final int STATE_DEVICE_PICTURE_ADD = 0;
     private static final int STATE_DEVICE_PICTURE_PREVIEW = 1;
 
@@ -74,6 +80,8 @@ public class NfcDeviceFragment extends Fragment {
     private Uri pictureUri = null;
 
     private LocationService locationService;
+
+    String coordinateSetting = "0.000000,0.000000";
 
     @Bind(R.id.folding_cell_lock)
     FoldingCell foldingCellLock;
@@ -246,6 +254,19 @@ public class NfcDeviceFragment extends Fragment {
         LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(broadcastReceiver);
     }
 
+    @OnClick(R.id.card_seting)
+    public void onSettingBtnClick() {
+//        getDeviceId(); //获取设备ID
+        operationSealSwitch = STATE_OPERATION_SETTING; //配置
+
+        locationService.requestLocation(getContext());// 定位SDK
+        isLocationServiceStarting = true;
+
+        //配置信息
+        Intent intent = new Intent(getContext(), DeviceSettingActivity.class);
+        startActivityForResult(intent, DEVICE_SETTING);
+    }
+
     @OnClick(R.id.cell_title_lock)
     public void onFoldingCellLockBtnClick() {
         if (operationSealSwitch == STATE_OPERATION_UNLOCK) {
@@ -275,6 +296,22 @@ public class NfcDeviceFragment extends Fragment {
         }*/
         locationService.requestLocation(getContext());// 定位SDK
         isLocationServiceStarting = true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == DEVICE_SETTING && resultCode == Activity.RESULT_OK) {
+            final SettingType settingType = data.getExtras().getParcelable(SettingType.EXTRA_DEVICE);
+            Log.d(TAG, "onActivityResult() returned: settingType = " + settingType.toString());
+
+            String imageResourceStr = data.getExtras().getString(TakePictueActivity.PICTURE_URI);
+
+            imageResourceStr = "";
+            serviceOerationSetting(settingType, coordinateSetting, imageResourceStr);
+
+            operationSealSwitch = STATE_OPERATION_INITIAL;
+        }
     }
 
     private void performTakePictureWithTransition(View v) {
@@ -426,6 +463,38 @@ public class NfcDeviceFragment extends Fragment {
         }
     }
 
+    private void serviceOerationSetting(SettingType settingType, String coordinate, String imageResourceStr) {
+        String token = App.getToken();
+        if (token != null) {
+            String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
+
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                    .configureDevice(token, "",
+                            settingType.getContainerNumber(), settingType.getOwner(), settingType.getFreightName(),
+                            settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
+                            settingType.getFrequency(),
+                            App.getTagId(),
+                            imageResourceStr,
+                            coordinate,
+                            operateTime)
+                    .subscribe(new Action1<Result>() {
+                        @Override
+                        public void call(Result result) {
+                            int res = result.getRESULT();
+                            if (res == 1) {
+                                showSnackbar(getString(R.string.success_device_setting_upload));
+                            } else {
+                                if (result.getERRORINFO().equals("15")) {
+                                    showSnackbar(getString(R.string.fail_device_nfc_tag));
+                                } else {
+                                    showSnackbar(getString(R.string.fail_device_setting_upload));
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
     private void serviceOerationLock() {
         String token = App.getToken();
         if (token != null) {
@@ -435,7 +504,7 @@ public class NfcDeviceFragment extends Fragment {
             if (!TextUtils.equals(lockLocation.getText(), getString(R.string.text_hint_get_current_location))) {
                 coordinate = lockLocation.getText().toString().split(", ")[1];
             }
-            String tagId = "00000000000000";
+            String tagId = "043B88F2994080";
             if (!TextUtils.equals(lockNfcId.getText(), getString(R.string.text_hint_get_nfc_tag))) {
                 tagId = lockNfcId.getText().toString();
             }
@@ -471,7 +540,7 @@ public class NfcDeviceFragment extends Fragment {
             if (!TextUtils.equals(unlockLocation.getText(), getString(R.string.text_hint_get_current_location))) {
                 coordinate = unlockLocation.getText().toString().split(", ")[1];
             }
-            String tagId = "00000000000000";
+            String tagId = "043B88F2994080";
             if (!TextUtils.equals(unlockNfcId.getText(), getString(R.string.text_hint_get_nfc_tag))) {
                 tagId = unlockNfcId.getText().toString();
             }
@@ -580,13 +649,37 @@ public class NfcDeviceFragment extends Fragment {
                         unlockTime.setText(time);
                         unlockLocation.setText(address);
                         break;
+                    case STATE_OPERATION_SETTING: //配置
+                        coordinateSetting = lat + "," + lng;
+                        break;
                 }
             } else if (null != location && location.getLocType() == BDLocation.TypeServerError) {
-                lockLocation.setText(getString(R.string.fail_get_current_location));
+                switch (operationSealSwitch) {
+                    case STATE_OPERATION_LOCK: //上封
+                        lockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                    case STATE_OPERATION_UNLOCK: //解封
+                        unlockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                }
             } else if (null != location && location.getLocType() == BDLocation.TypeNetWorkException) {
-                lockLocation.setText(getString(R.string.fail_get_current_location));
+                switch (operationSealSwitch) {
+                    case STATE_OPERATION_LOCK: //上封
+                        lockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                    case STATE_OPERATION_UNLOCK: //解封
+                        unlockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                }
             } else if (null != location && location.getLocType() == BDLocation.TypeCriteriaException) {
-                lockLocation.setText(getString(R.string.fail_get_current_location));
+                switch (operationSealSwitch) {
+                    case STATE_OPERATION_LOCK: //上封
+                        lockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                    case STATE_OPERATION_UNLOCK: //解封
+                        unlockLocation.setText(getString(R.string.fail_get_current_location));
+                        break;
+                }
             }
 
             isLocationServiceStarting = false;

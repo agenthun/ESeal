@@ -133,6 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onNext(UserInfoByGetToken userInfoByGetToken) {
                             if (userInfoByGetToken == null) return;
+                            if (userInfoByGetToken.getEFFECTIVETOKEN() != 1) return;
                             token = userInfoByGetToken.getTOKEN();
                             Log.d(TAG, "token: " + token);
                             if (token != null) {

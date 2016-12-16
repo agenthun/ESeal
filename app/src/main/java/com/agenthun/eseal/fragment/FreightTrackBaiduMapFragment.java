@@ -10,17 +10,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.FreightInfos;
-import com.agenthun.eseal.bean.LocationInfos;
-import com.agenthun.eseal.bean.base.Detail;
+import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
+import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
+import com.agenthun.eseal.bean.BleDeviceInfos;
+import com.agenthun.eseal.bean.DeviceLocationInfos;
+import com.agenthun.eseal.bean.base.BeidouMasterDevice;
+import com.agenthun.eseal.bean.base.BeidouNfcDevice;
+import com.agenthun.eseal.bean.base.BleDevice;
+import com.agenthun.eseal.bean.base.DeviceLocation;
 import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
-import com.agenthun.eseal.utils.ContainerNoSuggestion;
+import com.agenthun.eseal.utils.DeviceSearchSuggestion;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -63,7 +70,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
             50000, 100000, 200000, 500000, 1000000, 2000000
     };
 
-    private List<ContainerNoSuggestion> suggestionList = new ArrayList<>();
+    private List<DeviceSearchSuggestion> suggestionList = new ArrayList<>();
 
     private MapView bmapView;
 
@@ -101,24 +108,30 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
         String token = App.getToken();
         if (token != null) {
+            suggestionList.clear();
             /**
              * 获取蓝牙锁访问链路
              */
 //            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getBleDeviceFreightListObservable(token)
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBleDeviceFreightListObservable(token)
-                    .subscribe(new Action1<FreightInfos>() {
+                    .subscribe(new Action1<BleDeviceInfos>() {
                         @Override
-                        public void call(FreightInfos freightInfos) {
-                            if (freightInfos == null) return;
-                            List<Detail> details = freightInfos.getDetails();
-                            for (Detail detail :
+                        public void call(BleDeviceInfos bleDeviceInfos) {
+                            if (bleDeviceInfos == null) return;
+                            if (bleDeviceInfos.getResult().get(0).getRESULT() != 1) return;
+                            List<BleDevice> details = bleDeviceInfos.getDetails();
+                            for (BleDevice detail :
                                     details) {
-                                Log.d(TAG, "getBleDeviceFreightListObservable: " + detail.toString());
-                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
-                                        detail,
-                                        ContainerNoSuggestion.DeviceType.DEVICE_BLE);
-                                suggestionList.add(containerNoSuggestion);
+                                Log.d(TAG, "getBleDevice(): " + detail.toString());
+                                DeviceSearchSuggestion suggestion = new DeviceSearchSuggestion(detail);
+                                suggestionList.add(suggestion);
                             }
+                            Log.d(TAG, "from ble suggestionList.size(): " + suggestionList.size());
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(TAG, "getBleDevice() throwable: " + throwable.getLocalizedMessage());
                         }
                     });
 
@@ -131,42 +144,52 @@ public class FreightTrackBaiduMapFragment extends Fragment {
             /**
              * 北斗终端帽访问链路
              */
-/*            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouMasterDeviceFreightListObservable(token)
-                    .subscribe(new Action1<FreightInfos>() {
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouMasterDeviceFreightListObservable(token)
+                    .subscribe(new Action1<BeidouMasterDeviceInfos>() {
                         @Override
-                        public void call(FreightInfos freightInfos) {
-                            if (freightInfos == null) return;
-                            List<Detail> details = freightInfos.getDetails();
-                            for (Detail detail :
+                        public void call(BeidouMasterDeviceInfos beidouMasterDeviceInfos) {
+                            if (beidouMasterDeviceInfos == null) return;
+                            if (beidouMasterDeviceInfos.getResult().get(0).getRESULT() != 1) return;
+                            List<BeidouMasterDevice> details = beidouMasterDeviceInfos.getDetails();
+                            for (BeidouMasterDevice detail :
                                     details) {
-                                Log.d(TAG, "getBeidouMasterDeviceFreightListObservable() returned: " + detail.toString());
-                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
-                                        detail,
-                                        ContainerNoSuggestion.DeviceType.DEVICE_BEIDOU_MASTER);
-                                suggestionList.add(containerNoSuggestion);
+                                Log.d(TAG, "getBeidouMasterDevice(): " + detail.toString());
+                                DeviceSearchSuggestion suggestion = new DeviceSearchSuggestion(detail);
+                                suggestionList.add(suggestion);
                             }
+                            Log.d(TAG, "from beiMaster suggestionList.size(): " + suggestionList.size());
                         }
-                    });*/
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(TAG, "getBeidouMasterDevice() throwable: " + throwable.getLocalizedMessage());
+                        }
+                    });
 
             /**
              * 北斗终端NFC访问链路
              */
-/*            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouNfcDeviceFreightListObservable(token)
-                    .subscribe(new Action1<FreightInfos>() {
+            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getBeidouNfcDeviceFreightListObservable(token)
+                    .subscribe(new Action1<BeidouNfcDeviceInfos>() {
                         @Override
-                        public void call(FreightInfos freightInfos) {
-                            if (freightInfos == null) return;
-                            List<Detail> details = freightInfos.getDetails();
-                            for (Detail detail :
+                        public void call(BeidouNfcDeviceInfos beidouNfcDeviceInfos) {
+                            if (beidouNfcDeviceInfos == null) return;
+                            if (beidouNfcDeviceInfos.getResult().get(0).getRESULT() != 1) return;
+                            List<BeidouNfcDevice> details = beidouNfcDeviceInfos.getDetails();
+                            for (BeidouNfcDevice detail :
                                     details) {
-                                Log.d(TAG, "getBeidouNfcDeviceFreightListObservable() returned: " + detail.toString());
-                                ContainerNoSuggestion containerNoSuggestion = new ContainerNoSuggestion(
-                                        detail,
-                                        ContainerNoSuggestion.DeviceType.DEVICE_BEIDOU_NFC);
-                                suggestionList.add(containerNoSuggestion);
+                                Log.d(TAG, "getBeidouNfcDevice(): " + detail.toString());
+                                DeviceSearchSuggestion suggestion = new DeviceSearchSuggestion(detail);
+                                suggestionList.add(suggestion);
                             }
+                            Log.d(TAG, "from beiNfc suggestionList.size(): " + suggestionList.size());
                         }
-                    });*/
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Log.d(TAG, "getBeidouNfcDevice() throwable: " + throwable.getLocalizedMessage());
+                        }
+                    });
         }
 
         blurredMap = (ImageView) view.findViewById(R.id.blurredMap);
@@ -228,37 +251,39 @@ public class FreightTrackBaiduMapFragment extends Fragment {
             }
         });
 
-/*        floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+        floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
-                ContainerNoSuggestion containerNoSuggestion = suggestionList.get(itemPosition);
-                if (suggestionList.contains(containerNoSuggestion) && containerNoSuggestion.getIsHistory()) {
-                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
-                    leftIcon.setAlpha(.36f);
-                } else {
-                    Log.d(TAG, "onBindSuggestion() returned: " + containerNoSuggestion.getDetail().toString());
+                DeviceSearchSuggestion suggestion = (DeviceSearchSuggestion) item;
+                switch (suggestion.getType()) {
+                    case DeviceSearchSuggestion.DEVICE_BLE:
+                        leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_bluetooth_black_24dp));
+                        break;
+                    case DeviceSearchSuggestion.DEVICE_BEIDOU_MASTER:
+                        leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_lock_black_24dp));
+                        break;
+                    case DeviceSearchSuggestion.DEVICE_BEIDOU_NFC:
+                        leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_nfc_black_24dp));
+                        break;
                 }
-
-                Log.d(TAG, "onBindSuggestion() returned: " + itemPosition);
             }
-        });*/
+        });
 
         floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                final ContainerNoSuggestion containerNoSuggestion = (ContainerNoSuggestion) searchSuggestion;
-                if (suggestionList.contains(containerNoSuggestion)) {
-                    containerNoSuggestion.setIsHistory(true);
-                }
+                final DeviceSearchSuggestion suggestion = (DeviceSearchSuggestion) searchSuggestion;
 
-                String containerId = containerNoSuggestion.getDetail().getContainerId();
-                Log.d(TAG, "onSuggestionClicked() containerId = " + containerId);
-                String containerNo = containerNoSuggestion.getDetail().getContainerNo();
+                String id = suggestion.getId();
+                Integer type = suggestion.getType();
+                String name = suggestion.getName();
+                Log.d(TAG, "onSuggestionClicked() id = " + id +
+                        ", type = " + type +
+                        ", name = " + name);
 
                 loadingMapState(true);
                 clearLocationData();
-//                getLocationData(containerNo, containerId);
-                getLocationData(containerNo, "718");
+                getLocationData(id, type, name);
             }
 
             @Override
@@ -313,61 +338,152 @@ public class FreightTrackBaiduMapFragment extends Fragment {
     /**
      * 访问定位数据信息
      */
-    private void getLocationData(final String containerNo, final String containerId) {
+    private void getLocationData(final String id, final Integer type, final String name) {
         String token = App.getToken();
 
         if (token != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                            .getBleDeviceLocationObservable(App.getToken(), containerId)
-                            .map(new Func1<LocationInfos, List<LocationDetail>>() {
-                                @Override
-                                public List<LocationDetail> call(LocationInfos locationInfos) {
-                                    if (locationInfos.getResult().get(0).getRESULT() == 0) {
-                                        return new ArrayList<LocationDetail>();
-                                    }
+                    switch (type) {
+                        case DeviceSearchSuggestion.DEVICE_BLE:
+                            String idTset = "1143";//"718";
+                            /**
+                             * 获取蓝牙锁定位数据信息
+                             */
+                            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                                    .getBleDeviceLocationObservable(App.getToken(), idTset)
+                                    .map(new Func1<DeviceLocationInfos, List<LocationDetail>>() {
+                                        @Override
+                                        public List<LocationDetail> call(DeviceLocationInfos locationInfos) {
+                                            if (locationInfos == null ||
+                                                    locationInfos.getResult().get(0).getRESULT() != 1)
+                                                return new ArrayList<LocationDetail>();
 
-                                    List<LocationDetail> res = locationInfosToLocationDetailList(locationInfos.getDetails());
-                                    return res;
-                                }
-                            })
-                            .subscribe(new Subscriber<List<LocationDetail>>() {
-                                @Override
-                                public void onCompleted() {
+                                            List<LocationDetail> res = locationInfosToLocationDetailList(locationInfos.getDetails());
+                                            return res;
+                                        }
+                                    })
+                                    .subscribe(new Subscriber<List<LocationDetail>>() {
+                                        @Override
+                                        public void onCompleted() {
 
-                                }
+                                        }
 
-                                @Override
-                                public void onError(Throwable e) {
-                                    Log.d(TAG, "getBleDeviceLocationObservable Error()");
-                                    clearLocationData();
-                                    loadingMapState(false);
-                                }
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.d(TAG, "getBleDeviceLocationObservable Error()");
+                                            clearLocationData();
+                                            loadingMapState(false);
+                                        }
 
-                                @Override
-                                public void onNext(List<LocationDetail> locationDetails) {
-                                    showBaiduMap(locationDetails);
+                                        @Override
+                                        public void onNext(List<LocationDetail> locationDetails) {
+                                            showBaiduMap(locationDetails);
 
-                                    if (mOnItemClickListener != null && locationDetails != null && locationDetails.size() != 0) {
-                                        mOnItemClickListener.onItemClick(containerNo, containerId, locationDetails);
-                                    }
-                                }
-                            });
+                                            if (mOnItemClickListener != null && locationDetails != null && locationDetails.size() != 0) {
+                                                mOnItemClickListener.onItemClick(name, id, locationDetails);
+                                            }
+                                        }
+                                    });
+                            break;
+                        case DeviceSearchSuggestion.DEVICE_BEIDOU_MASTER:
+                            /**
+                             * 北斗终端帽定位数据信息
+                             */
+                            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                                    .getBeidouMasterDeviceLocationObservable(App.getToken(), id)
+                                    .map(new Func1<DeviceLocationInfos, List<LocationDetail>>() {
+                                        @Override
+                                        public List<LocationDetail> call(DeviceLocationInfos locationInfos) {
+                                            if (locationInfos == null ||
+                                                    locationInfos.getResult().get(0).getRESULT() != 1)
+                                                return new ArrayList<LocationDetail>();
+
+                                            List<LocationDetail> res = locationInfosToLocationDetailList(locationInfos.getDetails());
+                                            return res;
+                                        }
+                                    })
+                                    .subscribe(new Subscriber<List<LocationDetail>>() {
+                                        @Override
+                                        public void onCompleted() {
+
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.d(TAG, "getBeidouMasterDeviceLocationObservable Error()");
+                                            clearLocationData();
+                                            loadingMapState(false);
+                                        }
+
+                                        @Override
+                                        public void onNext(List<LocationDetail> locationDetails) {
+                                            showBaiduMap(locationDetails);
+
+                                            if (mOnItemClickListener != null && locationDetails != null && locationDetails.size() != 0) {
+                                                mOnItemClickListener.onItemClick(name, id, locationDetails);
+                                            }
+                                        }
+                                    });
+                            break;
+                        case DeviceSearchSuggestion.DEVICE_BEIDOU_NFC:
+                            /**
+                             * 北斗终端NFC定位数据信息
+                             */
+                            RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
+                                    .getBeidouNfcDeviceLocationObservable(App.getToken(), id)
+                                    .map(new Func1<DeviceLocationInfos, List<LocationDetail>>() {
+                                        @Override
+                                        public List<LocationDetail> call(DeviceLocationInfos locationInfos) {
+                                            if (locationInfos == null ||
+                                                    locationInfos.getResult().get(0).getRESULT() != 1)
+                                                return new ArrayList<LocationDetail>();
+
+                                            List<LocationDetail> res = locationInfosToLocationDetailList(locationInfos.getDetails());
+                                            return res;
+                                        }
+                                    })
+                                    .subscribe(new Subscriber<List<LocationDetail>>() {
+                                        @Override
+                                        public void onCompleted() {
+
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            Log.d(TAG, "getBeidouNfcDeviceLocationObservable Error()");
+                                            clearLocationData();
+                                            loadingMapState(false);
+                                        }
+
+                                        @Override
+                                        public void onNext(List<LocationDetail> locationDetails) {
+                                            showBaiduMap(locationDetails);
+
+                                            if (mOnItemClickListener != null && locationDetails != null && locationDetails.size() != 0) {
+                                                mOnItemClickListener.onItemClick(name, id, locationDetails);
+                                            }
+                                        }
+                                    });
+                            break;
+                    }
                 }
             }).start();
         }
     }
 
-    private List<LocationDetail> locationInfosToLocationDetailList(List<Detail> details) {
+    private List<LocationDetail> locationInfosToLocationDetailList(List<DeviceLocation> details) {
         List<LocationDetail> result = new ArrayList<LocationDetail>();
+        if (details == null || details.size() == 0) return result;
 
         //GPS坐标转百度地图坐标
 //        CoordinateConverter converter = new CoordinateConverter();
 //        converter.from(CoordinateConverter.CoordType.GPS);
-        for (Detail detail :
+        for (DeviceLocation detail :
                 details) {
+            if (detail.isInvalid()) continue;
+
             String time = detail.getReportTime();
             String status = detail.getStatus();
             String[] location = detail.getBaiduCoordinate().split(",");
@@ -394,6 +510,8 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         List<LatLng> polylines = new ArrayList<>();
         for (LocationDetail locationDetail :
                 locationDetails) {
+            if (locationDetail.isInvalid()) continue;
+
             LatLng lng = locationDetail.getLatLng();
             polylines.add(lng);
 

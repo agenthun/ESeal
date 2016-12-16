@@ -1,5 +1,8 @@
 package com.agenthun.eseal.bean.base;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.baidu.mapapi.model.LatLng;
 
 /**
@@ -8,7 +11,7 @@ import com.baidu.mapapi.model.LatLng;
  * @date 2016/11/22 20:45.
  */
 
-public class LocationDetail {
+public class LocationDetail implements Parcelable {
     private String reportTime;
     private String status;
     private LatLng latLng;
@@ -44,5 +47,67 @@ public class LocationDetail {
 
     public void setLatLng(LatLng latLng) {
         this.latLng = latLng;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.reportTime);
+        dest.writeString(this.status);
+        dest.writeParcelable(this.latLng, flags);
+    }
+
+    protected LocationDetail(Parcel in) {
+        this.reportTime = in.readString();
+        this.status = in.readString();
+        this.latLng = in.readParcelable(LatLng.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<LocationDetail> CREATOR = new Parcelable.Creator<LocationDetail>() {
+        @Override
+        public LocationDetail createFromParcel(Parcel source) {
+            return new LocationDetail(source);
+        }
+
+        @Override
+        public LocationDetail[] newArray(int size) {
+            return new LocationDetail[size];
+        }
+    };
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LocationDetail that = (LocationDetail) o;
+
+        if (!reportTime.equals(that.reportTime)) return false;
+        return latLng.equals(that.latLng);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = reportTime.hashCode();
+        result = 31 * result + latLng.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "LocationDetail{" +
+                "reportTime='" + reportTime + '\'' +
+                ", status='" + status + '\'' +
+                ", latLng=" + latLng +
+                '}';
+    }
+
+    public Boolean isInvalid() {
+        return reportTime == null || status == null || latLng == null;
     }
 }
