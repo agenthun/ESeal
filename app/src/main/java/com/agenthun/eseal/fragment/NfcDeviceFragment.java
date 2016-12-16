@@ -33,7 +33,6 @@ import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.activity.DeviceSettingActivity;
 import com.agenthun.eseal.activity.TakePictueActivity;
-import com.agenthun.eseal.bean.MACByOpenCloseContainer;
 import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
@@ -469,7 +468,7 @@ public class NfcDeviceFragment extends Fragment {
             String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .configureDevice(token, "",
+                    .configureDeviceObservable(token, "",
                             settingType.getContainerNumber(), settingType.getOwner(), settingType.getFreightName(),
                             settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
                             settingType.getFrequency(),
@@ -512,15 +511,15 @@ public class NfcDeviceFragment extends Fragment {
             imgUrl = "";
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .getMACByCloseOperationObservable(token, "", tagId, imgUrl, coordinate, operateTime)
-                    .subscribe(new Action1<MACByOpenCloseContainer>() {
+                    .closeDeviceObservable(token, "", tagId, imgUrl, coordinate, operateTime)
+                    .subscribe(new Action1<Result>() {
                         @Override
-                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
-                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
-                            if (result == 1) {
+                        public void call(Result result) {
+                            int r = result.getRESULT() == null ? 0 : result.getRESULT();
+                            if (r == 1) {
                                 showSnackbar(getString(R.string.success_device_setting_upload));
                             } else {
-                                if (macByOpenCloseContainer.getERRORINFO().equals("15")) {
+                                if (result.getERRORINFO().equals("15")) {
                                     showSnackbar(getString(R.string.fail_device_nfc_tag));
                                 } else {
                                     showSnackbar(getString(R.string.fail_device_setting_upload));
@@ -548,15 +547,15 @@ public class NfcDeviceFragment extends Fragment {
             imgUrl = "";
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .getMACByOpenOperationObservable(token, "", tagId, imgUrl, coordinate, operateTime)
-                    .subscribe(new Action1<MACByOpenCloseContainer>() {
+                    .openDeviceObservable(token, "", tagId, imgUrl, coordinate, operateTime)
+                    .subscribe(new Action1<Result>() {
                         @Override
-                        public void call(MACByOpenCloseContainer macByOpenCloseContainer) {
-                            int result = macByOpenCloseContainer.getRESULT() == null ? 0 : macByOpenCloseContainer.getRESULT();
-                            if (result == 1) {
+                        public void call(Result result) {
+                            int r = result.getRESULT() == null ? 0 : result.getRESULT();
+                            if (r == 1) {
                                 showSnackbar(getString(R.string.success_device_setting_upload));
                             } else {
-                                if (macByOpenCloseContainer.getERRORINFO().equals("15")) {
+                                if (result.getERRORINFO().equals("15")) {
                                     showSnackbar(getString(R.string.fail_device_nfc_tag));
                                 } else {
                                     showSnackbar(getString(R.string.fail_device_setting_upload));

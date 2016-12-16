@@ -11,9 +11,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
@@ -25,7 +23,7 @@ import android.widget.Toast;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.bean.User;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.NetUtil;
@@ -118,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
 
 //            RetrofitManager.builder(PathType.BASE_WEB_SERVICE).getTokenObservable(name, password)
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST).getTokenObservable(name, password)
-                    .subscribe(new Subscriber<UserInfoByGetToken>() {
+                    .subscribe(new Subscriber<User>() {
                         @Override
                         public void onCompleted() {
                             getProgressDialog().cancel();
@@ -131,10 +129,10 @@ public class LoginActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onNext(UserInfoByGetToken userInfoByGetToken) {
-                            if (userInfoByGetToken == null) return;
-                            if (userInfoByGetToken.getEFFECTIVETOKEN() != 1) return;
-                            token = userInfoByGetToken.getTOKEN();
+                        public void onNext(User user) {
+                            if (user == null) return;
+                            if (user.getEFFECTIVETOKEN() != 1) return;
+                            token = user.getTOKEN();
                             Log.d(TAG, "token: " + token);
                             if (token != null) {
                                 App.setToken(token);

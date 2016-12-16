@@ -7,8 +7,7 @@ import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
 import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
 import com.agenthun.eseal.bean.BleDeviceInfos;
 import com.agenthun.eseal.bean.DeviceLocationInfos;
-import com.agenthun.eseal.bean.MACByOpenCloseContainer;
-import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.bean.User;
 import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.FreightTrackWebService;
@@ -137,23 +136,23 @@ public class RetrofitManager {
     }
 
     //登陆,获取token
-    public Observable<UserInfoByGetToken> getTokenObservable(String userName, String password) {
-        return freightTrackWebService.userInfoByGetToken(userName, password, LanguageUtil.getLanguage())
+    public Observable<User> getTokenObservable(String userName, String password) {
+        return freightTrackWebService.getToken(userName, password, LanguageUtil.getLanguage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());
     }
 
     //配置终端货物信息参数
-    public Observable<Result> configureDevice(String token, @Nullable String implementID,
-                                              @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
-                                              @Nullable String frequency,
-                                              String RFID,
-                                              @Nullable String images,
-                                              @Nullable String coordinate,
-                                              String operateTime) {
+    public Observable<Result> configureDeviceObservable(String token, @Nullable String implementID,
+                                                        @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
+                                                        @Nullable String frequency,
+                                                        String RFID,
+                                                        @Nullable String images,
+                                                        @Nullable String coordinate,
+                                                        String operateTime) {
         return freightTrackWebService
-                .configureCargo(token, implementID,
+                .configureDevice(token, implementID,
                         containerNo, freightOwner, freightName, origin, destination, VesselName, voyage,
                         frequency,
                         RFID,
@@ -167,16 +166,16 @@ public class RetrofitManager {
     }
 
     //开箱操作 - 获取MAC implementID="12345678"
-    public Observable<MACByOpenCloseContainer> getMACByOpenOperationObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
-        return freightTrackWebService.openContainer(token, implementID, RFID, images, coordinate, operateTime, LanguageUtil.getLanguage())
+    public Observable<Result> openDeviceObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
+        return freightTrackWebService.openDevice(token, implementID, RFID, images, coordinate, operateTime, LanguageUtil.getLanguage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());
     }
 
     //关箱操作 - 获取MAC implementID="12345678"
-    public Observable<MACByOpenCloseContainer> getMACByCloseOperationObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
-        return freightTrackWebService.closeContainer(token, implementID, RFID, images, coordinate, operateTime, LanguageUtil.getLanguage())
+    public Observable<Result> closeDeviceObservable(String token, String implementID, String RFID, @Nullable String images, @Nullable String coordinate, String operateTime) {
+        return freightTrackWebService.closeDevice(token, implementID, RFID, images, coordinate, operateTime, LanguageUtil.getLanguage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .unsubscribeOn(Schedulers.io());

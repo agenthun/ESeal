@@ -5,7 +5,7 @@ package com.agenthun.eseal.bean;
  * @authors agenthun
  * @date 16/3/2 下午4:56.
  */
-public class UserInfoByGetToken {
+public class User {
     private Integer EFFECTIVETOKEN;
     private String EMAIL;
     private String ENTERPRISE;
@@ -22,15 +22,15 @@ public class UserInfoByGetToken {
     private String USERID;
     private String USERNAME;
 
-    public UserInfoByGetToken() {
+    public User() {
 
     }
 
-    public UserInfoByGetToken(String EMAIL, String ENTERPRISE,
-                              String FREIGHTOWNER, String IMGURL,
-                              String MOBILE, String REALNAME,
-                              String ROLEID, String TOKEN,
-                              String USERID, String USERNAME) {
+    public User(String EMAIL, String ENTERPRISE,
+                String FREIGHTOWNER, String IMGURL,
+                String MOBILE, String REALNAME,
+                String ROLEID, String TOKEN,
+                String USERID, String USERNAME) {
         this(1, EMAIL,
                 ENTERPRISE, "",
                 FREIGHTOWNER, IMGURL,
@@ -41,14 +41,14 @@ public class UserInfoByGetToken {
                 USERNAME);
     }
 
-    public UserInfoByGetToken(Integer EFFECTIVETOKEN, String EMAIL,
-                              String ENTERPRISE, String ERRORINFO,
-                              String FREIGHTOWNER, String IMGURL,
-                              String ISEMAIL, String ISSMS,
-                              String MOBILE, String REALNAME,
-                              Integer RESULT, String ROLEID,
-                              String TOKEN, String USERID,
-                              String USERNAME) {
+    public User(Integer EFFECTIVETOKEN, String EMAIL,
+                String ENTERPRISE, String ERRORINFO,
+                String FREIGHTOWNER, String IMGURL,
+                String ISEMAIL, String ISSMS,
+                String MOBILE, String REALNAME,
+                Integer RESULT, String ROLEID,
+                String TOKEN, String USERID,
+                String USERNAME) {
         this.EFFECTIVETOKEN = EFFECTIVETOKEN;
         this.EMAIL = EMAIL;
         this.ENTERPRISE = ENTERPRISE;
@@ -188,7 +188,7 @@ public class UserInfoByGetToken {
 
     @Override
     public String toString() {
-        return "UserInfoByGetToken{" +
+        return "User{" +
                 "EFFECTIVETOKEN=" + EFFECTIVETOKEN +
                 ", EMAIL='" + EMAIL + '\'' +
                 ", ENTERPRISE='" + ENTERPRISE + '\'' +

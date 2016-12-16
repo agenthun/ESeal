@@ -6,8 +6,7 @@ import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
 import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
 import com.agenthun.eseal.bean.BleDeviceInfos;
 import com.agenthun.eseal.bean.DeviceLocationInfos;
-import com.agenthun.eseal.bean.MACByOpenCloseContainer;
-import com.agenthun.eseal.bean.UserInfoByGetToken;
+import com.agenthun.eseal.bean.User;
 import com.agenthun.eseal.bean.base.Result;
 
 import retrofit2.http.GET;
@@ -23,14 +22,14 @@ public interface FreightTrackWebService {
 
     //登陆，获取Token
     @GET("GetTokenByUserNameAndPassword")
-    Observable<UserInfoByGetToken> userInfoByGetToken(
+    Observable<User> getToken(
             @Query("userName") String userName,
             @Query("password") String password,
             @Query("language") String language);
 
     //配置终端货物信息参数
     @GET("ConfigureCargo")
-    Observable<Result> configureCargo(
+    Observable<Result> configureDevice(
             @Query("token") String token,
             @Nullable @Query("implementID") String implementID,
             @Nullable @Query("containerNo") String containerNo,
@@ -49,7 +48,7 @@ public interface FreightTrackWebService {
 
     //解封、开箱操作 - 获取MAC
     @GET("OpenContainer")
-    Observable<MACByOpenCloseContainer> openContainer(
+    Observable<Result> openDevice(
             @Query("token") String token,
             @Query("implementID") String implementID,
             @Query("RFID") String RFID,
@@ -60,7 +59,7 @@ public interface FreightTrackWebService {
 
     //上封、关箱操作(海关 / 普通用户) - 获取MAC
     @GET("CloseContainer")
-    Observable<MACByOpenCloseContainer> closeContainer(
+    Observable<Result> closeDevice(
             @Query("token") String token,
             @Query("implementID") String implementID,
             @Query("RFID") String RFID,
