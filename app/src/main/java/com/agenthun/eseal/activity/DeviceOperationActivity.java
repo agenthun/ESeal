@@ -39,6 +39,7 @@ import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.ble.ACSUtility;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
+import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.model.protocol.ESealOperation;
 import com.agenthun.eseal.model.utils.Encrypt;
@@ -503,7 +504,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
             String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .configureDeviceObservable(token, App.getDeviceId(),
+                    .configureDeviceObservable(token, Api.DEVICE_TYPE_BLE, App.getDeviceId(),
                             settingType.getContainerNumber(), settingType.getOwner(), settingType.getFreightName(),
                             settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
                             settingType.getFrequency(),

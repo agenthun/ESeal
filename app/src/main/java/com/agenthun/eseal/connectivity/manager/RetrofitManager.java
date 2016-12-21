@@ -5,9 +5,11 @@ import android.support.annotation.Nullable;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
 import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
+import com.agenthun.eseal.bean.BleAndBeidouNfcDeviceInfos;
 import com.agenthun.eseal.bean.BleDeviceInfos;
 import com.agenthun.eseal.bean.DeviceLocationInfos;
 import com.agenthun.eseal.bean.User;
+import com.agenthun.eseal.bean.base.BleAndBeidouNfcDevice;
 import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.FreightTrackWebService;
@@ -144,7 +146,7 @@ public class RetrofitManager {
     }
 
     //配置终端货物信息参数
-    public Observable<Result> configureDeviceObservable(String token, @Nullable String implementID,
+    public Observable<Result> configureDeviceObservable(String token, @Nullable String deviceType, @Nullable String implementID,
                                                         @Nullable String containerNo, @Nullable String freightOwner, @Nullable String freightName, @Nullable String origin, @Nullable String destination, @Nullable String VesselName, @Nullable String voyage,
                                                         @Nullable String frequency,
                                                         String RFID,
@@ -152,7 +154,7 @@ public class RetrofitManager {
                                                         @Nullable String coordinate,
                                                         String operateTime) {
         return freightTrackWebService
-                .configureDevice(token, implementID,
+                .configureDevice(token, deviceType, implementID,
                         containerNo, freightOwner, freightName, origin, destination, VesselName, voyage,
                         frequency,
                         RFID,
@@ -193,7 +195,7 @@ public class RetrofitManager {
      * @description 蓝牙锁访问链路
      */
     //根据Token获取所有在途中的货物设置信息
-    public Observable<BleDeviceInfos> getBleDeviceFreightListObservable(String token) {
+    public Observable<BleAndBeidouNfcDeviceInfos> getBleDeviceFreightListObservable(String token) {
         return freightTrackWebService.getBleDeviceFreightList(token, LanguageUtil.getLanguage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -233,7 +235,14 @@ public class RetrofitManager {
      * @description 北斗终端NFC访问链路
      */
     //根据Token获取所有在途中的货物设置信息
-    public Observable<BeidouNfcDeviceInfos> getBeidouNfcDeviceFreightListObservable(String token) {
+    public Observable<BleAndBeidouNfcDeviceInfos> getBleAndBeidouNfcDeviceFreightListObservable(String token) {
+        return freightTrackWebService.getBleAndBeidouNfcDeviceFreightList(token, LanguageUtil.getLanguage())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io());
+    }
+
+    public Observable<BleAndBeidouNfcDeviceInfos> getBeidouNfcDeviceFreightListObservable(String token) {
         return freightTrackWebService.getBeidouNfcDeviceFreightList(token, LanguageUtil.getLanguage())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

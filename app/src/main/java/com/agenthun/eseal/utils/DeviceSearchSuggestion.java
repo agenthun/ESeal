@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.agenthun.eseal.bean.base.BeidouMasterDevice;
 import com.agenthun.eseal.bean.base.BeidouNfcDevice;
+import com.agenthun.eseal.bean.base.BleAndBeidouNfcDevice;
 import com.agenthun.eseal.bean.base.BleDevice;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
@@ -24,7 +25,7 @@ public class DeviceSearchSuggestion implements SearchSuggestion {
     public static final int DEVICE_BEIDOU_NFC = 2;
 
     @NonNull
-    private final String id;
+    private String id;
 
     @Nullable
     private String name;
@@ -41,6 +42,20 @@ public class DeviceSearchSuggestion implements SearchSuggestion {
 
     public DeviceSearchSuggestion(BeidouNfcDevice device) {
         this(device.getNFCId(), device.getNFCId(), DEVICE_BEIDOU_NFC, 0);
+    }
+
+    public DeviceSearchSuggestion(BleAndBeidouNfcDevice device, int deviceType) {
+        if (deviceType == DEVICE_BLE) {
+            this.id = device.getContainerId();
+            this.name = device.getContainerNo();
+            this.type = DEVICE_BLE;
+            this.isHistory = 0;
+        } else if (deviceType == DEVICE_BEIDOU_NFC) {
+            this.id = device.getContainerId();
+            this.name = device.getContainerNo();
+            this.type = DEVICE_BEIDOU_NFC;
+            this.isHistory = 0;
+        }
     }
 
     public DeviceSearchSuggestion(@NonNull String id, String name, Integer type, Integer isHistory) {

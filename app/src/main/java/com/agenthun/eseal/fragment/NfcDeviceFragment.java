@@ -36,6 +36,7 @@ import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.bean.base.Result;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
+import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
@@ -468,7 +469,7 @@ public class NfcDeviceFragment extends Fragment {
             String operateTime = DATE_FORMAT.format(Calendar.getInstance().getTime());
 
             RetrofitManager.builder(PathType.WEB_SERVICE_V2_TEST)
-                    .configureDeviceObservable(token, "",
+                    .configureDeviceObservable(token, Api.DEVICE_TYPE_BEIDOU_NFC, "",
                             settingType.getContainerNumber(), settingType.getOwner(), settingType.getFreightName(),
                             settingType.getOrigin(), settingType.getDestination(), settingType.getVessel(), settingType.getVoyage(),
                             settingType.getFrequency(),

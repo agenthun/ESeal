@@ -4,9 +4,11 @@ import android.support.annotation.Nullable;
 
 import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
 import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
+import com.agenthun.eseal.bean.BleAndBeidouNfcDeviceInfos;
 import com.agenthun.eseal.bean.BleDeviceInfos;
 import com.agenthun.eseal.bean.DeviceLocationInfos;
 import com.agenthun.eseal.bean.User;
+import com.agenthun.eseal.bean.base.BleAndBeidouNfcDevice;
 import com.agenthun.eseal.bean.base.Result;
 
 import retrofit2.http.GET;
@@ -31,6 +33,7 @@ public interface FreightTrackWebService {
     @GET("ConfigureCargo")
     Observable<Result> configureDevice(
             @Query("token") String token,
+            @Nullable @Query("DeviceType") String deviceType,
             @Nullable @Query("implementID") String implementID,
             @Nullable @Query("containerNo") String containerNo,
             @Nullable @Query("freightOwner") String freightOwner,
@@ -74,7 +77,7 @@ public interface FreightTrackWebService {
      */
     //根据Token获取所有在途中的货物设置信息
     @GET("GetFreightInfoByToken")
-    Observable<BleDeviceInfos> getBleDeviceFreightList(
+    Observable<BleAndBeidouNfcDeviceInfos> getBleDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
 
@@ -115,7 +118,7 @@ public interface FreightTrackWebService {
      * @description 北斗终端NFC访问链路
      */
     //根据Token获取所有在途中的货物设置信息
-    @GET("GetAllNFCByToken")
+/*    @GET("GetAllNFCByToken")
     Observable<BeidouNfcDeviceInfos> getBeidouNfcDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
@@ -125,6 +128,22 @@ public interface FreightTrackWebService {
     Observable<DeviceLocationInfos> getBeidouNfcDeviceLocation(
             @Query("token") String token,
             @Query("NFCId") String nfcId,
+            @Query("language") String language);*/
+    @GET("GetFreightInfoByToken")
+    Observable<BleAndBeidouNfcDeviceInfos> getBleAndBeidouNfcDeviceFreightList(
+            @Query("token") String token,
+            @Query("language") String language);
+
+    @GET("GetFreightInfoByToken")
+    Observable<BleAndBeidouNfcDeviceInfos> getBeidouNfcDeviceFreightList(
+            @Query("token") String token,
+            @Query("language") String language);
+
+    //根据containerId获取该货物状态列表
+    @GET("GetAllBaiduCoordinateByContainerId")
+    Observable<DeviceLocationInfos> getBeidouNfcDeviceLocation(
+            @Query("token") String token,
+            @Query("containerId") String containerId,
             @Query("language") String language);
 
 }

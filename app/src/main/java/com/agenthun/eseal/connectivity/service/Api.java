@@ -6,6 +6,9 @@ package com.agenthun.eseal.connectivity.service;
  * @date 16/3/3 下午9:32.
  */
 public class Api {
+    public static final String DEVICE_TYPE_BLE = "1";
+    public static final String DEVICE_TYPE_BEIDOU_NFC = "2";
+
     public static final String K_API_BASE_URL_STRING = "http://www.freight-track.com/webservice/FreightTrackWebService.asmx/";
     public static final String AMAP_SERVICE_URL_STRING = "http://www.freight-track.com/BaiduMap/";
 
