@@ -19,6 +19,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.agenthun.eseal.App;
@@ -136,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "token: " + token);
                             if (token != null) {
                                 App.setToken(token);
-                                Intent intent = new Intent(LoginActivity.this, MainActivityX.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 intent.putExtra(RetrofitManager.TOKEN, token);
                                 startActivity(intent);
                                 finish();
@@ -146,14 +147,16 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            Snackbar.make(loginName, getString(R.string.error_network_not_open), Snackbar.LENGTH_LONG)
+            Snackbar snackbar = Snackbar.make(loginName, getString(R.string.error_network_not_open), Snackbar.LENGTH_SHORT)
                     .setAction(getString(R.string.text_hint_open_network), new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
                             startActivity(intent);
                         }
-                    }).show();
+                    });
+            ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(LoginActivity.this, R.color.blue_grey_100));
+            snackbar.show();
         }
     }
 

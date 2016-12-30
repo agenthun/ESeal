@@ -32,6 +32,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
@@ -301,7 +302,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
             isPortOpen = false;
             utility.closeACSUtility();
         }
-        startActivity(new Intent(this, MainActivityX.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
@@ -315,6 +316,7 @@ public class DeviceOperationActivity extends AppCompatActivity {
 
         //配置信息
         Intent intent = new Intent(DeviceOperationActivity.this, DeviceSettingActivity.class);
+        intent.putExtra(DeviceSettingActivity.IS_CONFIG_BLE_DEVICE, true);
         startActivityForResult(intent, DEVICE_SETTING);
     }
 
@@ -376,17 +378,18 @@ public class DeviceOperationActivity extends AppCompatActivity {
         if (nfcAdapter != null) {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
-                Snackbar.make(foldingCellLock, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                showSnackbar(getString(R.string.text_hint_close_to_nfc_tag));
             } else {
-                Snackbar.make(foldingCellLock, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                Snackbar snackbar = Snackbar.make(cardSetting, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                                 startActivity(intent);
                             }
-                        }).show();
+                        });
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(DeviceOperationActivity.this, R.color.blue_grey_100));
+                snackbar.show();
             }
         }
     }
@@ -866,11 +869,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
         public void didPackageSended(boolean succeed) {
             Log.d(TAG, "didPackageSended() returned: " + succeed);
             if (succeed) {
-                Snackbar.make(cardSetting, getString(R.string.success_device_send_data), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                showSnackbar(getString(R.string.success_device_send_data));
             } else {
-                Snackbar.make(cardSetting, getString(R.string.fail_device_send_data), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                showSnackbar(getString(R.string.fail_device_send_data));
             }
         }
 
@@ -1028,8 +1029,10 @@ public class DeviceOperationActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Snackbar.make(cardSetting, msg, Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                Snackbar snackbar = Snackbar.make(cardSetting, msg, Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null);
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(DeviceOperationActivity.this, R.color.blue_grey_100));
+                snackbar.show();
             }
         });
     }

@@ -1,22 +1,16 @@
 package com.agenthun.eseal.activity;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
@@ -28,12 +22,12 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.connectivity.nfc.NfcUtility;
 import com.agenthun.eseal.model.utils.SettingType;
-import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.view.CheckableFab;
 
 import java.io.ByteArrayOutputStream;
@@ -51,12 +45,13 @@ import butterknife.OnClick;
 public class DeviceSettingActivity extends AppCompatActivity {
     private static final String TAG = "DeviceSettingActivity";
     public static final String RESULT_CONFIGURE = "result_configure";
+    public static final String IS_CONFIG_BLE_DEVICE = "IS_CONFIG_BLE_DEVICE";
 
-    @Bind(R.id.addPicture)
-    View addPicture;
+    @Bind(R.id.nfc_layout)
+    View nfcLayout;
 
-    @Bind(R.id.picturePreview)
-    ImageView picturePreview;
+    @Bind(R.id.frequency_layout)
+    View frequencyLayout;
 
     @Bind(R.id.nfc_id)
     AppCompatEditText nfcId;
@@ -97,11 +92,24 @@ public class DeviceSettingActivity extends AppCompatActivity {
 
     private Uri pictureUri = null;
 
+    private boolean isConfigBleDevice = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_setting);
         ButterKnife.bind(this);
+
+        //加载显示BLE/NFC设备的不同配置参数
+        Intent start = getIntent();
+        isConfigBleDevice = start.getBooleanExtra(IS_CONFIG_BLE_DEVICE, true);
+        if (isConfigBleDevice) {
+            nfcLayout.setVisibility(View.VISIBLE);
+            frequencyLayout.setVisibility(View.VISIBLE);
+        } else {
+            nfcLayout.setVisibility(View.GONE);
+            frequencyLayout.setVisibility(View.GONE);
+        }
 
         mNfcUtility = new NfcUtility(tagCallback);
 
@@ -148,31 +156,12 @@ public class DeviceSettingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         fab.hide();
-
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(TakePictueActivity.PICTURE_URI);
-
-        localBroadcastManager.registerReceiver(broadcastReceiver, filter);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-    }
-
-    @OnClick(R.id.addPicture)
-    public void onAddPictureBtnClick() {
-        Log.d(TAG, "onAddPictureBtnClick() returned: ");
-        performTakePictureWithTransition(addPicture);
     }
 
     @OnClick(R.id.nfc_id)
@@ -181,44 +170,26 @@ public class DeviceSettingActivity extends AppCompatActivity {
         enableNfcReaderMode();
     }
 
-    private void performTakePictureWithTransition(View v) {
-        Activity activity = this;
-
-        final int[] startLocation = new int[2];
-        v.getLocationOnScreen(startLocation);
-        startLocation[0] += v.getWidth() / 2;
-
-        if (v == null || ApiLevelHelper.isLowerThan(Build.VERSION_CODES.LOLLIPOP)) {
-            TakePictueActivity.start(activity, startLocation);
-            return;
-        }
-        if (ApiLevelHelper.isAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
-//            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeBasic();
-            ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(v,
-                    startLocation[0],
-                    startLocation[1],
-                    0,
-                    0);
-            TakePictueActivity.start(activity, startLocation, optionsCompat);
-        }
-    }
-
     private void enableNfcReaderMode() {
         NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (nfcAdapter != null) {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(this, mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
-                Snackbar.make(nfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                Snackbar snackbar = Snackbar.make(nfcId, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null);
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(DeviceSettingActivity.this, R.color.blue_grey_100));
+                snackbar.show();
             } else {
-                Snackbar.make(nfcId, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                Snackbar snackbar = Snackbar.make(nfcId, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                                 startActivity(intent);
                             }
-                        }).show();
+                        });
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(DeviceSettingActivity.this, R.color.blue_grey_100));
+                snackbar.show();
             }
         }
     }
@@ -299,33 +270,18 @@ public class DeviceSettingActivity extends AppCompatActivity {
         settingType.setDestination(destination.getText().toString().trim());
         settingType.setVessel(vessel.getText().toString().trim());
         settingType.setVoyage(voyage.getText().toString().trim());
-        settingType.setFrequency(frequency.getText().toString().trim());
-        b.putParcelable(SettingType.EXTRA_DEVICE, settingType);
-        if (pictureUri != null) {
-            String imgUrl = getImageResourceBase64(picturePreview);
-            b.putString(TakePictueActivity.PICTURE_URI, imgUrl);
+        if (isConfigBleDevice) {
+            settingType.setFrequency(frequency.getText().toString().trim());
         } else {
-            b.putString(TakePictueActivity.PICTURE_URI, "");
+            settingType.setFrequency("+0");
         }
+        b.putParcelable(SettingType.EXTRA_DEVICE, settingType);
+
+        b.putString(TakePictueActivity.PICTURE_URI, "");
+
         data.putExtras(b);
         setResult(RESULT_OK, data);
     }
-
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String uriStr = intent.getStringExtra(TakePictueActivity.PICTURE_URI);
-            pictureUri = Uri.parse(uriStr);
-
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    picturePreview.setImageURI(pictureUri);
-                    picturePreview.setVisibility(View.VISIBLE);
-                }
-            });
-        }
-    };
 
     private String getImageResourceBase64(ImageView imageView) {
         BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();

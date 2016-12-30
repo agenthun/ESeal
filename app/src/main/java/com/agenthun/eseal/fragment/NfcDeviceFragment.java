@@ -28,9 +28,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
+import com.agenthun.eseal.activity.DeviceOperationActivity;
 import com.agenthun.eseal.activity.DeviceSettingActivity;
 import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.bean.base.Result;
@@ -264,6 +266,7 @@ public class NfcDeviceFragment extends Fragment {
 
         //配置信息
         Intent intent = new Intent(getContext(), DeviceSettingActivity.class);
+        intent.putExtra(DeviceSettingActivity.IS_CONFIG_BLE_DEVICE, false);
         startActivityForResult(intent, DEVICE_SETTING);
     }
 
@@ -620,8 +623,10 @@ public class NfcDeviceFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Snackbar.make(foldingCellLock, msg, Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                Snackbar snackbar = Snackbar.make(foldingCellLock, msg, Snackbar.LENGTH_SHORT)
+                        .setAction("Action", null);
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(getContext(), R.color.blue_grey_100));
+                snackbar.show();
             }
         });
     }

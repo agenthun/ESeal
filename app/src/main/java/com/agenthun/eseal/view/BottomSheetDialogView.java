@@ -35,6 +35,8 @@ public class BottomSheetDialogView {
     private static List<LocationDetail> details;
     private final View view;
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public BottomSheetDialogView(final Context context, String containerNo, List<LocationDetail> details) {
         BottomSheetDialogView.details = details;
 

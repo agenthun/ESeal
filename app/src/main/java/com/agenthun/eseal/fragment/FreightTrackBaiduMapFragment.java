@@ -45,9 +45,13 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import rx.Subscriber;
 import rx.functions.Action1;
@@ -531,6 +535,10 @@ public class FreightTrackBaiduMapFragment extends Fragment {
 
             String time = detail.getReportTime();
             String status = detail.getStatus();
+            if (status.equals("0")) {
+                time = utc2Local(time, "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss");
+            }
+
             String[] location = detail.getBaiduCoordinate().split(",");
             LatLng lng = new LatLng(
                     Double.parseDouble(location[0]),
@@ -720,6 +728,23 @@ public class FreightTrackBaiduMapFragment extends Fragment {
         return Math.abs((moveDistance * slope) / Math.sqrt(1 + slope * slope));
     }
 
+    /**
+     * UTC时间转本地时间
+     */
+    private String utc2Local(String utcTime, String utcTimePatten, String localTimePatten) {
+        SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
+        utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date gpsUTCDate = null;
+        try {
+            gpsUTCDate = utcFormater.parse(utcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
+        localFormater.setTimeZone(TimeZone.getDefault());
+        String localTime = localFormater.format(gpsUTCDate.getTime());
+        return localTime;
+    }
 
     //itemClick interface
     public interface OnItemClickListener {
