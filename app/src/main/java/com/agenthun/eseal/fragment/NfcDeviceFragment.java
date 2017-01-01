@@ -344,17 +344,18 @@ public class NfcDeviceFragment extends Fragment {
         if (nfcAdapter != null) {
             if (nfcAdapter.isEnabled()) {
                 nfcAdapter.enableReaderMode(getActivity(), mNfcUtility, NfcUtility.NFC_TAG_FLAGS, null);
-                Snackbar.make(foldingCellLock, getString(R.string.text_hint_close_to_nfc_tag), Snackbar.LENGTH_SHORT)
-                        .setAction("Action", null).show();
+                showSnackbar(getString(R.string.text_hint_close_to_nfc_tag));
             } else {
-                Snackbar.make(foldingCellLock, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
+                Snackbar snackbar = Snackbar.make(foldingCellLock, getString(R.string.error_nfc_not_open), Snackbar.LENGTH_SHORT)
                         .setAction(getString(R.string.text_hint_open_nfc), new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent = new Intent(Settings.ACTION_NFC_SETTINGS);
                                 startActivity(intent);
                             }
-                        }).show();
+                        });
+                ((TextView) (snackbar.getView().findViewById(R.id.snackbar_text))).setTextColor(ContextCompat.getColor(getContext(), R.color.blue_grey_100));
+                snackbar.show();
             }
         }
     }
