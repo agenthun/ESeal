@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -25,6 +26,7 @@ import com.agenthun.eseal.adapter.SectionsPagerAdapter;
 import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.PreferencesHelper;
 import com.agenthun.eseal.view.BottomSheetDialogView;
 
 import java.util.ArrayList;
@@ -191,11 +193,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_sign_out) {
+            signOut(true);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void signOut(boolean isSave) {
+        PreferencesHelper.signOut(this, isSave);
+        LoginActivity.start(this, isSave);
+        ActivityCompat.finishAfterTransition(this);
     }
 
     private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo, List<LocationDetail> details) {

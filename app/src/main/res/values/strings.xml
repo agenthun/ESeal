@@ -14,7 +14,9 @@
     <string name="error_invalid_account">请输入用户名</string>
     <string name="error_invalid_password">请输入密码</string>
     <string name="error_invalid_null">该用户尚未注册!</string>
+    <string name="error_invalid_user">错误, 用户名或密码无效</string>
     <string name="action_login">正在登录...</string>
+    <string name="sign_out">退出</string>
 
     <string name="page_title_freight_track_query">货讯速查</string>
     <string name="page_title_scan_ble_device">蓝牙封锁</string>

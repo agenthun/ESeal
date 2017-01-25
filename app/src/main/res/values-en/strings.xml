@@ -14,7 +14,9 @@
     <string name="error_invalid_account">Incorrect username</string>
     <string name="error_invalid_password">Incorrect password</string>
     <string name="error_invalid_null">Incorrect username</string>
+    <string name="error_invalid_user">Error, incorrect username or password</string>
     <string name="action_login">Logging in...</string>
+    <string name="sign_out">Sign out</string>
 
     <string name="page_title_freight_track_query">Freight Query</string>
     <string name="page_title_scan_ble_device">BLE Seal</string>
