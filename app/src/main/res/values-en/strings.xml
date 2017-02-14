@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BLE-Seal</string>
+    <string name="app_name">NFC-Seal</string>
 
     <string name="navigation_drawer_open">Drawer open</string>
     <string name="navigation_drawer_close">Drawer close</string>

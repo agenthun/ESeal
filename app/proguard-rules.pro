@@ -28,6 +28,19 @@
     @butterknife.* <methods>;
 }
 
+-keepclassmembers class * {
+    public <init> (org.json.JSONObject);
+}
+
+-keep public class com.agenthun.eseal.R$*{
+    public static final int *;
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
 -dontwarn okio.**
 -dontwarn retrofit2.**
 -dontwarn rx.**

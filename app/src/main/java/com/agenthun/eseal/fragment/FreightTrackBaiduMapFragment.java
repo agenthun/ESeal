@@ -15,14 +15,10 @@ import android.widget.TextView;
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.BeidouMasterDeviceInfos;
-import com.agenthun.eseal.bean.BeidouNfcDeviceInfos;
 import com.agenthun.eseal.bean.BleAndBeidouNfcDeviceInfos;
-import com.agenthun.eseal.bean.BleDeviceInfos;
 import com.agenthun.eseal.bean.DeviceLocationInfos;
 import com.agenthun.eseal.bean.base.BeidouMasterDevice;
-import com.agenthun.eseal.bean.base.BeidouNfcDevice;
 import com.agenthun.eseal.bean.base.BleAndBeidouNfcDevice;
-import com.agenthun.eseal.bean.base.BleDevice;
 import com.agenthun.eseal.bean.base.DeviceLocation;
 import com.agenthun.eseal.bean.base.LocationDetail;
 import com.agenthun.eseal.connectivity.manager.RetrofitManager;
@@ -44,13 +40,16 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import rx.Subscriber;
@@ -221,12 +220,14 @@ public class FreightTrackBaiduMapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         bmapView.onResume();
+        MobclickAgent.onPageStart(TAG);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         bmapView.onPause();
+        MobclickAgent.onPageEnd(TAG);
     }
 
     @Override
@@ -298,6 +299,7 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                 loadingMapState(true);
                 clearLocationData();
                 getLocationData(id, type, name);
+                umengOnEvent(id, type, name); //友盟API
             }
 
             @Override
@@ -832,5 +834,25 @@ public class FreightTrackBaiduMapFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void umengOnEvent(String id, Integer type, String name) {
+        Map<String, String> map = new HashMap<>();
+        map.put("deviceId", id);
+        map.put("name", name);
+        switch (type) {
+            case DeviceSearchSuggestion.DEVICE_BLE:
+                map.put("type", "BLE");
+                break;
+            case DeviceSearchSuggestion.DEVICE_BEIDOU_MASTER:
+                map.put("type", "BEIDOU_MASTER");
+                break;
+            case DeviceSearchSuggestion.DEVICE_BEIDOU_NFC:
+                map.put("type", "BEIDOU_NFC");
+                break;
+            default:
+                break;
+        }
+        MobclickAgent.onEvent(getContext(), "getLocationData", map);
     }
 }

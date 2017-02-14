@@ -91,4 +91,5 @@ dependencies {
     compile 'com.github.gabrielemariotti.recyclerview:recyclerview-animators:0.3.0-SNAPSHOT@aar'
     compile 'com.commonsware.cwac:camera:0.6.+'
     compile 'com.ramotion.foldingcell:folding-cell:1.0.1'
+    compile 'com.umeng.analytics:analytics:latest.integration'
 }

@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.AppCompatEditText;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -30,6 +29,7 @@ import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.NetUtil;
 import com.agenthun.eseal.utils.PreferencesHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         assureUserInit();
         if (mUser == null || isInSaveMode()) {
             initContents();
@@ -93,6 +94,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         //after andrioid m, must request Permission on runtime
         getPermissions(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -128,6 +135,8 @@ public class LoginActivity extends AppCompatActivity {
         if (NetUtil.isConnected(this)) { //已连接网络
             String name = mUser.getUsername();
             String password = mUser.getPassword();
+
+            MobclickAgent.onProfileSignIn(name);
 
             getProgressDialog().show();
 
@@ -187,6 +196,11 @@ public class LoginActivity extends AppCompatActivity {
         }
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        // 获取设备状态，友盟API
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_PHONE_STATE);
         }
 
         if (permissions.size() > 0) {

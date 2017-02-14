@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.agenthun.eseal">
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -110,6 +112,14 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="ZsAwCHLDTrMGyu4Nb7HLfeAOjawrAQF6" />
+
+        <!--友盟U-App API-->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="58a29e19310c935fbf000738" />
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Wandoujia" />
     </application>
 
 </manifest>

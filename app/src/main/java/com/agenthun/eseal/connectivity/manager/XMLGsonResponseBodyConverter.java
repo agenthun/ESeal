@@ -31,7 +31,6 @@ public class XMLGsonResponseBodyConverter<T> implements Converter<ResponseBody, 
     public T convert(ResponseBody value) throws IOException {
         Document document = Jsoup.parse(value.string());
         String gsonString = document.tagName("string").text();
-
         JsonReader jsonReader = gson.newJsonReader(new StringReader(gsonString));
         try {
             return adapter.read(jsonReader);
