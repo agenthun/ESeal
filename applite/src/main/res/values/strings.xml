@@ -1,0 +1,126 @@
+<resources>
+    <string name="app_name">NFC封锁 Lite</string>
+
+    <string name="navigation_drawer_open">打开导航抽屉</string>
+    <string name="navigation_drawer_close">关闭导航抽屉</string>
+
+    <string name="action_settings">设置</string>
+
+    <string name="prompt_account">用户名</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录</string>
+    <string name="action_forget_password">无法登录?</string>
+    <string name="action_sign_up">注册</string>
+    <string name="error_invalid_account">请输入用户名</string>
+    <string name="error_invalid_password">请输入密码</string>
+    <string name="error_invalid_null">该用户尚未注册!</string>
+    <string name="error_invalid_user">错误, 用户名或密码无效</string>
+    <string name="action_login">正在登录...</string>
+    <string name="sign_out">退出</string>
+
+    <string name="page_title_freight_track_query">货讯速查</string>
+    <string name="page_title_scan_ble_device">蓝牙封锁</string>
+    <string name="page_title_nfc_device">NFC封锁</string>
+
+    <string name="text_hint_freight_query">请输入货物箱号</string>
+    <string name="text_container_no">箱号</string>
+    <string name="menu_clear">关闭</string>
+    <string name="menu_toggle_icon">触发</string>
+    <string name="menu_icon_type">种类</string>
+
+    <string name="action_type_1">主动查询上传</string>
+    <string name="action_type_2">安全异常上传</string>
+    <string name="action_type_3">已上封</string>
+    <string name="action_type_5">设备配置</string>
+
+    <string name="error_ble_not_supported">该设备不支持蓝牙功能</string>
+    <string name="no_devices_all">未发现设备</string>
+    <string name="scan_device_active">请下拉刷新扫描设备</string>
+    <string name="device_connecting">正在连接中...</string>
+    <string name="success_device_connection">连接成功</string>
+    <string name="fail_device_connection">连接失败</string>
+    <string name="time_out_device_connection">连接超时</string>
+    <string name="success_device_send_data">发送成功</string>
+    <string name="fail_device_send_data">发送失败</string>
+    <string name="device_reply_query_title">设备状态信息</string>
+    <string name="device_reply_query_period">上传周期</string>
+    <string name="text_upload_period">上传周期</string>
+    <string name="text_current_position">当前位置</string>
+    <string name="text_device_status">锁状态</string>
+    <string name="device_reply_safe_0">未上封</string>
+    <string name="device_reply_safe_1">已上封</string>
+    <string name="device_reply_safe_2">已拆封</string>
+    <string name="device_reply_lock">闭合</string>
+    <string name="device_reply_unlock">未闭合</string>
+    <string name="device_reply_info_title">设备位置信息</string>
+    <string name="device_reply_info_time_error">时间未知</string>
+    <string name="device_reply_read_setting_title">配置信息</string>
+    <string name="text_ok">确认</string>
+
+    <string name="card_title_read_setting">读取配置</string>
+    <string name="card_title_setting">配置</string>
+    <string name="card_title_lock">上封</string>
+    <string name="text_hint_lock_operation">上封操作</string>
+    <string name="card_title_unlock">解封</string>
+    <string name="text_hint_unlock_operation">解封操作</string>
+    <string name="card_title_scan_nfc">扫描NFC</string>
+    <string name="card_subtitle_scan_nfc">封条ID</string>
+    <string name="card_title_query_status">状态查询</string>
+    <string name="card_title_query_info">位置查询</string>
+    <string name="card_title_take_picture">设备拍照</string>
+    <string name="error_nfc_not_open">请开启NFC</string>
+    <string name="text_hint_open_nfc">打开</string>
+    <string name="text_title_hint">提示</string>
+    <string name="text_hint_close_to_nfc_tag">请将NFC封条贴至手机底部</string>
+    <string name="text_hint_get_nfc_tag">点击获取NFC封条ID</string>
+    <string name="text_hint_get_current_location">正在获取当前地址...</string>
+    <string name="fail_get_current_location">定位失败, 请重新定位</string>
+    <string name="error_network_not_open">请开启网络</string>
+    <string name="error_network">网络故障</string>
+    <string name="text_hint_open_network">设置</string>
+    <string name="text_hint_request_take_picture_permission">需要拍照权限</string>
+
+    <string name="text_title_device_setting_upload">同步信息</string>
+    <string name="success_device_setting_upload">已成功同步至服务器</string>
+    <string name="fail_device_setting_upload">未成功同步至服务器</string>
+    <string name="fail_device_nfc_tag">无效的NFC封条ID</string>
+
+    <string name="text_hint_freight_container_number">箱号</string>
+    <string name="text_hint_freight_owner">货主</string>
+    <string name="text_hint_freight_name">货物</string>
+    <string name="text_hint_freight_origin">起始地</string>
+    <string name="text_hint_freight_destination">目的地</string>
+    <string name="text_hint_freight_vessel">船名</string>
+    <string name="text_hint_freight_voyage">航次</string>
+    <string name="text_hint_freight_frequency">上报周期(s)</string>
+    <string name="text_hint_nfc_id">NFC封条ID</string>
+    <string name="text_hint_add_device_picture">添加设备照片</string>
+
+    <string name="text_hint_take_picture">拍照</string>
+    <string name="action_type_0">周期上传</string>
+    <string name="action_type_4">已解封</string>
+
+    <string name="text_hint_time">时间</string>
+
+    <string name="error_query_device_group">获取设备失败, 请下拉刷新重新获取</string>
+
+    <string name="text_search">搜索</string>
+    <string name="text_location_search">定位</string>
+    <string name="error_query_freight_location">获取位置信息失败, 请重试</string>
+
+    <string name="title_pick_time">选择时间段</string>
+    <string name="text_hint_time_from">开始日期</string>
+    <string name="text_hint_time_to">结束日期</string>
+    <string name="error_time_from">请选择开始日期</string>
+    <string name="error_time_to">请选择结束日期</string>
+    <string name="error_time_from_to">开始日期应在结束日期之前</string>
+    <string name="text_time_picker_title">日期</string>
+    <string name="text_time_picker_ok">确认</string>
+    <string name="text_time_picker_cancel">取消</string>
+    <string name="text_time_picker_year">年</string>
+    <string name="text_time_picker_month">月</string>
+    <string name="text_time_picker_day">日</string>
+    <string name="text_time_picker_hour">时</string>
+    <string name="text_time_picker_minute">分</string>
+
+</resources>

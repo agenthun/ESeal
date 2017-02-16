@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF30B9C1</color>
+    <color name="colorPrimaryDark">#FF0097A7</color>
+    <color name="colorAccent">#FFFCB830</color>
+    <color name="colorAccentDark">#FFE27B4F</color>
+    <color name="colorDivider">#61616161</color>
+
+    <color name="backgroundWhite">#20616161</color>
+    <color name="white">@android:color/white</color>
+
+    <color name="text_title">#8A000000</color>
+    <color name="text_primary">#DF000000</color>
+    <color name="text_light">@android:color/white</color>
+    <color name="text_dark">#616161</color>
+
+    <color name="touch_effect">#9ccc</color>
+
+    <color name="gray_100">#f5f5f5</color>
+    <color name="gray_200">#eeeeee</color>
+
+    <color name="orange_500">#ff9800</color>
+    <color name="red_500">#e51c23</color>
+
+    <color name="serenity_mask">#C2CCE4</color>
+    <color name="rose_quartz_mask">#F7DFDF</color>
+    <color name="amber_a100_mask">#FBD82A</color>
+    <color name="green_mask">#ADD57E</color>
+    <color name="teal_mask">#B3DFDC</color>
+    <color name="blue_mask">#00B8D4</color>
+    <color name="red_mask">#F9A58B</color>
+
+    <color name="blue_grey_50">#ffeceff1</color>
+    <color name="blue_grey_100">#ffcfd8dc</color>
+    <color name="blue_grey_500">#ff607d8b</color>
+    <color name="blue_grey_600">#ff546e7a</color>
+    <color name="blue_grey_700">#ff455a64</color>
+    <color name="blue_grey_800">#ff37474f</color>
+    <color name="blue_grey_900">#ff263238</color>
+
+    <color name="btn_accept_background">#ff0fcb5d</color>
+    <color name="btn_decline_background">@android:color/holo_red_light</color>
+
+</resources>

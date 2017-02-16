@@ -41,6 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/spacing_normal"
+                    android:layout_marginTop="@dimen/spacing_normal"
                     android:text="@string/no_devices_all" />
 
                 <TextView

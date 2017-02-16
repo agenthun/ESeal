@@ -114,10 +114,13 @@ public class BottomSheetDialogView {
     }
 
     private static class SimpleAdapter extends RecyclerView.Adapter<ViewHolder> {
+        private Context mContext;
+
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.list_item_freight_track, null);
+            this.mContext = parent.getContext();
             return new ViewHolder(view);
         }
 
@@ -133,27 +136,27 @@ public class BottomSheetDialogView {
                 case "1":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(App.getContext(), R.color.dark_gray));
+                            ContextCompat.getColor(mContext, R.color.dark_gray));
                     break;
                 case "2":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(App.getContext(), R.color.red_500));
+                            ContextCompat.getColor(mContext, R.color.red_500));
                     break;
                 case "3":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(App.getContext(), R.color.colorPrimary));
+                            ContextCompat.getColor(mContext, R.color.colorPrimary));
                     break;
                 case "4":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(App.getContext(), R.color.colorPrimary));
+                            ContextCompat.getColor(mContext, R.color.colorPrimary));
                     break;
                 case "5":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_settings_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(App.getContext(), R.color.dark_gray));
+                            ContextCompat.getColor(mContext, R.color.dark_gray));
                     break;
             }
 
@@ -190,17 +193,17 @@ public class BottomSheetDialogView {
         private String getActionType(String actionType) {
             switch (actionType) {
                 case "0":
-                    return App.getContext().getString(R.string.action_type_0);
+                    return mContext.getString(R.string.action_type_0);
                 case "1":
-                    return App.getContext().getString(R.string.action_type_1);
+                    return mContext.getString(R.string.action_type_1);
                 case "2":
-                    return App.getContext().getString(R.string.action_type_2);
+                    return mContext.getString(R.string.action_type_2);
                 case "3":
-                    return App.getContext().getString(R.string.action_type_3);
+                    return mContext.getString(R.string.action_type_3);
                 case "4":
-                    return App.getContext().getString(R.string.action_type_4);
+                    return mContext.getString(R.string.action_type_4);
                 case "5":
-                    return App.getContext().getString(R.string.action_type_5);
+                    return mContext.getString(R.string.action_type_5);
             }
             return "";
         }

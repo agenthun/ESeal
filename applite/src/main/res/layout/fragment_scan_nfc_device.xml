@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.agenthun.eseallite.view.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refresh_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/devicesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/spacing_normal"
+            android:paddingTop="@dimen/spacing_normal"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="vertical"
+            android:transitionGroup="false"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:ignore="UnusedAttribute" />
+
+        <LinearLayout
+            android:id="@+id/noDevices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_app"
+                android:tint="@color/colorPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/spacing_normal"
+                android:layout_marginTop="@dimen/spacing_normal"
+                android:text="@string/no_devices_all" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/scan_device_active" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</com.agenthun.eseallite.view.ScrollChildSwipeRefreshLayout>
