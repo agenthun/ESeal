@@ -16,6 +16,7 @@ import com.agenthun.eseallite.R;
 import com.agenthun.eseallite.fragment.FreightTrackMapFragment;
 import com.agenthun.eseallite.utils.ActivityUtils;
 import com.agenthun.eseallite.utils.DeviceSearchSuggestion;
+import com.baidu.mapapi.SDKInitializer;
 
 import butterknife.ButterKnife;
 
@@ -46,6 +47,9 @@ public class FreightTrackMapActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //初始化百度地图API
+        SDKInitializer.initialize(getApplicationContext());
+
         setContentView(R.layout.activity_toolbar_frame_fab);
 
         ButterKnife.bind(this);

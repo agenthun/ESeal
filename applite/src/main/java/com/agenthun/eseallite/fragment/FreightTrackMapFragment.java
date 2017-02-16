@@ -120,7 +120,6 @@ public class FreightTrackMapFragment extends Fragment {
         fab.setOnClickListener(mOnFabClickListener);
 
         mHandler = new Handler();
-
         return view;
     }
 
