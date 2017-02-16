@@ -49,9 +49,9 @@
 
 -keep class com.commonsware.cwac.** { *; }
 
-#-libraryjars libs/BaiduLBS_Android.jar
--keep class com.baidu.** { *; }
--keep class vi.com.gdi.bgl.android.**{*;}
+-keep class com.baidu.** {*;}
+-keep class vi.com.** {*;}
+-dontwarn com.baidu.**
 
 -keepattributes Signature
 -keepattributes EnclosingMethod
