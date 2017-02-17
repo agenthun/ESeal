@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.agenthun.eseallite.R;
+import com.agenthun.eseallite.fragment.FreightTrackGoogleMapFragment;
 import com.agenthun.eseallite.fragment.FreightTrackMapFragment;
 import com.agenthun.eseallite.utils.ActivityUtils;
 import com.agenthun.eseallite.utils.DeviceSearchSuggestion;
@@ -67,7 +68,8 @@ public class FreightTrackMapActivity extends AppCompatActivity {
             }
         });
 
-        attachDeviceFragment();
+//        attachDeviceFragment();
+        attachDeviceGoogleMapFragment(); //test GoogleMap
 
         supportPostponeEnterTransition();
     }
@@ -84,6 +86,15 @@ public class FreightTrackMapActivity extends AppCompatActivity {
         FreightTrackMapFragment fragment = (FreightTrackMapFragment) supportFragmentManager.findFragmentById(R.id.content_main);
         if (fragment == null) {
             fragment = FreightTrackMapFragment.newInstance(mFreight.getId(), mFreight.getName());
+            ActivityUtils.replaceFragmentToActivity(supportFragmentManager, fragment, R.id.content_main);
+        }
+    }
+
+    private void attachDeviceGoogleMapFragment() {
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        FreightTrackGoogleMapFragment fragment = (FreightTrackGoogleMapFragment) supportFragmentManager.findFragmentById(R.id.content_main);
+        if (fragment == null) {
+            fragment = FreightTrackGoogleMapFragment.newInstance(mFreight.getId(), mFreight.getName());
             ActivityUtils.replaceFragmentToActivity(supportFragmentManager, fragment, R.id.content_main);
         }
     }
