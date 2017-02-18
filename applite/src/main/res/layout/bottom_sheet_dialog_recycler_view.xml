@@ -3,9 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/spacing_normal"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin">
+    android:paddingBottom="@dimen/spacing_normal">
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/bottom_sheet_title"
@@ -13,6 +11,8 @@
         android:layout_height="56dp"
         android:layout_marginBottom="7dp"
         android:gravity="center_vertical|left"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:text="@string/text_hint_freight_container_number"
         android:textColor="?android:textColor"
         android:textSize="16sp" />
@@ -20,7 +20,9 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/blue_grey_100" />
+        android:background="@color/blue_grey_100"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bottom_sheet_recycler_view"

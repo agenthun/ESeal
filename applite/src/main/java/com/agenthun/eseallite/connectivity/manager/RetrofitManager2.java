@@ -280,7 +280,7 @@ public class RetrofitManager2 {
 //        });
 
         return Observable
-                .just(new LocationDetail("2017/02/14 13:14:51", "0", new LatLng(45.6406300000, -73.8472210000)))
+                .just(new LocationDetail("2017/02/14 13:14:51", "0", "1", "1", new LatLng(45.6406300000, -73.8472210000)))
                 .delay(500, TimeUnit.MILLISECONDS);
     }
 
@@ -298,7 +298,7 @@ public class RetrofitManager2 {
 
         List<LocationDetail> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            LocationDetail detail = new LocationDetail("2017/02/14 13:14:51", "0", new LatLng(45.6406300000 + Math.cos(i / 39.9f), -73.8472210000 + Math.cos(i / 99.9f)));
+            LocationDetail detail = new LocationDetail("2017/02/14 13:14:51", "0", String.valueOf(2), "1", new LatLng(45.6406300000 + Math.cos(i / 39.9f), -73.8472210000 + Math.cos(i / 99.9f)));
             list.add(detail);
         }
         return Observable

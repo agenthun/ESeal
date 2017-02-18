@@ -13,15 +13,19 @@ import com.baidu.mapapi.model.LatLng;
 
 public class LocationDetail implements Parcelable {
     private String reportTime;
-    private String status;
+    private String uploadType;
+    private String securityLevel;
+    private String closedFlag;
     private LatLng latLng;
 
     public LocationDetail() {
     }
 
-    public LocationDetail(String reportTime, String status, LatLng latLng) {
+    public LocationDetail(String reportTime, String uploadType, String securityLevel, String closedFlag, LatLng latLng) {
         this.reportTime = reportTime;
-        this.status = status;
+        this.uploadType = uploadType;
+        this.securityLevel = securityLevel;
+        this.closedFlag = closedFlag;
         this.latLng = latLng;
     }
 
@@ -33,12 +37,28 @@ public class LocationDetail implements Parcelable {
         this.reportTime = reportTime;
     }
 
-    public String getStatus() {
-        return status;
+    public String getUploadType() {
+        return uploadType;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUploadType(String uploadType) {
+        this.uploadType = uploadType;
+    }
+
+    public String getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
+    public String getClosedFlag() {
+        return closedFlag;
+    }
+
+    public void setClosedFlag(String closedFlag) {
+        this.closedFlag = closedFlag;
     }
 
     public LatLng getLatLng() {
@@ -57,13 +77,17 @@ public class LocationDetail implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.reportTime);
-        dest.writeString(this.status);
+        dest.writeString(this.uploadType);
+        dest.writeString(this.securityLevel);
+        dest.writeString(this.closedFlag);
         dest.writeParcelable(this.latLng, flags);
     }
 
     protected LocationDetail(Parcel in) {
         this.reportTime = in.readString();
-        this.status = in.readString();
+        this.uploadType = in.readString();
+        this.securityLevel = in.readString();
+        this.closedFlag = in.readString();
         this.latLng = in.readParcelable(LatLng.class.getClassLoader());
     }
 
@@ -102,12 +126,14 @@ public class LocationDetail implements Parcelable {
     public String toString() {
         return "LocationDetail{" +
                 "reportTime='" + reportTime + '\'' +
-                ", status='" + status + '\'' +
+                ", uploadType='" + uploadType + '\'' +
+                ", securityLevel='" + securityLevel + '\'' +
+                ", closedFlag='" + closedFlag + '\'' +
                 ", latLng=" + latLng +
                 '}';
     }
 
     public Boolean isInvalid() {
-        return reportTime == null || status == null || latLng == null;
+        return reportTime == null || uploadType == null || latLng == null;
     }
 }

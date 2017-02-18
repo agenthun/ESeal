@@ -11,12 +11,16 @@ import android.os.Parcelable;
 
 public class DeviceLocation implements Parcelable {
     private String ReportTime;
-    private String Status;
+    private String UploadType;
+    private String SecurityLevel;
+    private String ClosedFlag;
     private String BaiduCoordinate;
 
-    public DeviceLocation(String reportTime, String status, String baiduCoordinate) {
+    public DeviceLocation(String reportTime, String uploadType, String securityLevel, String closedFlag, String baiduCoordinate) {
         ReportTime = reportTime;
-        Status = status;
+        UploadType = uploadType;
+        SecurityLevel = securityLevel;
+        ClosedFlag = closedFlag;
         BaiduCoordinate = baiduCoordinate;
     }
 
@@ -28,12 +32,28 @@ public class DeviceLocation implements Parcelable {
         ReportTime = reportTime;
     }
 
-    public String getStatus() {
-        return Status;
+    public String getUploadType() {
+        return UploadType;
     }
 
-    public void setStatus(String status) {
-        Status = status;
+    public void setUploadType(String uploadType) {
+        UploadType = uploadType;
+    }
+
+    public String getSecurityLevel() {
+        return SecurityLevel;
+    }
+
+    public void setSecurityLevel(String securityLevel) {
+        SecurityLevel = securityLevel;
+    }
+
+    public String getClosedFlag() {
+        return ClosedFlag;
+    }
+
+    public void setClosedFlag(String closedFlag) {
+        ClosedFlag = closedFlag;
     }
 
     public String getBaiduCoordinate() {
@@ -52,13 +72,17 @@ public class DeviceLocation implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.ReportTime);
-        dest.writeString(this.Status);
+        dest.writeString(this.UploadType);
+        dest.writeString(this.SecurityLevel);
+        dest.writeString(this.ClosedFlag);
         dest.writeString(this.BaiduCoordinate);
     }
 
     protected DeviceLocation(Parcel in) {
         this.ReportTime = in.readString();
-        this.Status = in.readString();
+        this.UploadType = in.readString();
+        this.SecurityLevel = in.readString();
+        this.ClosedFlag = in.readString();
         this.BaiduCoordinate = in.readString();
     }
 
@@ -82,7 +106,7 @@ public class DeviceLocation implements Parcelable {
         DeviceLocation that = (DeviceLocation) o;
 
         if (!ReportTime.equals(that.ReportTime)) return false;
-        if (!Status.equals(that.Status)) return false;
+        if (!UploadType.equals(that.UploadType)) return false;
         return BaiduCoordinate.equals(that.BaiduCoordinate);
 
     }
@@ -90,7 +114,7 @@ public class DeviceLocation implements Parcelable {
     @Override
     public int hashCode() {
         int result = ReportTime.hashCode();
-        result = 31 * result + Status.hashCode();
+        result = 31 * result + UploadType.hashCode();
         result = 31 * result + BaiduCoordinate.hashCode();
         return result;
     }
@@ -99,12 +123,14 @@ public class DeviceLocation implements Parcelable {
     public String toString() {
         return "DeviceLocation{" +
                 "ReportTime='" + ReportTime + '\'' +
-                ", Status='" + Status + '\'' +
+                ", UploadType='" + UploadType + '\'' +
+                ", SecurityLevel='" + SecurityLevel + '\'' +
+                ", ClosedFlag='" + ClosedFlag + '\'' +
                 ", BaiduCoordinate='" + BaiduCoordinate + '\'' +
                 '}';
     }
 
     public Boolean isInvalid() {
-        return ReportTime == null || Status == null || BaiduCoordinate == null;
+        return ReportTime == null || UploadType == null || BaiduCoordinate == null;
     }
 }

@@ -255,8 +255,10 @@ public class FreightTrackMapFragment extends Fragment {
             if (detail.isInvalid()) continue;
 
             String time = detail.getReportTime();
-            String status = detail.getStatus();
-            if (status.equals("0")) {
+            String uploadType = detail.getUploadType();
+            String securityLevel = detail.getSecurityLevel();
+            String closedFlag = detail.getClosedFlag();
+            if (uploadType.equals("0")) {
                 time = utc2Local(time, "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss");
             }
 
@@ -267,7 +269,7 @@ public class FreightTrackMapFragment extends Fragment {
             );
 //            converter.coord(lng);
 //            lng = converter.convert();
-            result.add(new LocationDetail(time, status, lng));
+            result.add(new LocationDetail(time, uploadType, securityLevel, closedFlag, lng));
         }
 
         return result;

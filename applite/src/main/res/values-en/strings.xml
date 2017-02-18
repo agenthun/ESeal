@@ -29,10 +29,10 @@
     <string name="menu_icon_type">Type</string>
 
     <string name="action_type_0">Routine Upload</string>
-    <string name="action_type_1">Active Upload</string>
+    <string name="action_type_1">UnSealed</string>
     <string name="action_type_2">Abnormal Upload</string>
     <string name="action_type_3">Sealed</string>
-    <string name="action_type_4">UnSealed</string>
+    <string name="action_type_4">Active Upload</string>
     <string name="action_type_5">Setting Device</string>
 
     <string name="error_ble_not_supported">BLE is not supported</string>
@@ -51,7 +51,7 @@
     <string name="text_device_status">Device status</string>
     <string name="device_reply_safe_0">Unseal</string>
     <string name="device_reply_safe_1">Sealed</string>
-    <string name="device_reply_safe_2">Opened</string>
+    <string name="device_reply_safe_2">Forced Open</string>
     <string name="device_reply_lock">Locked</string>
     <string name="device_reply_unlock">Unlock</string>
     <string name="device_reply_info_title">Device Position</string>

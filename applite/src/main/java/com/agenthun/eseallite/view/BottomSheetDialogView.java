@@ -125,27 +125,46 @@ public class BottomSheetDialogView {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
-            String actionType = details.get(position).getStatus();
+            String actionType = details.get(position).getUploadType();
+            int securityLevel = Integer.parseInt(details.get(position).getSecurityLevel());
             switch (actionType) {
-                case "0":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(mContext, R.color.blue_grey_500));
+                case "0": //周期上传
+                    if (securityLevel == 2) { //非法打开
+                        holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.red_500));
+                        break;
+                    } else { //正常
+                        holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.blue_grey_500));
+                    }
                     break;
-                case "1":
+                case "3": //上封
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(mContext, R.color.blue_grey_500));
+                    if (securityLevel == 2) { //非法状态
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.red_500));
+                    } else { //正常
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.colorPrimary));
+                    }
                     break;
+                case "1": //解封
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
+                    if (securityLevel == 2) { //非法状态
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.red_500));
+                    } else { //正常
+                        holder.securityLevelImageView.setColorFilter(
+                                ContextCompat.getColor(mContext, R.color.colorPrimary));
+                    }
+                    break;
+
                 case "2":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
                             ContextCompat.getColor(mContext, R.color.red_500));
-                    break;
-                case "3":
-                    holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
-                    holder.securityLevelImageView.setColorFilter(
-                            ContextCompat.getColor(mContext, R.color.colorPrimary));
                     break;
                 case "4":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
