@@ -76,7 +76,8 @@ public class BottomSheetDialogView {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        String msg = time + "\r\n\r\n" + reverseGeoCodeResult.getAddress();
+                        String msg = time + "\r\n\r\n" + (reverseGeoCodeResult.getAddress().isEmpty() ?
+                                reverseGeoCodeResult.getAddressDetail().city + ", " + reverseGeoCodeResult.getAddressDetail().province : reverseGeoCodeResult.getAddress());
                         new AlertDialog.Builder(context)
                                 .setTitle(title)
                                 .setMessage(msg)

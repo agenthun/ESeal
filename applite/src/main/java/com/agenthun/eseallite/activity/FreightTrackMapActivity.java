@@ -68,8 +68,8 @@ public class FreightTrackMapActivity extends AppCompatActivity {
             }
         });
 
-//        attachDeviceFragment();
-        attachDeviceGoogleMapFragment(); //test GoogleMap
+        attachDeviceFragment();
+//        attachDeviceGoogleMapFragment(); //test GoogleMap
 
         supportPostponeEnterTransition();
     }

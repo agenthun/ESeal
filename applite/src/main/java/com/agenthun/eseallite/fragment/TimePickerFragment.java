@@ -63,8 +63,6 @@ public class TimePickerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_time_picker, container, false);
         ButterKnife.bind(this, view);
 
-        getTimePickerDialog();
-
         return view;
     }
 
@@ -76,13 +74,13 @@ public class TimePickerFragment extends Fragment {
     @OnClick(R.id.time_from)
     public void onTimeFromEtClick() {
         Log.d(TAG, "onTimeFromEtClick() returned: ");
-        mTimePickerDialog.show(getFragmentManager(), TAG_TIME_FROM);
+        getTimePickerDialog().show(getFragmentManager(), TAG_TIME_FROM);
     }
 
     @OnClick(R.id.time_to)
     public void onTimeToEtClick() {
         Log.d(TAG, "onTimeToEtClick() returned: ");
-        mTimePickerDialog.show(getFragmentManager(), TAG_TIME_TO);
+        getTimePickerDialog().show(getFragmentManager(), TAG_TIME_TO);
     }
 
     @OnClick(R.id.pick_time_button)
@@ -124,7 +122,10 @@ public class TimePickerFragment extends Fragment {
         snackbar.show();
     }
 
-    private void getTimePickerDialog() {
+    private TimePickerDialog getTimePickerDialog() {
+        if (mTimePickerDialog != null) {
+            return mTimePickerDialog;
+        }
         mTimePickerDialog = new TimePickerDialog.Builder()
                 .setCallBack(mOnDateSetListener)
                 .setTitleStringId(getString(R.string.text_time_picker_title))
@@ -143,6 +144,7 @@ public class TimePickerFragment extends Fragment {
                 .setWheelItemTextSelectorColor(ContextCompat.getColor(getActivity(), R.color.colorAccent))
                 .setWheelItemTextSize(16)
                 .build();
+        return mTimePickerDialog;
     }
 
     private OnDateSetListener mOnDateSetListener = new OnDateSetListener() {
