@@ -140,7 +140,12 @@ public class BottomSheetDialogView {
                                 ContextCompat.getColor(mContext, R.color.blue_grey_500));
                     }
                     break;
-                case "3": //上封
+                case "100":
+                    holder.securityLevelImageView.setImageResource(R.drawable.ic_settings_black_24dp);
+                    holder.securityLevelImageView.setColorFilter(
+                            ContextCompat.getColor(mContext, R.color.blue_grey_500));
+                    break;
+                case "101": //上封
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_black_24dp);
                     if (securityLevel == 2) { //非法状态
                         holder.securityLevelImageView.setColorFilter(
@@ -150,7 +155,7 @@ public class BottomSheetDialogView {
                                 ContextCompat.getColor(mContext, R.color.colorPrimary));
                     }
                     break;
-                case "1": //解封
+                case "102": //解封
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_lock_open_black_24dp);
                     if (securityLevel == 2) { //非法状态
                         holder.securityLevelImageView.setColorFilter(
@@ -161,7 +166,7 @@ public class BottomSheetDialogView {
                     }
                     break;
 
-                case "2":
+/*                case "2":
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_warning_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
                             ContextCompat.getColor(mContext, R.color.red_500));
@@ -175,7 +180,7 @@ public class BottomSheetDialogView {
                     holder.securityLevelImageView.setImageResource(R.drawable.ic_settings_black_24dp);
                     holder.securityLevelImageView.setColorFilter(
                             ContextCompat.getColor(mContext, R.color.blue_grey_500));
-                    break;
+                    break;*/
             }
 
 
@@ -210,18 +215,18 @@ public class BottomSheetDialogView {
         //获取相应的ActionType
         private String getActionType(String actionType) {
             switch (actionType) {
-                case "0":
+                case "0": //周期上传
                     return mContext.getString(R.string.action_type_0);
-                case "1":
-                    return mContext.getString(R.string.action_type_1);
-                case "2":
+                case "100": //配置
+                    return mContext.getString(R.string.action_type_100);
+                case "101": //上封
+                    return mContext.getString(R.string.action_type_101);
+                case "102": //解封
+                    return mContext.getString(R.string.action_type_102);
+/*                case "2":
                     return mContext.getString(R.string.action_type_2);
-                case "3":
-                    return mContext.getString(R.string.action_type_3);
                 case "4":
-                    return mContext.getString(R.string.action_type_4);
-                case "5":
-                    return mContext.getString(R.string.action_type_5);
+                    return mContext.getString(R.string.action_type_4);*/
             }
             return "";
         }

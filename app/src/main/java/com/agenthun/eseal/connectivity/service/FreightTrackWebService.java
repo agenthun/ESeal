@@ -114,6 +114,15 @@ public interface FreightTrackWebService {
             @Query("implementID") String implementID,
             @Query("language") String language);
 
+    //根据implementID获取该货物某时间段内的状态列表
+    @GET("GetImplementPositionInfoByIDAndTime")
+    Observable<DeviceLocationInfos> getBeidouMasterDeviceLocation(
+            @Query("token") String token,
+            @Query("implementID") String implementID,
+            @Query("startTime") String startTime,
+            @Query("endTime") String endTime,
+            @Query("language") String language);
+
     /**
      * @description 北斗终端NFC访问链路
      */

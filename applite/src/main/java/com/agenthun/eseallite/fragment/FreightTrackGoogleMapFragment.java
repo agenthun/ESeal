@@ -92,6 +92,8 @@ public class FreightTrackGoogleMapFragment extends Fragment {
     MapView bmapView;
 
     private GoogleMap mGoogleMap;
+    private com.google.android.gms.maps.model.Polyline mGoogleMapVirtureRoad;
+    private com.google.android.gms.maps.model.Marker mGoogleMapMoveMarker;
     @Bind(R.id.googleMapView)
     com.google.android.gms.maps.MapView googleMapView;
 
@@ -217,20 +219,7 @@ public class FreightTrackGoogleMapFragment extends Fragment {
      * 设置Google地图属性
      */
     private void setupGoogleMap() {
-        googleMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                com.google.android.gms.maps.model.LatLng sydney = new com.google.android.gms.maps.model.LatLng(-33.867, 151.206);
-
-                googleMap.setMyLocationEnabled(true);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
-
-                googleMap.addMarker(new com.google.android.gms.maps.model.MarkerOptions()
-                        .title("Sydney")
-                        .snippet("The most populous city in Australia.")
-                        .position(sydney));
-            }
-        });
+        googleMapView.getMapAsync(mOnMapReadyCallback);
     }
 
     /**
@@ -275,6 +264,20 @@ public class FreightTrackGoogleMapFragment extends Fragment {
         }
     }
 
+    private com.google.android.gms.maps.model.LatLng baiduLatLngToGoogleLatLng(LatLng baiduLatLng) {
+        double lat = baiduLatLng.latitude;
+        double lng = baiduLatLng.longitude;
+        com.google.android.gms.maps.model.LatLng googleLatLng = new com.google.android.gms.maps.model.LatLng(lat, lng);
+        return googleLatLng;
+    }
+
+    private LatLng googleLatLngToBaiduLatLng(com.google.android.gms.maps.model.LatLng googleLatLng) {
+        double lat = googleLatLng.latitude;
+        double lng = googleLatLng.longitude;
+        LatLng baiduLatLng = new LatLng(lat, lng);
+        return baiduLatLng;
+    }
+
     private List<LocationDetail> locationInfosToLocationDetailList(List<DeviceLocation> details) {
         List<LocationDetail> result = new ArrayList<LocationDetail>();
         if (details == null || details.size() == 0) return result;
@@ -305,6 +308,79 @@ public class FreightTrackGoogleMapFragment extends Fragment {
         }
 
         return result;
+    }
+
+    private OnMapReadyCallback mOnMapReadyCallback = new OnMapReadyCallback() {
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            // Instantiates a new Polyline object and adds points to define a rectangle
+            com.google.android.gms.maps.model.PolylineOptions rectOptions = new com.google.android.gms.maps.model.PolylineOptions()
+                    .add(new com.google.android.gms.maps.model.LatLng(-18.5186650000, 141.9748780000))
+                    .add(new com.google.android.gms.maps.model.LatLng(-18.5186650000, 144.9748780000))  // North of the previous point, but at the same longitude
+                    .add(new com.google.android.gms.maps.model.LatLng(-20.5186650000, 144.9748780000))  // Same latitude, and 30km to the west
+                    .add(new com.google.android.gms.maps.model.LatLng(-20.5186650000, 141.9748780000))  // Same longitude, and 16km to the south
+                    .add(new com.google.android.gms.maps.model.LatLng(-24.5186650000, 141.9748780000)); // Closes the polyline.
+
+            rectOptions.width(8)
+                    .color(ContextCompat.getColor(getActivity(), R.color.red_500));
+
+            // Get back the mutable Polyline
+            com.google.android.gms.maps.model.Polyline polyline = googleMap.addPolyline(rectOptions);
+
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new com.google.android.gms.maps.model.LatLng(-18.5186650000, 141.9748780000), 6));
+        }
+    };
+
+    /**
+     * 加载轨迹数据至Google地图
+     */
+    private void showGoogleMap(List<LocationDetail> locationDetails) {
+        if (locationDetails == null || locationDetails.size() == 0) return;
+
+        int countInCircle = 0;
+
+        List<com.google.android.gms.maps.model.LatLng> polylines = new ArrayList<>();
+        for (LocationDetail locationDetail :
+                locationDetails) {
+            if (locationDetail.isInvalid()) continue;
+
+            LatLng lng = locationDetail.getLatLng();
+
+            polylines.add(baiduLatLngToGoogleLatLng(lng));
+
+            if (polylines.size() > 1) {
+                if (SpatialRelationUtil.isCircleContainsPoint(googleLatLngToBaiduLatLng(polylines.get(0)), LOCATION_RADIUS, lng)) {
+                    countInCircle++;
+                }
+            }
+        }
+
+/*        Collections.reverse(polylines); //按时间正序
+
+        OverlayOptions markerOptions = null;
+
+        if (polylines.size() > 1) {
+            OverlayOptions polylineOptions = new PolylineOptions()
+                    .points(polylines)
+                    .width(8)
+                    .color(ContextCompat.getColor(getActivity(), R.color.red_500));
+
+            mVirtureRoad = (Polyline) mBaiduMap.addOverlay(polylineOptions);
+            markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory
+                    .fromResource(R.drawable.ic_car)).position(polylines.get(0)).rotate((float) getAngle(0));
+        } else {
+            markerOptions = new MarkerOptions().flat(true).anchor(0.5f, 0.5f).icon(BitmapDescriptorFactory
+                    .fromResource(R.drawable.ic_car)).position(polylines.get(0));
+        }
+        mMoveMarker = (Marker) mBaiduMap.addOverlay(markerOptions);
+
+        //设置中心点
+        setBaiduMapAdaptedZoom(polylines);
+        if (polylines.size() > 1 && countInCircle < polylines.size() / 2) {
+            movingThread = new Thread(new MyThread());
+            movingThread.start();
+        }*/
+
     }
 
     /**

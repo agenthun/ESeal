@@ -69,7 +69,7 @@
         <!--Google地图API-->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCzqqPnekgzwjihF3e4d_EtWIT8qMtVcLc" />
+            android:value="AIzaSyAVHlxP2FqI5CXLTObWYFdD1gz7t1l6dJ0" />
         <!--AIzaSyCzqqPnekgzwjihF3e4d_EtWIT8qMtVcLc-->
         <!--AIzaSyAVHlxP2FqI5CXLTObWYFdD1gz7t1l6dJ0-->
 

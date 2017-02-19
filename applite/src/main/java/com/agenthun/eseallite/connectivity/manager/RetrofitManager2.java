@@ -9,6 +9,7 @@ import com.agenthun.eseallite.bean.DeviceLocationInfos;
 import com.agenthun.eseallite.bean.User;
 import com.agenthun.eseallite.bean.base.BeidouMasterDevice;
 import com.agenthun.eseallite.bean.base.BleAndBeidouNfcDevice;
+import com.agenthun.eseallite.bean.base.DeviceLocation;
 import com.agenthun.eseallite.bean.base.LocationDetail;
 import com.agenthun.eseallite.bean.base.Result;
 import com.agenthun.eseallite.connectivity.service.Api;
@@ -25,8 +26,10 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.http.Query;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
@@ -194,6 +197,12 @@ public class RetrofitManager2 {
                 .unsubscribeOn(Schedulers.io());
     }
 
+    //根据implementID获取该货物某时间段内的状态列表
+    public Observable<DeviceLocationInfos> getBeidouMasterDeviceLocationObservable(String token, String implementID, String from, String to) {
+        return freightTrackWebService
+                .getBeidouMasterDeviceLocation(token, implementID, from, to, LanguageUtil.getLanguage());
+    }
+
 
     /**
      * @description 北斗终端NFC访问链路
@@ -220,6 +229,7 @@ public class RetrofitManager2 {
 
     /**
      * @description 获取所有终端货物信息
+     * @warning 这里移除BLE和BeidouNfcDevice设备, 不是所有类型设备
      */
     //根据Token获取所有在途中的货物设置信息
     public Observable<List<DeviceSearchSuggestion>> getAllDeviceFreightListObservable(String token) {
@@ -233,7 +243,7 @@ public class RetrofitManager2 {
             public List<DeviceSearchSuggestion> call(BleAndBeidouNfcDeviceInfos bleAndBeidouNfcDeviceInfos, BeidouMasterDeviceInfos beidouMasterDeviceInfos) {
                 List<DeviceSearchSuggestion> result = new ArrayList<DeviceSearchSuggestion>();
 
-                if (bleAndBeidouNfcDeviceInfos != null &&
+/*                if (bleAndBeidouNfcDeviceInfos != null &&
                         bleAndBeidouNfcDeviceInfos.getResult().get(0).getRESULT() == 1) {
                     List<BleAndBeidouNfcDevice> details = bleAndBeidouNfcDeviceInfos.getDetails();
                     for (BleAndBeidouNfcDevice detail :
@@ -249,7 +259,7 @@ public class RetrofitManager2 {
                             result.add(suggestion);
                         }
                     }
-                }
+                }*/
 
                 if (beidouMasterDeviceInfos != null
                         && beidouMasterDeviceInfos.getResult().get(0).getRESULT() == 1) {
@@ -286,16 +296,41 @@ public class RetrofitManager2 {
 
     //根据Token获取该货物所选时间段的位置状态列表
     public Observable<List<LocationDetail>> getFreightLocationListObservable(String token, String id, String from, String to) {
-//        Observable<DeviceLocationInfos> deviceLocationInfos = RetrofitManager2.builder(PathType.WEB_SERVICE_V2_TEST)
-//                .getBleDeviceLocationObservable(token, id);
-//
-//        return deviceLocationInfos.map(new Func1<DeviceLocationInfos, LocationDetail>() {
-//            @Override
-//            public LocationDetail call(DeviceLocationInfos deviceLocationInfos) {
-//                return new LocationDetail("2017/2/14 13:14", "0", new LatLng(40.6406300000, -73.8472210000));
-//            }
-//        });
+        Observable<DeviceLocationInfos> deviceLocationInfos = RetrofitManager2.builder(PathType.WEB_SERVICE_V2_TEST)
+                .getBeidouMasterDeviceLocationObservable(token, id, from, to);
 
+        return deviceLocationInfos.map(new Func1<DeviceLocationInfos, List<LocationDetail>>() {
+            @Override
+            public List<LocationDetail> call(DeviceLocationInfos deviceLocationInfos) {
+                List<LocationDetail> list = new ArrayList<>();
+                if (deviceLocationInfos != null
+                        && deviceLocationInfos.getResult().get(0).getRESULT() == 1) {
+                    for (DeviceLocation deviceLocation :
+                            deviceLocationInfos.getDetails()) {
+                        String reportTime = deviceLocation.getReportTime();
+                        String uploadType = deviceLocation.getUploadType();
+                        String securityLevel = deviceLocation.getSecurityLevel();
+                        String closedFlag = deviceLocation.getClosedFlag();
+                        String[] location = deviceLocation.getBaiduCoordinate().split(",");
+                        LatLng latLng = new LatLng(
+                                Double.parseDouble(location[0]),
+                                Double.parseDouble(location[1])
+                        );
+
+                        LocationDetail d = new LocationDetail(reportTime,
+                                uploadType,
+                                securityLevel,
+                                closedFlag,
+                                latLng);
+                        list.add(d);
+                    }
+                }
+                return list;
+            }
+        });
+
+/*
+        //构造测试数据
         List<LocationDetail> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             LocationDetail detail = new LocationDetail("2017/02/14 13:14:51", "0", String.valueOf(2), "1", new LatLng(45.6406300000 + Math.cos(i / 39.9f), -73.8472210000 + Math.cos(i / 99.9f)));
@@ -303,6 +338,6 @@ public class RetrofitManager2 {
         }
         return Observable
                 .just(list)
-                .delay(3000, TimeUnit.MILLISECONDS);
+                .delay(3000, TimeUnit.MILLISECONDS);*/
     }
 }
