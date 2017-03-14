@@ -165,7 +165,6 @@ public class LoginActivity extends AppCompatActivity {
                                 PreferencesHelper.writeTokenToPreferences(LoginActivity.this, token);
                                 App.setToken(token);
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra(RetrofitManager.TOKEN, token);
                                 startActivity(intent);
                                 finish();
                             } else {
@@ -196,6 +195,14 @@ public class LoginActivity extends AppCompatActivity {
         }
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        // 读写外设为必须权限，用户如果禁止，则每次进入都会申请
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
         // 获取设备状态，友盟API

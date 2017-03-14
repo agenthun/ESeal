@@ -7,18 +7,25 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
 import com.agenthun.eseal.bean.base.LocationDetail;
+import com.agenthun.eseal.utils.LanguageUtil;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
 import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.PendingResult;
+import com.google.maps.model.GeocodingResult;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,12 +37,22 @@ import java.util.List;
  * @date 16/3/8 上午12:26.
  */
 public class BottomSheetDialogView {
+    private static final String TAG = "BottomSheetDialogView";
+
     private static List<LocationDetail> details;
     private final View view;
+    private Context mContext;
+
+    private boolean mUsingGoogleMap = false;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public BottomSheetDialogView(final Context context, String containerNo, List<LocationDetail> details) {
+        mContext = context;
+
+        mUsingGoogleMap = "zh-CN".equals(LanguageUtil.getLanguage()) ? false : true;
+//        mUsingGoogleMap = true; //for test googleMap
+
         BottomSheetDialogView.details = details;
 
         BottomSheetDialog dialog = new BottomSheetDialog(context);
@@ -53,40 +70,125 @@ public class BottomSheetDialogView {
         simpleAdapter.setOnItemClickListener(new SimpleAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, final LocationDetail locationDetail) {
-                GeoCoder geoCoder = GeoCoder.newInstance();
-                geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(locationDetail.getLatLng()));
-                geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
-                    @Override
-                    public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
-
-                    }
-
-                    @Override
-                    public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
-                        String title = context.getString(R.string.text_current_position);
-                        String time = "";
-                        try {
-                            time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
-                                    new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
-                                            locationDetail.getReportTime()
-                                    )
-                            );
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        String msg = time + "\r\n\r\n" + (reverseGeoCodeResult.getAddress().isEmpty() ?
-                                reverseGeoCodeResult.getAddressDetail().city + ", " + reverseGeoCodeResult.getAddressDetail().province : reverseGeoCodeResult.getAddress());
-                        new AlertDialog.Builder(context)
-                                .setTitle(title)
-                                .setMessage(msg)
-                                .setPositiveButton(R.string.text_ok, null).show();
-                    }
-                });
+                processReverseGeoCode(mUsingGoogleMap, locationDetail);
             }
         });
 
         dialog.setContentView(view);
         dialog.show();
+    }
+
+    private void processReverseGeoCode(boolean usingGoogleMap, final LocationDetail locationDetail) {
+        if (usingGoogleMap) {
+            GeoApiContext geoApiContext = new GeoApiContext().setApiKey(App.GOOGLE_MAP_API_KEY);
+            GeocodingApi.reverseGeocode(geoApiContext, locationDetail.getGoogleMapLatLng())
+                    .setCallback(new PendingResult.Callback<GeocodingResult[]>() {
+                        @Override
+                        public void onResult(GeocodingResult[] result) {
+                            final String title = mContext.getString(R.string.text_current_position);
+                            String time = "";
+                            try {
+                                time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
+                                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
+                                                locationDetail.getReportTime()
+                                        )
+                                );
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            final String msg = time + "\r\n\r\n" + (result[0] == null ?
+                                    mContext.getString(R.string.fail_get_current_location) : result[0].formattedAddress);
+
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    getView().post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            new AlertDialog.Builder(mContext)
+                                                    .setTitle(title)
+                                                    .setMessage(msg)
+                                                    .setPositiveButton(R.string.text_ok, null).show();
+                                        }
+                                    });
+                                }
+                            }.start();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable e) {
+                            Log.d(TAG, "onFailure() GeocodingApi.reverseGeocode");
+                            final String title = mContext.getString(R.string.text_current_position);
+                            String time = "";
+                            try {
+                                time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
+                                        new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
+                                                locationDetail.getReportTime()
+                                        )
+                                );
+                            } catch (ParseException error) {
+                                return;
+                            }
+                            final String msg = time + "\r\n\r\n" + mContext.getString(R.string.fail_get_current_location);
+
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    getView().post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            new AlertDialog.Builder(mContext)
+                                                    .setTitle(title)
+                                                    .setMessage(msg)
+                                                    .setPositiveButton(R.string.text_ok, null).show();
+                                        }
+                                    });
+                                }
+                            }.start();
+                        }
+                    });
+        } else {
+            GeoCoder geoCoder = GeoCoder.newInstance();
+            geoCoder.reverseGeoCode(new ReverseGeoCodeOption().location(locationDetail.getLatLng()));
+            geoCoder.setOnGetGeoCodeResultListener(new OnGetGeoCoderResultListener() {
+                @Override
+                public void onGetGeoCodeResult(GeoCodeResult geoCodeResult) {
+
+                }
+
+                @Override
+                public void onGetReverseGeoCodeResult(ReverseGeoCodeResult reverseGeoCodeResult) {
+                    final String title = mContext.getString(R.string.text_current_position);
+                    String time = "";
+                    try {
+                        time = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
+                                new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(
+                                        locationDetail.getReportTime()
+                                )
+                        );
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    final String msg = time + "\r\n\r\n" + (reverseGeoCodeResult.getAddress().isEmpty() ?
+                            reverseGeoCodeResult.getAddressDetail().city + ", " + reverseGeoCodeResult.getAddressDetail().province : reverseGeoCodeResult.getAddress());
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            getView().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new AlertDialog.Builder(mContext)
+                                            .setTitle(title)
+                                            .setMessage(msg)
+                                            .setPositiveButton(R.string.text_ok, null).show();
+                                }
+                            });
+                        }
+                    }.start();
+                }
+            });
+        }
     }
 
     public static void show(Context context, String containerNo, List<LocationDetail> details) {

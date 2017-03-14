@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Vibrator;
 
 import com.agenthun.eseal.utils.baidumap.LocationService;
+import com.agenthun.eseal.utils.update.UpdateConfig;
 import com.baidu.mapapi.SDKInitializer;
 
 /**
@@ -19,6 +20,8 @@ public class App extends Application {
     private static String tagId = "043B88F2994080";
     private static String deviceId = "13003";
 
+    public static final String GOOGLE_MAP_API_KEY = "AIzaSyBy5WtHdZ7Pbe-A2N57Kbf7iR0OIgo3yuY";
+
     public LocationService locationService;
     public Vibrator mVibrator;
 
@@ -26,6 +29,11 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mApplicationContext = this;
+
+        /***
+         * 初始化版本升级模块
+         */
+        UpdateConfig.initGet(this);
 
         /***
          * 初始化定位sdk，建议在Application中创建

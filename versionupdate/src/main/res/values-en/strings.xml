@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Version Update</string>
+    <string name="jjdxm_update_action_pause">Stop</string>
+    <string name="jjdxm_update_action_continue">Keep on</string>
+    <string name="jjdxm_update_action_cancel">Cancel</string>
+    <string name="jjdxm_update_updatetitle">Found a new version</string>
+    <string name="jjdxm_update_newversion">"The last version: "</string>
+    <string name="jjdxm_update_updatecontent">Update</string>
+    <string name="jjdxm_update_targetsize">"New version size: "</string>
+    <string name="jjdxm_update_gprscondition">(Tip: non WIFI environment)</string>
+    <string name="jjdxm_update_updatenow">Update now</string>
+    <string name="jjdxm_update_installnow">Install now</string>
+    <string name="jjdxm_update_notnow">Later</string>
+    <string name="jjdxm_update_ignore">Ignore this version</string>
+    <string name="jjdxm_update_dialog_installapk">Would you like to install the latest version ?</string>
+</resources>

@@ -16,6 +16,12 @@
             android:clickable="true"
             android:visibility="gone" />
 
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
         <ImageView
             android:id="@+id/blurredMap"
             android:layout_width="match_parent"

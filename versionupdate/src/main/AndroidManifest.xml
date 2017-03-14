@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.pekingopera.versionupdate">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <activity
+            android:name=".view.UpdateDialogActivity"
+            android:theme="@style/AppTheme.Translucent" />
+        <activity android:name=".view.DownloadDialogActivity" />
+
+        <service android:name=".server.DownloadingService" />
+    </application>
+
+</manifest>

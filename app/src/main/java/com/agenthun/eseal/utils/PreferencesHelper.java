@@ -15,10 +15,14 @@ import android.text.TextUtils;
 public class PreferencesHelper {
 
     private static final String USER_PREFERENCES = "userPreferences";
+    private static final String APP_PREFERENCES = "appPreferences";
+
     private static final String PREFERENCE_USERNAME = USER_PREFERENCES + ".username";
     private static final String PREFERENCE_PASSWORD = USER_PREFERENCES + ".password";
 
     private static final String PREFERENCE_TOKEN = USER_PREFERENCES + ".token";
+
+    private static final String PREFERENCE_APP_NEW_VERSION = APP_PREFERENCES + ".newVersion";
 
     public PreferencesHelper() {
     }
@@ -36,6 +40,12 @@ public class PreferencesHelper {
         editor.apply();
     }
 
+    public static void writeAppNewVersionToPreferences(Context context, String newVersion) {
+        SharedPreferences.Editor editor = getEditor(context);
+        editor.putString(PREFERENCE_APP_NEW_VERSION, newVersion);
+        editor.apply();
+    }
+
     public static User getUser(Context context) {
         SharedPreferences preferences = getSharedPreferences(context);
         final String username = preferences.getString(PREFERENCE_USERNAME, null);
@@ -50,6 +60,12 @@ public class PreferencesHelper {
         SharedPreferences preferences = getSharedPreferences(context);
         final String token = preferences.getString(PREFERENCE_TOKEN, "null");
         return token;
+    }
+
+    public static String getAppNewVersion(Context context) {
+        SharedPreferences preferences = getSharedPreferences(context);
+        final String newVersion = preferences.getString(PREFERENCE_APP_NEW_VERSION, "");
+        return newVersion;
     }
 
     public static void signOut(Context context, boolean isSavePreferences) {

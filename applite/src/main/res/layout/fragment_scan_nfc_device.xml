@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.agenthun.eseallite.view.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.agenthun.eseallite.pagescannfcdevice.view.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/refresh_layout"
@@ -38,7 +38,7 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_app"
-                android:tint="@color/colorPrimary" />
+                android:tint="@color/colorPrimaryDeepDark" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -57,4 +57,4 @@
 
         </LinearLayout>
     </RelativeLayout>
-</com.agenthun.eseallite.view.ScrollChildSwipeRefreshLayout>
+</com.agenthun.eseallite.pagescannfcdevice.view.ScrollChildSwipeRefreshLayout>

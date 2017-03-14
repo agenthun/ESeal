@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -50,10 +51,17 @@ import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.model.utils.SocketPackage;
 import com.agenthun.eseal.model.utils.StateType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.LanguageUtil;
+import com.agenthun.eseal.utils.LocationHelper;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClientOption;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.PendingResult;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import com.ramotion.foldingcell.FoldingCell;
 
 import java.io.ByteArrayOutputStream;
@@ -143,6 +151,9 @@ public class DeviceOperationActivity extends AppCompatActivity {
     //-1:初始化状态; 0:上封; 1:解封
     private int operationSealSwitch = STATE_OPERATION_INITIAL;
     private boolean isLocationServiceStarting = false;
+
+    private LocationHelper mLocationHelper;
+    private boolean mUsingGoogleMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,6 +265,13 @@ public class DeviceOperationActivity extends AppCompatActivity {
                 operationSealSwitch = STATE_OPERATION_INITIAL;
             }
         });
+
+        mUsingGoogleMap = "zh-CN".equals(LanguageUtil.getLanguage()) ? false : true;
+//        mUsingGoogleMap = true; //for test googleMap
+
+        if (mUsingGoogleMap) {
+            mLocationHelper = LocationHelper.getInstance(this);
+        }
     }
 
     @Override
@@ -278,12 +296,22 @@ public class DeviceOperationActivity extends AppCompatActivity {
         LocationClientOption mOption = locationService.getDefaultLocationClientOption();
         mOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
         locationService.setLocationOption(mOption);
+
+        //注册GPS硬件监听
+        if (mUsingGoogleMap) {
+            mLocationHelper.registerListener(mGpsLocationCallBack);
+        }
     }
 
     @Override
     public void onStop() {
         locationService.unregisterListener(mListener); //注销掉监听
         locationService.stop(); //停止定位服务
+
+        //注销掉GPS硬件监听
+        if (mUsingGoogleMap) {
+            mLocationHelper.unregisterListener();
+        }
         super.onStop();
     }
 
@@ -311,8 +339,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
 //        getDeviceId(); //获取设备ID
         operationSealSwitch = STATE_OPERATION_SETTING; //配置
 
-        locationService.requestLocation(this);// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(this);// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
 
         //配置信息
         Intent intent = new Intent(DeviceOperationActivity.this, DeviceSettingActivity.class);
@@ -331,8 +363,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
 /*        if (isLocationServiceStarting) {
             locationService.stop();
         }*/
-        locationService.requestLocation(this);// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(this);// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
     }
 
     @OnClick(R.id.cell_title_unlock)
@@ -347,8 +383,12 @@ public class DeviceOperationActivity extends AppCompatActivity {
 /*        if (isLocationServiceStarting) {
             locationService.stop();
         }*/
-        locationService.requestLocation(this);// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(this);// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
     }
 
     private void performTakePictureWithTransition(View v) {
@@ -1098,6 +1138,93 @@ public class DeviceOperationActivity extends AppCompatActivity {
             }
 
             isLocationServiceStarting = false;
+        }
+    };
+
+    /**
+     * GPS定位结果回调
+     */
+    private LocationHelper.LocationCallBack mGpsLocationCallBack = new LocationHelper.LocationCallBack() {
+        @Override
+        public void onSuccess(final Location location) {
+            mLocationHelper.stopRequest();
+
+            Log.d(TAG, "onSuccess() returned: " + location.getLatitude() + ", " + location.getLongitude());
+            final String time = DATE_FORMAT.format(location.getTime());
+            final double lat = location.getLatitude();
+            final double lng = location.getLongitude();
+
+            if (operationSealSwitch == STATE_OPERATION_SETTING) {
+                coordinateSetting = lat + "," + lng;
+            } else {
+                GeoApiContext geoApiContext = new GeoApiContext().setApiKey(App.GOOGLE_MAP_API_KEY);
+                GeocodingApi.reverseGeocode(geoApiContext, new LatLng(lat, lng))
+                        .setCallback(new PendingResult.Callback<GeocodingResult[]>() {
+                            @Override
+                            public void onResult(final GeocodingResult[] result) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        cardSetting.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String address = result[0].formattedAddress + ", " + lat + "," + lng;
+                                                switch (operationSealSwitch) {
+                                                    case STATE_OPERATION_LOCK: //上封
+                                                        lockTime.setText(time);
+                                                        lockLocation.setText(address);
+                                                        break;
+                                                    case STATE_OPERATION_UNLOCK: //解封
+                                                        unlockTime.setText(time);
+                                                        unlockLocation.setText(address);
+                                                        break;
+                                                }
+                                            }
+                                        });
+                                    }
+                                }.start();
+                            }
+
+                            @Override
+                            public void onFailure(Throwable e) {
+                                cardSetting.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String address = lat + "," + lng;
+                                        switch (operationSealSwitch) {
+                                            case STATE_OPERATION_LOCK: //上封
+                                                lockTime.setText(time);
+                                                lockLocation.setText(address);
+                                                break;
+                                            case STATE_OPERATION_UNLOCK: //解封
+                                                unlockTime.setText(time);
+                                                unlockLocation.setText(address);
+                                                break;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+            }
+        }
+
+        @Override
+        public void onError() {
+            Log.d(TAG, "GPS location failed");
+            mLocationHelper.stopRequest();
+            cardSetting.post(new Runnable() {
+                @Override
+                public void run() {
+                    switch (operationSealSwitch) {
+                        case STATE_OPERATION_LOCK: //上封
+                            lockLocation.setText(getString(R.string.fail_get_current_location));
+                            break;
+                        case STATE_OPERATION_UNLOCK: //解封
+                            unlockLocation.setText(getString(R.string.fail_get_current_location));
+                            break;
+                    }
+                }
+            });
         }
     };
 }

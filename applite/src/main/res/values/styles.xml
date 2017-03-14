@@ -28,7 +28,7 @@
     </style>
 
     <style name="AppTheme.NoActionBar.TextAppearance" parent="AppTheme.NoActionBar">
-        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="SplashTheme" parent="AppTheme.NoActionBar.TextAppearance">

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/ESeal.iml" filepath="$PROJECT_DIR$/ESeal.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/applite/applite.iml" filepath="$PROJECT_DIR$/applite/applite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/versionupdate/versionupdate.iml" filepath="$PROJECT_DIR$/versionupdate/versionupdate.iml" />
     </modules>
   </component>
 </project>

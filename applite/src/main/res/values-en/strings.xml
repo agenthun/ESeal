@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ESeal Lite</string>
+    <string name="app_name">NFC-Seal Lite</string>
 
     <string name="navigation_drawer_open">Drawer open</string>
     <string name="navigation_drawer_close">Drawer close</string>
@@ -30,62 +30,62 @@
 
     <string name="action_type_100">Setting Device</string>
     <string name="action_type_101">Sealed</string>
-    <string name="action_type_102">UnSealed</string>
+    <string name="action_type_102">Unsealed</string>
     <string name="action_type_0">Routine Upload</string>
     <string name="action_type_2">Abnormal Upload</string>
     <string name="action_type_4">Active Upload</string>
 
     <string name="error_ble_not_supported">BLE is not supported</string>
-    <string name="no_devices_all">Not Found Device</string>
+    <string name="no_devices_all">Not found device</string>
     <string name="scan_device_active">Please refresh to scan devices</string>
     <string name="device_connecting">Connecting...</string>
     <string name="success_device_connection">Connection successfully</string>
     <string name="fail_device_connection">Connection failed</string>
     <string name="time_out_device_connection">Connection timeout</string>
     <string name="success_device_send_data">Send success</string>
-    <string name="fail_device_send_data">Send failure</string>
-    <string name="device_reply_query_title">Device Status</string>
+    <string name="fail_device_send_data">Send failed</string>
+    <string name="device_reply_query_title">Device status</string>
     <string name="device_reply_query_period">Upload period</string>
     <string name="text_upload_period">Upload period</string>
     <string name="text_current_position">Current position</string>
     <string name="text_device_status">Device status</string>
     <string name="device_reply_safe_0">Unseal</string>
     <string name="device_reply_safe_1">Sealed</string>
-    <string name="device_reply_safe_2">Forced Open</string>
+    <string name="device_reply_safe_2">Forced open</string>
     <string name="device_reply_lock">Locked</string>
     <string name="device_reply_unlock">Unlock</string>
-    <string name="device_reply_info_title">Device Position</string>
+    <string name="device_reply_info_title">Device position</string>
     <string name="device_reply_info_time_error">Time is unknown</string>
-    <string name="device_reply_read_setting_title">Device Setting</string>
+    <string name="device_reply_read_setting_title">Device setting</string>
     <string name="text_ok">Ok</string>
 
-    <string name="card_title_read_setting">Reading Device Settings</string>
+    <string name="card_title_read_setting">Read device settings</string>
     <string name="card_title_setting">Settings</string>
     <string name="card_title_lock">Lock</string>
-    <string name="text_hint_lock_operation">Lock Operation</string>
+    <string name="text_hint_lock_operation">Lock operation</string>
     <string name="card_title_unlock">Unlock</string>
-    <string name="text_hint_unlock_operation">Unlock Operation</string>
-    <string name="card_title_scan_nfc">NFC Scan</string>
+    <string name="text_hint_unlock_operation">Unlock operation</string>
+    <string name="card_title_scan_nfc">NFC scan</string>
     <string name="card_subtitle_scan_nfc">Device ID</string>
-    <string name="card_title_query_status">Status Query</string>
-    <string name="card_title_query_info">Position Query</string>
-    <string name="card_title_take_picture">Add Device Picture</string>
-    <string name="error_nfc_not_open">Please Enable NFC</string>
+    <string name="card_title_query_status">Status query</string>
+    <string name="card_title_query_info">Position query</string>
+    <string name="card_title_take_picture">Add device picture</string>
+    <string name="error_nfc_not_open">Please enable NFC</string>
     <string name="text_hint_open_nfc">Open</string>
     <string name="text_title_hint">Hint</string>
-    <string name="text_hint_close_to_nfc_tag">Please Close Your SmartPhone to the NFC Tag</string>
-    <string name="text_hint_get_nfc_tag">Please Click to Get the NFC Tag ID</string>
-    <string name="text_hint_get_current_location">Getting the Current Location...</string>
-    <string name="fail_get_current_location">Location Failed, Please Try Again</string>
-    <string name="error_network_not_open">Please Enable Network</string>
-    <string name="error_network">Network Error</string>
+    <string name="text_hint_close_to_nfc_tag">Please close your smartphone to the NFC tag</string>
+    <string name="text_hint_get_nfc_tag">Please click to get the NFC tag ID</string>
+    <string name="text_hint_get_current_location">Getting the current location...</string>
+    <string name="fail_get_current_location">Location failed. Please try again</string>
+    <string name="error_network_not_open">Please enable network</string>
+    <string name="error_network">Network error</string>
     <string name="text_hint_open_network">Setting</string>
-    <string name="text_hint_request_take_picture_permission">APP Needs Camera Permission!</string>
+    <string name="text_hint_request_take_picture_permission">APP needs camera permission!</string>
 
-    <string name="text_title_device_setting_upload">Upload Info</string>
+    <string name="text_title_device_setting_upload">Upload info</string>
     <string name="success_device_setting_upload">Synchronized success</string>
-    <string name="fail_device_setting_upload">Synchronized failure</string>
-    <string name="fail_device_nfc_tag">Invalid NFC Tag ID</string>
+    <string name="fail_device_setting_upload">Synchronized failed</string>
+    <string name="fail_device_nfc_tag">Invalid NFC tag ID</string>
 
     <string name="text_hint_freight_container_number">Container No</string>
     <string name="text_hint_freight_owner">Owner</string>
@@ -96,24 +96,25 @@
     <string name="text_hint_freight_voyage">Voyage</string>
     <string name="text_hint_freight_frequency">Upload period(s)</string>
     <string name="text_hint_nfc_id">NFC ID</string>
-    <string name="text_hint_add_device_picture">Add Device Picture</string>
+    <string name="text_hint_add_device_picture">Add device picture</string>
 
-    <string name="text_hint_take_picture">Take Picture</string>
+    <string name="text_hint_take_picture">Take picture</string>
 
     <string name="text_hint_time">Time</string>
 
-    <string name="error_query_device_group">Query Device Failed, Please Refresh to Scan Devices</string>
+    <string name="error_query_device_group">Query device failed. Please refresh to scan devices</string>
 
     <string name="text_search">Search</string>
     <string name="text_location_search">Location</string>
-    <string name="error_query_freight_location">Locate Freight Failed, Please Try Again</string>
+    <string name="error_query_freight_location">Locate freight failed. Please try again</string>
+    <string name="warn_query_freight_location_no_data">Query no location data</string>
 
-    <string name="title_pick_time">Pick Time</string>
+    <string name="title_pick_time">Pick time</string>
     <string name="text_hint_time_from">From</string>
     <string name="text_hint_time_to">To</string>
-    <string name="error_time_from">Please Pick Start Date</string>
-    <string name="error_time_to">Please Pick End Date</string>
-    <string name="error_time_from_to">Start Date must be Before End Date</string>
+    <string name="error_time_from">Please pick start date</string>
+    <string name="error_time_to">Please pick end date</string>
+    <string name="error_time_from_to">Start date must be before end date</string>
     <string name="text_time_picker_title">Date</string>
     <string name="text_time_picker_ok">Ok</string>
     <string name="text_time_picker_cancel">Cancel</string>
@@ -122,5 +123,36 @@
     <string name="text_time_picker_day">Day</string>
     <string name="text_time_picker_hour">Hour</string>
     <string name="text_time_picker_minute">Minute</string>
+
+    <string name="about">About</string>
+    <string name="text_app_new_version_update">Check for updates</string>
+    <string name="text_app_already_the_latest_version">This is the latest version</string>
+    <string name="error_check_update_version">Version check failed</string>
+    <string name="text_new_app_version">New version</string>
+    <string name="text_found_new_app_version">Found the new version</string>
+    <string name="text_downloaded_new_app_version">The new version has been downloaded</string>
+    <string name="text_app_update_now">Update now</string>
+    <string name="text_app_install_now">Install now</string>
+    <string name="text_app_update_later">Later</string>
+    <string name="text_update_latest_version">"The lastest version: "</string>
+    <string name="text_update_version_size">"Size: "</string>
+    <string name="text_update_version_content">"Update content: "</string>
+    <string name="text_download_file">Start download APK</string>
+    <string name="error_download_file">Download failed</string>
+    <string name="success_download_file">Download success</string>
+    <string name="text_new_notification_message">New message</string>
+    <string name="text_downloading_file">Downloading</string>
+
+    <string name="text_app_introduction">Features</string>
+    <string name="text_thanks">Thanks</string>
+    <string name="text_thanks_name">meng</string>
+    <string name="text_app_about_me">About me</string>
+    <string name="text_copyright">Copyright @ 2017 agenthun</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_introduction_title_1">1.View all running NFC-Seal</string>
+    <string name="text_introduction_title_2">2.Show the latest location of the freight</string>
+    <string name="text_introduction_title_3">3.View details of the freight</string>
+    <string name="text_introduction_title_4">4.Query the freight track by time</string>
+    <string name="error_404_network">Oops... looks like you got lost</string>
 
 </resources>

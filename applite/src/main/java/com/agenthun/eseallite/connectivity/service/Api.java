@@ -15,4 +15,8 @@ public class Api {
     public static final String WEB_SERVICE_V2_TEST = "http://dev.freight-track.com/WebService/CTMSHuWebService.asmx/";
     public static final String WEB_SERVICE_V2_RELEASE = "http://www.freight-track.com/WebService/CTMSHuWebService.asmx/";
     public static final String MAP_SERVICE_V2_URL_STRING = "http://dev.freight-track.com/baidumap/";
+
+    public static final String ESeal_UPDATE_SERVICE_URL = "http://www.freight-track.com/update/updatecheck2.aspx";
+    public static final String ESeal_LITE_UPDATE_SERVICE_URL = "http://www.freight-track.com/update/updatecheck3.aspx";
+
 }

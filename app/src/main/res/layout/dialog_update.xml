@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="288dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/jjdxm_update_dialog_bg"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/spacing_normal">
+
+        <!-- Title -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="24dp">
+
+            <ImageView
+                android:id="@+id/jjdxm_update_wifi_indicator"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/jjdxm_update_gprscondition"
+                android:src="@drawable/jjdxm_update_wifi_disable" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="56dp"
+                android:text="@string/jjdxm_update_updatetitle"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/blue_grey_800" />
+
+        </RelativeLayout>
+
+        <!-- split -->
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue_grey_100" />
+
+        <!-- Content -->
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingBottom="24dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/jjdxm_update_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:text="1232432"
+                    android:textColor="@color/blue_grey_700" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Ignore CheckBox -->
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/jjdxm_update_id_check"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:button="@drawable/jjdxm_update_button_check_selector"
+            android:text="@string/jjdxm_update_ignore"
+            android:textColor="@color/blue_grey_700" />
+
+        <!-- OK&Cancel Button -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/spacing_normal"
+            android:paddingRight="@dimen/spacing_normal"
+            android:paddingTop="32dp">
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/jjdxm_update_id_ok"
+                style="?android:textAppearanceButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default"
+                android:focusable="true"
+                android:text="@string/jjdxm_update_updatenow"
+                android:textAllCaps="false"
+                android:textColor="@color/text_light" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/jjdxm_update_id_cancel"
+                style="?android:textAppearanceButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/spacing_normal"
+                android:layout_weight="1"
+                android:background="@drawable/btn_default_cancel"
+                android:focusable="true"
+                android:text="@string/jjdxm_update_notnow"
+                android:textAllCaps="false"
+                android:textColor="@color/blue_grey_900" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
