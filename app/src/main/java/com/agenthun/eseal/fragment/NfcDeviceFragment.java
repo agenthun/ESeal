@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Build;
@@ -32,7 +33,6 @@ import android.widget.TextView;
 
 import com.agenthun.eseal.App;
 import com.agenthun.eseal.R;
-import com.agenthun.eseal.activity.DeviceOperationActivity;
 import com.agenthun.eseal.activity.DeviceSettingActivity;
 import com.agenthun.eseal.activity.TakePictueActivity;
 import com.agenthun.eseal.bean.base.Result;
@@ -42,10 +42,23 @@ import com.agenthun.eseal.connectivity.service.Api;
 import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.model.utils.SettingType;
 import com.agenthun.eseal.utils.ApiLevelHelper;
+import com.agenthun.eseal.utils.LanguageUtil;
+import com.agenthun.eseal.utils.LocationHelper;
+import com.agenthun.eseal.utils.NetUtil;
 import com.agenthun.eseal.utils.baidumap.LocationService;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClientOption;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.GeolocationApi;
+import com.google.maps.PendingResult;
+import com.google.maps.model.CellTower;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.GeolocationPayload;
+import com.google.maps.model.GeolocationResult;
+import com.google.maps.model.LatLng;
+import com.google.maps.model.WifiAccessPoint;
 import com.ramotion.foldingcell.FoldingCell;
 
 import java.io.ByteArrayOutputStream;
@@ -121,6 +134,9 @@ public class NfcDeviceFragment extends Fragment {
     private int operationSealSwitch = STATE_OPERATION_INITIAL;
     private boolean isLocationServiceStarting = false;
 
+    private LocationHelper mLocationHelper;
+    private boolean mUsingGoogleMap = false;
+
     public static NfcDeviceFragment newInstance() {
         NfcDeviceFragment fragment = new NfcDeviceFragment();
         return fragment;
@@ -129,6 +145,12 @@ public class NfcDeviceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mUsingGoogleMap = "zh-CN".equals(LanguageUtil.getLanguage()) ? false : true;
+//        mUsingGoogleMap = true; //for test googleMap
+
+        if (mUsingGoogleMap) {
+            mLocationHelper = LocationHelper.getInstance(getContext());
+        }
     }
 
     @Nullable
@@ -227,7 +249,6 @@ public class NfcDeviceFragment extends Fragment {
         filter.addAction(TakePictueActivity.PICTURE_URI);
 
         localBroadcastManager.registerReceiver(broadcastReceiver, filter);
-
         mNfcUtility = new NfcUtility(tagCallback);
     }
 
@@ -241,12 +262,22 @@ public class NfcDeviceFragment extends Fragment {
         LocationClientOption mOption = locationService.getDefaultLocationClientOption();
         mOption.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
         locationService.setLocationOption(mOption);
+
+        //注册GPS硬件监听
+        if (mUsingGoogleMap) {
+            mLocationHelper.registerListener(mGpsLocationCallBack);
+        }
     }
 
     @Override
     public void onStop() {
         locationService.unregisterListener(mListener); //注销掉监听
         locationService.stop(); //停止定位服务
+
+        //注销掉GPS硬件监听
+        if (mUsingGoogleMap) {
+            mLocationHelper.unregisterListener();
+        }
         super.onStop();
     }
 
@@ -261,8 +292,12 @@ public class NfcDeviceFragment extends Fragment {
 //        getDeviceId(); //获取设备ID
         operationSealSwitch = STATE_OPERATION_SETTING; //配置
 
-        locationService.requestLocation(getContext());// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(getContext());// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
 
         //配置信息
         Intent intent = new Intent(getContext(), DeviceSettingActivity.class);
@@ -281,8 +316,12 @@ public class NfcDeviceFragment extends Fragment {
 /*        if (isLocationServiceStarting) {
             locationService.stop();
         }*/
-        locationService.requestLocation(getContext());// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(getContext());// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
     }
 
     @OnClick(R.id.cell_title_unlock)
@@ -297,8 +336,12 @@ public class NfcDeviceFragment extends Fragment {
 /*        if (isLocationServiceStarting) {
             locationService.stop();
         }*/
-        locationService.requestLocation(getContext());// 定位SDK
-        isLocationServiceStarting = true;
+        if (!mUsingGoogleMap) {
+            locationService.requestLocation(getContext());// 定位SDK
+            isLocationServiceStarting = true;
+        } else {
+            mLocationHelper.requestLocation();
+        }
     }
 
     @Override
@@ -691,4 +734,135 @@ public class NfcDeviceFragment extends Fragment {
             isLocationServiceStarting = false;
         }
     };
+
+    /**
+     * GPS定位结果回调
+     */
+    private LocationHelper.LocationCallBack mGpsLocationCallBack = new LocationHelper.LocationCallBack() {
+        @Override
+        public void onSuccess(final Location location) {
+            mLocationHelper.stopRequest();
+
+            Log.d(TAG, "onSuccess() returned: " + location.getLatitude() + ", " + location.getLongitude());
+            final String time = DATE_FORMAT.format(location.getTime());
+            final double lat = location.getLatitude();
+            final double lng = location.getLongitude();
+
+            if (operationSealSwitch == STATE_OPERATION_SETTING) {
+                coordinateSetting = lat + "," + lng;
+            } else {
+                GeoApiContext geoApiContext = new GeoApiContext().setApiKey(App.GOOGLE_MAP_API_KEY);
+                GeocodingApi.reverseGeocode(geoApiContext, new LatLng(lat, lng))
+                        .setCallback(new PendingResult.Callback<GeocodingResult[]>() {
+                            @Override
+                            public void onResult(final GeocodingResult[] result) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        getView().post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String address = result[0].formattedAddress + ", " + lat + "," + lng;
+                                                switch (operationSealSwitch) {
+                                                    case STATE_OPERATION_LOCK: //上封
+                                                        lockTime.setText(time);
+                                                        lockLocation.setText(address);
+                                                        break;
+                                                    case STATE_OPERATION_UNLOCK: //解封
+                                                        unlockTime.setText(time);
+                                                        unlockLocation.setText(address);
+                                                        break;
+                                                }
+                                            }
+                                        });
+                                    }
+                                }.start();
+                            }
+
+                            @Override
+                            public void onFailure(Throwable e) {
+                                getView().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String address = lat + "," + lng;
+                                        switch (operationSealSwitch) {
+                                            case STATE_OPERATION_LOCK: //上封
+                                                lockTime.setText(time);
+                                                lockLocation.setText(address);
+                                                break;
+                                            case STATE_OPERATION_UNLOCK: //解封
+                                                unlockTime.setText(time);
+                                                unlockLocation.setText(address);
+                                                break;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+            }
+        }
+
+        @Override
+        public void onError() {
+            Log.d(TAG, "GPS location failed");
+            mLocationHelper.stopRequest();
+            getView().post(new Runnable() {
+                @Override
+                public void run() {
+                    switch (operationSealSwitch) {
+                        case STATE_OPERATION_LOCK: //上封
+                            lockLocation.setText(getString(R.string.fail_get_current_location));
+                            break;
+                        case STATE_OPERATION_UNLOCK: //解封
+                            unlockLocation.setText(getString(R.string.fail_get_current_location));
+                            break;
+                    }
+                }
+            });
+        }
+    };
+
+    private void processGoogleMapGeocodeLocation() {
+        GeoApiContext geoApiContext = new GeoApiContext().setApiKey(App.GOOGLE_MAP_API_KEY);
+
+        GeolocationPayload.GeolocationPayloadBuilder payloadBuilder = new GeolocationPayload.GeolocationPayloadBuilder()
+                .ConsiderIp(false);
+
+        Activity activity = getActivity();
+        CellTower.CellTowerBuilder cellTowerBuilder = new CellTower.CellTowerBuilder()
+                .CellId(NetUtil.getCellLocationCid(activity))
+                .LocationAreaCode(NetUtil.getCellLocationLac(activity))
+                .MobileCountryCode(Integer.parseInt(NetUtil.getTelephonyNetWorkOperatorMcc(activity)))
+                .MobileNetworkCode(Integer.parseInt(NetUtil.getTelephonyNetWorkOperatorMnc(activity)));
+
+        payloadBuilder.AddCellTower(cellTowerBuilder.createCellTower());
+
+        if (NetUtil.isWifi(getContext())) {
+            WifiAccessPoint.WifiAccessPointBuilder wifiAccessPointBuilder = new WifiAccessPoint.WifiAccessPointBuilder()
+                    .MacAddress(NetUtil.getWifiMacAddress(activity))
+                    .SignalStrength(NetUtil.getWifiRssi(activity));
+
+            payloadBuilder.AddWifiAccessPoint(wifiAccessPointBuilder.createWifiAccessPoint());
+
+            wifiAccessPointBuilder = new WifiAccessPoint.WifiAccessPointBuilder()
+                    .MacAddress(NetUtil.getWifiInfo(activity).getBSSID());
+
+
+            payloadBuilder.AddWifiAccessPoint(wifiAccessPointBuilder.createWifiAccessPoint());
+        }
+
+
+        GeolocationApi.geolocate(geoApiContext, payloadBuilder.createGeolocationPayload())
+                .setCallback(new PendingResult.Callback<GeolocationResult>() {
+                    @Override
+                    public void onResult(GeolocationResult result) {
+                        Log.d(TAG, "onResult() returned: " + result.location.toString());
+                    }
+
+                    @Override
+                    public void onFailure(Throwable e) {
+                        Log.d(TAG, "onFailure() returned: " + e.getMessage());
+                    }
+                });
+    }
 }

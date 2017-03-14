@@ -136,4 +136,8 @@ public class LocationDetail implements Parcelable {
     public Boolean isInvalid() {
         return reportTime == null || uploadType == null || latLng == null;
     }
+
+    public com.google.maps.model.LatLng getGoogleMapLatLng() {
+        return new com.google.maps.model.LatLng(latLng.latitude, latLng.longitude);
+    }
 }

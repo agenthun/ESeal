@@ -9,6 +9,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <!--GPS定位权限/蓝牙扫描外加权限-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -19,13 +20,14 @@
         android:required="true" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".pagelogin.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme"
@@ -37,21 +39,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.ScanNfcDeviceActivity"
+            android:name=".pagescannfcdevice.ScanNfcDeviceActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.FreightTrackMapActivity"
+            android:name=".pagefreighttrackmap.FreightTrackMapActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.TimePickerActivity"
+            android:name=".pagetimepicker.TimePickerActivity"
             android:label="@string/title_pick_time"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar.TextAppearance"
             android:windowSoftInputMode="stateAlwaysHidden|stateHidden" />
+        <activity
+            android:name=".pageabout.AboutActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar.TextAppearance" />
+
+        <service android:name=".connectivity.manager.DownloadService" />
 
         <!--百度地图API-->
         <service
@@ -62,9 +71,14 @@
                 <action android:name="com.baidu.location.service_v2.2"></action>
             </intent-filter>
         </service>
+
+        //for agenthun 百度地图API KEY
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="wHHhofqGwWGGEGOUbLhZFKcY" />
+
+        //for meng 百度地图API KEY
+        <!--<meta-data android:name="com.baidu.lbsapi.API_KEY" android:value="CPWln3SclTqUed1GwPNA6i1b1OWpz7At" />-->
 
         <!--Google地图API-->
         <meta-data
@@ -76,7 +90,7 @@
         <!--友盟U-App API-->
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="58a29e19310c935fbf000738" />
+            android:value="58b256c08630f50b32000445" />
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="Wandoujia" />

@@ -27,6 +27,7 @@
     <string name="menu_clear">关闭</string>
     <string name="menu_toggle_icon">触发</string>
     <string name="menu_icon_type">种类</string>
+    <string name="error_query_freight_location">获取位置信息失败, 请重试</string>
 
     <string name="action_type_100">设备配置</string>
     <string name="action_type_101">已上封</string>
@@ -102,4 +103,34 @@
 
     <string name="text_hint_time">时间</string>
 
+    <string name="about">关于</string>
+    <string name="text_app_new_version_update">版本更新</string>
+    <string name="text_app_already_the_latest_version">已是最新版本</string>
+    <string name="error_check_update_version">版本检测失败</string>
+    <string name="text_new_app_version">新版本</string>
+    <string name="text_found_new_app_version">发现新版本</string>
+    <string name="text_downloaded_new_app_version">新版本已下载</string>
+    <string name="text_app_update_now">立即更新</string>
+    <string name="text_app_install_now">立即安装</string>
+    <string name="text_app_update_later">以后再说</string>
+    <string name="text_update_latest_version">"最新版本: "</string>
+    <string name="text_update_version_size">"新版本大小: "</string>
+    <string name="text_update_version_content">"更新内容: "</string>
+    <string name="text_download_file">开始下载APK</string>
+    <string name="error_download_file">下载失败</string>
+    <string name="success_download_file">下载成功</string>
+    <string name="text_new_notification_message">您有一条新通知</string>
+    <string name="text_downloading_file">正在下载中</string>
+
+    <string name="text_app_introduction">功能介绍</string>
+    <string name="text_thanks">致谢</string>
+    <string name="text_thanks_name">meng</string>
+    <string name="text_app_about_me">关于我</string>
+    <string name="text_copyright">Copyright @ 2017 agenthun</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_introduction_title_1">1.查看所有运行的NFC封锁</string>
+    <string name="text_introduction_title_2">2.显示货物最新位置</string>
+    <string name="text_introduction_title_3">3.查看货物详情</string>
+    <string name="text_introduction_title_4">4.搜索时间段内货物的运输轨迹</string>
+    <string name="error_404_network">Oops... 网页访问出错啦!</string>
 </resources>

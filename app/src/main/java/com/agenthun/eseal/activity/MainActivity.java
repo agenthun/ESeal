@@ -28,6 +28,8 @@ import com.agenthun.eseal.connectivity.manager.RetrofitManager;
 import com.agenthun.eseal.utils.ApiLevelHelper;
 import com.agenthun.eseal.utils.PreferencesHelper;
 import com.agenthun.eseal.view.BottomSheetDialogView;
+import com.pekingopera.versionupdate.UpdateHelper;
+import com.pekingopera.versionupdate.listener.ForceListener;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        token = getIntent().getStringExtra(RetrofitManager.TOKEN);
+        token = PreferencesHelper.getTOKEN(this);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         // Set up the ViewPager with the sections adapter.
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-         /*       double[] res = LocationUtil.getLocation(getApplicationContext());
+         /*       double[] res = LocationHelper.getLocation(getApplicationContext());
                 Snackbar.make(view, res[0] + ", " + res[1], Snackbar.LENGTH_SHORT)
                         .setAction("Action", null).show();*/
 
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        checkUpdate();
     }
 
     @Override
@@ -200,9 +203,13 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_sign_out) {
-            signOut(true);
-            return true;
+        switch (id) {
+            case R.id.action_sign_out:
+                signOut(true);
+                return true;
+            case R.id.action_about:
+                AboutActivity.start(this);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -217,5 +224,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void showFreightDataListByBottomSheet(String token, String containerId, final String containerNo, List<LocationDetail> details) {
         BottomSheetDialogView.show(MainActivity.this, containerNo, details);
+    }
+
+    private void checkUpdate() {
+        UpdateHelper.getInstance().setForceListener(new ForceListener() {
+            @Override
+            public void onUserCancel(boolean force) {
+                if (force) {
+                    finish();
+                }
+            }
+        }).check(this);
     }
 }

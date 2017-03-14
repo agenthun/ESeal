@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:src="@drawable/ic_lock_black_24dp"
-        android:tint="@color/dark_gray" />
+        android:tint="@color/blue_grey_500" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/createDatetime"

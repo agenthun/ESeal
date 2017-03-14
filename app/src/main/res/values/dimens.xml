@@ -18,5 +18,8 @@
     <dimen name="size_avatar">72dp</dimen>
     <dimen name="size_fab">56dp</dimen>
 
+    <dimen name="size_list_icon">24dp</dimen>
+    <dimen name="size_list_avatar">48dp</dimen>
+
     <dimen name="size_edit_text">18sp</dimen>
 </resources>

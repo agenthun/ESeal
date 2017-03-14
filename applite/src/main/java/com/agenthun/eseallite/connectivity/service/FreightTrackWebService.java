@@ -7,9 +7,16 @@ import com.agenthun.eseallite.bean.BleAndBeidouNfcDeviceInfos;
 import com.agenthun.eseallite.bean.DeviceLocationInfos;
 import com.agenthun.eseallite.bean.User;
 import com.agenthun.eseallite.bean.base.Result;
+import com.agenthun.eseallite.bean.updateByRetrofit.UpdateResponse;
 
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -26,6 +33,9 @@ public interface FreightTrackWebService {
             @Query("password") String password,
             @Query("language") String language);
 
+    /**
+     * @description 蓝牙锁、北斗终端NFC 配置设备
+     */
     //配置终端货物信息参数
     @GET("ConfigureCargo")
     Observable<Result> configureDevice(
@@ -46,6 +56,9 @@ public interface FreightTrackWebService {
             @Query("operateTime") String operateTime,
             @Query("language") String language);
 
+    /**
+     * @description 蓝牙锁、北斗终端NFC设备的上封/解封操作
+     */
     //解封、开箱操作 - 获取MAC
     @GET("OpenContainer")
     Observable<Result> openDevice(
@@ -70,35 +83,25 @@ public interface FreightTrackWebService {
 
 
     /**
-     * @description 蓝牙锁访问链路
+     * @description 蓝牙锁、北斗终端NFC设备访问链路
      */
-    //根据Token获取所有在途中的货物设置信息
+    //根据Token获取蓝牙锁和BeidouNfc设备的所有在途中的货物信息
     @GET("GetFreightInfoByToken")
-    Observable<BleAndBeidouNfcDeviceInfos> getBleDeviceFreightList(
+    Observable<BleAndBeidouNfcDeviceInfos> getBleAndBeidouNfcDeviceFreightList(
             @Query("token") String token,
             @Query("language") String language);
 
-    //根据containerId获取该货物状态列表
+    //根据containerId获取蓝牙锁和BeidouNfc设备的该货物状态列表
     @GET("GetAllBaiduCoordinateByContainerId")
-    Observable<DeviceLocationInfos> getBleDeviceLocation(
+    Observable<DeviceLocationInfos> getBleAndBeidouNfcDeviceLocation(
             @Query("token") String token,
             @Query("containerId") String containerId,
             @Query("language") String language);
-
-
-
-/*    //获取某集装箱containerId动态数据列表
-    @GET("GetAllDynamicData")
-    Call<AllDynamicDataByContainerId> getAllDynamicData(
-            @Query("token") String token,
-            @Query("containerId") String containerId,
-            @Query("currentPageIndex") Integer currentPageIndex,
-            @Query("language") String language);*/
 
     /**
      * @description 北斗终端帽访问链路
      */
-    //根据Token获取所有在途中的货物设置信息
+    //根据Token获取北斗终端帽的所有在途中的货物信息
     @GET("GetAllImplement")
     Observable<BeidouMasterDeviceInfos> getBeidouMasterDeviceFreightList(
             @Query("token") String token,
@@ -111,7 +114,7 @@ public interface FreightTrackWebService {
             @Query("implementID") String implementID,
             @Query("language") String language);
 
-    //根据implementID获取该货物某时间段内的状态列表
+    //根据implementID获取北斗终端帽的该货物所选时间段的状态列表
     @GET("GetImplementPositionInfoByIDAndTime")
     Observable<DeviceLocationInfos> getBeidouMasterDeviceLocation(
             @Query("token") String token,
@@ -120,36 +123,41 @@ public interface FreightTrackWebService {
             @Query("endTime") String endTime,
             @Query("language") String language);
 
+    //根据implementID获取北斗终端帽的该设备的最新货物状态
+    @GET("GetLastImplementData")
+    Observable<DeviceLocationInfos> getBeidouMasterDeviceLastLocation(
+            @Query("token") String token,
+            @Query("implementID") String implementID,
+            @Query("language") String language);
+
     /**
-     * @description 北斗终端NFC访问链路
+     * @description 版本检测更新
      */
-    //根据Token获取所有在途中的货物设置信息
-/*    @GET("GetAllNFCByToken")
-    Observable<BeidouNfcDeviceInfos> getBeidouNfcDeviceFreightList(
-            @Query("token") String token,
-            @Query("language") String language);
+    //APP 版本检测更新
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(Api.ESeal_UPDATE_SERVICE_URL)
+    Observable<UpdateResponse> checkAppUpdate();
 
-    //根据NFCId获取该货物状态列表
-    @GET("GetNFCPositionInfoByID")
-    Observable<DeviceLocationInfos> getBeidouNfcDeviceLocation(
-            @Query("token") String token,
-            @Query("NFCId") String nfcId,
-            @Query("language") String language);*/
-    @GET("GetFreightInfoByToken")
-    Observable<BleAndBeidouNfcDeviceInfos> getBleAndBeidouNfcDeviceFreightList(
-            @Query("token") String token,
-            @Query("language") String language);
+    //APP Lite 版本检测更新
+    @Headers({
+            "Accept: application/json",
+            "Content-Type: application/json"
+    })
+    @GET(Api.ESeal_LITE_UPDATE_SERVICE_URL)
+    Observable<UpdateResponse> checkAppLiteUpdate();
 
-    @GET("GetFreightInfoByToken")
-    Observable<BleAndBeidouNfcDeviceInfos> getBeidouNfcDeviceFreightList(
-            @Query("token") String token,
-            @Query("language") String language);
+    /**
+     * @description 下载文件
+     */
+    //下载APK文件
+    @Streaming
+    @GET
+    Observable<ResponseBody> downloadFile(@Url String fileUrl);
 
-    //根据containerId获取该货物状态列表
-    @GET("GetAllBaiduCoordinateByContainerId")
-    Observable<DeviceLocationInfos> getBeidouNfcDeviceLocation(
-            @Query("token") String token,
-            @Query("containerId") String containerId,
-            @Query("language") String language);
-
+    @Streaming
+    @GET
+    Observable<Response<ResponseBody>> downloadFile(@Header("Range") String range, @Url String fileUrl);
 }
