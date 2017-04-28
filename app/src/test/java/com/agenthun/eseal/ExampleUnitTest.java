@@ -1,5 +1,7 @@
 package com.agenthun.eseal;
 
+import com.agenthun.eseal.utils.TimeZoneUtil;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -77,5 +79,15 @@ public class ExampleUnitTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testTimeZoneUtil() {
+        String utcTime = TimeZoneUtil.getLocal2UtcTime();
+        String localTime = TimeZoneUtil.utc2Local(utcTime, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss");
+        String utcTimeFromLocalTime = TimeZoneUtil.local2Utc(localTime, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss");
+        System.out.println("utcTime = " + utcTime);
+        System.out.println("localTime = " + localTime);
+        System.out.println("utcTimeFromLocalTime = " + utcTimeFromLocalTime);
     }
 }

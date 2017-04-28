@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.TimeUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.agenthun.eseal.connectivity.service.PathType;
 import com.agenthun.eseal.utils.DeviceSearchSuggestion;
 import com.agenthun.eseal.utils.LanguageUtil;
 import com.agenthun.eseal.utils.PreferencesHelper;
+import com.agenthun.eseal.utils.TimeZoneUtil;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -41,6 +43,7 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
+import com.google.maps.TimeZoneApi;
 import com.umeng.analytics.MobclickAgent;
 
 import java.text.ParseException;
@@ -496,9 +499,9 @@ public class FreightTrackBaiduMapFragment extends Fragment {
             String uploadType = detail.getUploadType();
             String securityLevel = detail.getSecurityLevel();
             String closedFlag = detail.getClosedFlag();
-            if (uploadType.equals("0")) {
-                time = utc2Local(time, "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss");
-            }
+//            if (uploadType.equals("0")) {
+                time = TimeZoneUtil.utc2Local(time, "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm:ss");
+//            }
 
             String[] location = detail.getBaiduCoordinate().split(",");
             LatLng lng = new LatLng(
@@ -853,24 +856,6 @@ public class FreightTrackBaiduMapFragment extends Fragment {
             return MOVE_DISTANCE_MIN;
         }
         return Math.abs((moveDistance * slope) / Math.sqrt(1 + slope * slope));
-    }
-
-    /**
-     * UTC时间转本地时间
-     */
-    private String utc2Local(String utcTime, String utcTimePatten, String localTimePatten) {
-        SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
-        utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date gpsUTCDate = null;
-        try {
-            gpsUTCDate = utcFormater.parse(utcTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
-        localFormater.setTimeZone(TimeZone.getDefault());
-        String localTime = localFormater.format(gpsUTCDate.getTime());
-        return localTime;
     }
 
     private void showLoadingFreightLocationError() {
